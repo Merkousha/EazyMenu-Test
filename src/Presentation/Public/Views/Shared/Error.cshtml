@@ -1,0 +1,14 @@
+@model EazyMenu.Public.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "خطا";
+}
+<section class="text-center">
+    <h1 class="text-danger">مشکلی رخ داده است</h1>
+    <p>لطفاً مجدداً تلاش کنید یا با تیم پشتیبانی ایزی‌منو تماس بگیرید.</p>
+    @if (Model.ShowRequestId)
+    {
+        <p>
+            <strong>کد پیگیری:</strong> <code>@Model.RequestId</code>
+        </p>
+    }
+</section>

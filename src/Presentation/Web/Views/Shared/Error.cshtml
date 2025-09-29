@@ -1,0 +1,12 @@
+@model EazyMenu.Web.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "خطا";
+}
+<h1 class="text-danger">خطایی رخ داده است.</h1>
+<h2 class="text-danger">لطفاً بعداً دوباره تلاش کنید.</h2>
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+    </p>
+}
