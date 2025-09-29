@@ -7,6 +7,10 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-09-29 (later)
+- Added coordination documents for multi-agent collaboration: `Docs/AGENTS.md` and `Docs/copilot-instructions.md`.
+- Documented roles, coding conventions, workflow expectations, and updated guidance for future contributors.
+
 ## 2025-09-29
 - Converted both `EazyMenu.Web` and `EazyMenu.Public` presentation projects from Razor Pages to ASP.NET Core MVC (controllers, views, layouts, updated startup pipelines).
 - Updated `Docs/Architecture.md` and `README.md` to reflect the MVC presentation approach.
