@@ -7,6 +7,12 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-09-30
+- Structured the domain foundation with `ValueObject` and `Entity` base abstractions plus a shared `DomainException` for guard clauses.
+- Added rich value objects (`Money`, `Address`, `Email`, `PhoneNumber`, `BrandProfile`, `Percentage`, `ScheduleSlot`, `QrCodeReference`) aligned with the DomainModel specification.
+- Implemented the Tenant aggregate (Tenant, Branch, Subscription, enums) complete with domain events for registration and subscription activation.
+- Ran `dotnet build` on the full solution to confirm the domain enhancements compile cleanly.
+
 ## 2025-09-29 (later)
 - Added coordination documents for multi-agent collaboration: `Docs/AGENTS.md` and `Docs/copilot-instructions.md`.
 - Documented roles, coding conventions, workflow expectations, and updated guidance for future contributors.
