@@ -39,6 +39,18 @@ public sealed class ScheduleSlot : ValueObject
         return new ScheduleSlot(dayOfWeek, start, end);
     }
 
+    public bool Overlaps(ScheduleSlot other)
+    {
+        Guard.AgainstNull(other, nameof(other));
+
+        if (DayOfWeek != other.DayOfWeek)
+        {
+            return false;
+        }
+
+        return Start < other.End && End > other.Start;
+    }
+
     protected override IEnumerable<object?> GetAtomicValues()
     {
         yield return DayOfWeek;

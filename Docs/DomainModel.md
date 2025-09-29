@@ -30,7 +30,10 @@
   - پلن، قیمت، دوره، وضعیت، تاریخ شروع/پایان، تخفیف، کدReferral.
 
 - **Branch**:
-  - اطلاعات مکان، ساعات کاری، ظرفیت، اطلاع‌رسانی، QR های فعال.
+  - اطلاعات مکان، ساعات کاری، ظرفیت، اطلاع‌رسانی، QR های فعال، فهرست میزها (`Table`).
+
+- **Table** (موجودیت داخلی Branch):
+  - شناسه (`TableId`)، عنوان/شماره، ظرفیت، وضعیت فعال/خارج‌از-سرویس، موقعیت (Indoor/Outdoor).
 
 - **Menu** (اگریگیت):
   - دسته‌ها (`MenuCategory`)، آیتم‌ها (`MenuItem`)، نسخه‌بندی، زبان.
@@ -60,7 +63,7 @@
 
 ## ارزش‌اشیاء پیشنهادی (Value Objects)
 
-- `TenantId`, `BranchId`, `MenuId`, `OrderId`, `ReservationId`, `PaymentId`
+- `TenantId`, `BranchId`, `TableId`, `MenuId`, `OrderId`, `ReservationId`, `PaymentId`
 - `Money`, `Percentage`, `Quantity`
 - `Email`, `PhoneNumber`
 - `Address` (شامل شهر، خیابان، کدپستی)
@@ -79,7 +82,10 @@
 - `OrderStatusChangedDomainEvent`
 - `PaymentCompletedDomainEvent`
 - `ReservationCreatedDomainEvent`
+- `ReservationConfirmedDomainEvent`
 - `ReservationCancelledDomainEvent`
+- `ReservationCheckedInDomainEvent`
+- `ReservationNoShowRecordedDomainEvent`
 - `NotificationDispatchedDomainEvent`
 
 ## سرویس‌های دامنه‌ای و سیاست‌ها
@@ -87,6 +93,7 @@
 - **TenantProvisioningService** (در حال حاضر InMemory – نیاز به پیاده‌سازی واقعی).
 - **PricingService** برای محاسبه قیمت پلن‌ها و سفارش‌ها (مالیات، تخفیف، هزینه ارسال).
 - **SchedulingPolicy** برای جلوگیری از تداخل رزروها.
+  - پیاده‌سازی پایه: `DefaultReservationSchedulingPolicy` که براساس ظرفیت میز و تداخل بازه‌های زمانی، میز مناسب را تخصیص می‌دهد.
 - **InventoryPolicy** برای موجودی آیتم‌ها (فعلاً خارج از محدوده MVP ولی در نظر گرفته شود).
 - **NotificationPolicy** برای انتخاب کانال اعلان بر اساس پلن و تنظیمات.
 
@@ -163,7 +170,8 @@ src/Domain
 - **Menu/MenuCategory/MenuItem**: پشتیبانی چندزبانه، موجودی، قیمت‌های متفاوت آنلاین/حضوری. متدها: `Publish`, `Archive`, `UpdatePrice`, `SetAvailability`.
 - **Order**: `OrderNumber`, `TenantId`, `BranchId`, `CustomerInfo`, `Items`, `Totals`, `Status`, `PaymentStatus`, `DeliveryMethod`. متدها: `AddItem`, `ApplyDiscount`, `Confirm`, `StartPreparation`, `Complete`, `Cancel`.
 - **OrderItem**: `MenuItemId`, `Quantity`, `UnitPrice`, `Notes`. متدها: `UpdateQuantity`, `UpdateNotes`.
-- **Reservation**: `ReservationId`, `TenantId`, `BranchId`, `ScheduleSlot`, `PartySize`, `Status`, `SpecialRequest`. متدها: `Confirm`, `Cancel`, `MarkAsNoShow`, `CheckIn`.
+- **Reservation**: `ReservationId`, `TenantId`, `BranchId`, `TableId`, `ScheduleSlot`, `PartySize`, `Status`, `SpecialRequest`, اطلاعات تماس مشتری. متدها: `Confirm`, `Cancel`, `MarkAsNoShow`, `MarkAsCheckedIn`, `Reschedule`, `ChangeTable`, `UpdatePartySize`.
+- **Table**: `TableId`, `Label`, `Capacity`, `IsOutdoor`, `IsOutOfService`. متدها: `UpdateLabel`, `UpdateCapacity`, `SetOutdoor`, `MarkOutOfService`, `RestoreToService`.
 - **PaymentTransaction**: `PaymentId`, `ExternalReference`, `Amount`, `Status`, `Method`, `IssuedAt`, `CompletedAt`. متدها: `MarkSucceeded`, `MarkFailed`, `MarkRefunded`.
 - **Notification**: `NotificationId`, `Type`, `Channel`, `Severity`, `Content`, `IsRead`. متدها: `MarkAsRead`, `ScheduleRetry`.
 - **SupportTicket**: `TicketId`, `Subject`, `Description`, `Priority`, `Status`, `Messages`. متدها: `AddMessage`, `Assign`, `Resolve`, `Reopen`.
