@@ -1,0 +1,19 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/EazyMenu
+/src/Application/bin/Debug/net9.0
+/src/Application/obj
+/src/Domain/bin/Debug/net9.0
+/src/Domain/obj
+/src/Infrastructure/bin/Debug/net9.0
+/src/Infrastructure/obj
+/src/Presentation/Public/bin/Debug/net9.0
+/src/Presentation/Public/obj
+/src/Presentation/Web/bin/Debug/net9.0
+/src/Presentation/Web/obj
+/tests/EazyMenu.IntegrationTests/bin/Debug/net9.0
+/tests/EazyMenu.IntegrationTests/obj
+/tests/EazyMenu.UnitTests/bin/Debug/net9.0
+/tests/EazyMenu.UnitTests/obj
