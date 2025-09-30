@@ -3,6 +3,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Application\EazyMenu.Application.csproj" />
     <ProjectReference Include="..\..\Infrastructure\EazyMenu.Infrastructure.csproj" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <PropertyGroup>

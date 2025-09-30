@@ -21,9 +21,13 @@ public sealed class Branch : Entity<BranchId>
         Address = address;
     }
 
-    public string Name { get; private set; }
+    private Branch()
+    {
+    }
 
-    public Address Address { get; private set; }
+    public string Name { get; private set; } = string.Empty;
+
+    public Address Address { get; private set; } = null!;
 
     public IReadOnlyCollection<QrCodeReference> QrCodes => new ReadOnlyCollection<QrCodeReference>(_qrCodes);
 

@@ -14,6 +14,7 @@ public sealed class Tenant : Entity<TenantId>, IAggregateRoot
 {
     private readonly List<Branch> _branches = new();
     private readonly List<Subscription> _subscriptions = new();
+    private Subscription? _activeSubscription;
 
     private Tenant(TenantId id, string businessName, BrandProfile branding, Email contactEmail, PhoneNumber contactPhone, DateTime createdAtUtc)
         : base(id)
@@ -52,7 +53,11 @@ public sealed class Tenant : Entity<TenantId>, IAggregateRoot
 
     public DateTime CreatedAtUtc { get; private set; }
 
-    public Subscription? ActiveSubscription { get; private set; }
+    public Subscription? ActiveSubscription
+    {
+        get => _activeSubscription;
+        private set => _activeSubscription = value;
+    }
 
     public IReadOnlyCollection<Branch> Branches => new ReadOnlyCollection<Branch>(_branches);
 

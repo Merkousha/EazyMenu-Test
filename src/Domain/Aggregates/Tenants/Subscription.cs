@@ -19,11 +19,15 @@ public sealed class Subscription : Entity<Guid>
         Status = SubscriptionStatus.Pending;
     }
 
+    private Subscription()
+    {
+    }
+
     public SubscriptionPlan Plan { get; private set; }
 
     public SubscriptionStatus Status { get; private set; }
 
-    public Money Price { get; private set; }
+    public Money Price { get; private set; } = null!;
 
     public DateTime StartDateUtc { get; private set; }
 
