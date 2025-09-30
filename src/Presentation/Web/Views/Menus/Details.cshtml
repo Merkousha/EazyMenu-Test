@@ -9,7 +9,7 @@
     ViewData["Title"] ??= $"مدیریت {defaultName}";
 }
 
-<div class="container" dir="rtl" data-menu-details data-menu-id="@Model.MenuId">
+<div class="container" dir="rtl" data-menu-details data-menu-id="@Model.MenuId" data-tenant-id="@Model.TenantId" data-base-url="@Url.Content("~/")">
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <div>
             <h1 class="h3 mb-1">@defaultName</h1>

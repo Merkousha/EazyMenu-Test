@@ -8,7 +8,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - When closing an item here, log the details in `Docs/ProgressLog.md` for long-term history.
 
 ## In Progress
-- [ ] توسعه قابلیت‌های تعاملی مدیریت منو (CRUD کامل، مرتب‌سازی، انتشار) با تکیه بر فرمان‌های Application و Endpointهای AJAX (View جزئیات و Partialها بازنویسی شده؛ گام بعد: Endpointهای AJAX و اسکریپت `menu-management.js`).
+- [ ] توسعه قابلیت‌های تعاملی مدیریت منو (CRUD کامل، مرتب‌سازی، انتشار) با تکیه بر فرمان‌های Application و Endpointهای AJAX (کنترلرها و اسکریپت Dashboard آماده؛ گام بعد: مسیر Quick Update، SignalR و همگام‌سازی سایت عمومی پس از انتشار).
 
 ## Up Next
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.

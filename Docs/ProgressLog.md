@@ -10,8 +10,11 @@ A running history of significant work completed in this repository.
 ## 2025-10-07 (latest)
 - بازنویسی کامل View `Views/Menus/Details.cshtml` برای نمایش ترکیبی دسته‌ها و آیتم‌ها با Partialهای جدید و فرم افزودن دسته، رفع خطاهای Razor و تنظیم namespaceهای لازم.
 - هم‌ترازسازی بخش اطلاعات پایه، پیام‌های بدون داده و پوشه اسکریپت‌ها با داده‌های واقعی منو و آماده‌سازی توکن ضدتقلب جهت استفاده در درخواست‌های AJAX آینده.
-- اجرای `dotnet build` (موفق، مدت 14.3 ثانیه) و `dotnet test` (موفق، 94 تست، مدت 5.2 ثانیه) پس از اصلاح View به‌منظور تضمین سلامت سراسری.
-- گام بعدی: پیاده‌سازی Endpointهای AJAX برای CRUD دسته/آیتم، تکمیل اسکریپت `menu-management.js` و اتصال دوباره به رویداد انتشار.
+- پیاده‌سازی کنترلرهای `MenuCategoriesController` و `MenuItemsController` بر پایه کلاس مشترک `MenuDashboardControllerBase` برای پوشش سناریوهای ایجاد/ویرایش/آرشیو، تغییر وضعیت، مرتب‌سازی و انتشار منو با بازگشت Partial جهت بروزرسانی آنی UI.
+- ساخت اسکریپت `wwwroot/js/menu-management.js` برای مدیریت فرم‌های AJAX، فراخوانی Endpointهای جدید، نمایش پیام‌های کاربر و پشتیبانی از Drag & Drop با SortableJS.
+- افزودن تست‌های واحد `MenuCategoriesControllerTests` و `MenuItemsControllerTests` با استفاده از Moq جهت تضمین رفتار جریان‌های موفق و خطا، به‌روزرسانی پروژه تست برای استفاده از بسته Moq.
+- اجرای `dotnet build` (موفق، مدت 3.7 ثانیه) و `dotnet test` (موفق، 102 تست، مدت 5.0 ثانیه) پس از افزودن Endpointها، اسکریپت و تست‌ها به‌منظور تضمین سلامت سراسری.
+- گام بعدی: تکمیل مسیر Quick Update قیمت/موجودی و SignalR برای همگام‌سازی لحظه‌ای، به‌همراه انتشار محتوا در سایت عمومی بر اساس نسخه جدید.
 
 ## 2025-09-30 (latest)
 - افزودن سرویس `DashboardTenantProvider` برای استخراج شناسه مستاجر فعال از پایگاه‌داده و ثبت آن در DI پروژه وب.

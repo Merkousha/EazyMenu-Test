@@ -283,3 +283,9 @@ public sealed class ReorderItemsInput
     [Required]
     public IReadOnlyList<Guid> ItemIds { get; init; } = Array.Empty<Guid>();
 }
+
+public sealed class SetMenuItemAvailabilityInput
+{
+    [Required]
+    public bool? IsAvailable { get; init; }
+}

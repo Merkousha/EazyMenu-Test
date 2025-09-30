@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EazyMenu.Application.Abstractions.Messaging;
 using EazyMenu.Application.Common.Exceptions;
+using EazyMenu.Application.Features.Menus.Commands.PublishMenu;
 using EazyMenu.Application.Features.Menus.Common;
 using EazyMenu.Application.Features.Menus.Queries.GetMenuDetails;
 using EazyMenu.Application.Features.Menus.Queries.GetMenus;
@@ -21,17 +22,20 @@ public sealed class MenusController : Controller
     private readonly IDashboardTenantProvider _tenantProvider;
     private readonly IQueryHandler<GetMenusQuery, IReadOnlyCollection<MenuSummaryDto>> _getMenusQueryHandler;
     private readonly IQueryHandler<GetMenuDetailsQuery, MenuDetailsDto> _getMenuDetailsQueryHandler;
+    private readonly ICommandHandler<PublishMenuCommand, int> _publishMenuCommandHandler;
 
     public MenusController(
         ILogger<MenusController> logger,
         IDashboardTenantProvider tenantProvider,
         IQueryHandler<GetMenusQuery, IReadOnlyCollection<MenuSummaryDto>> getMenusQueryHandler,
-        IQueryHandler<GetMenuDetailsQuery, MenuDetailsDto> getMenuDetailsQueryHandler)
+        IQueryHandler<GetMenuDetailsQuery, MenuDetailsDto> getMenuDetailsQueryHandler,
+        ICommandHandler<PublishMenuCommand, int> publishMenuCommandHandler)
     {
         _logger = logger;
         _tenantProvider = tenantProvider;
         _getMenusQueryHandler = getMenusQueryHandler;
         _getMenuDetailsQueryHandler = getMenuDetailsQueryHandler;
+        _publishMenuCommandHandler = publishMenuCommandHandler;
     }
 
     [HttpGet]
@@ -90,6 +94,41 @@ public sealed class MenusController : Controller
             _logger.LogError(exception, "خطای غیرمنتظره هنگام دریافت منو {MenuId}", menuId);
             TempData["MenuError"] = "در بازیابی منوی درخواستی خطایی رخ داد.";
             return RedirectToAction(nameof(Index));
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Publish(Guid menuId, CancellationToken cancellationToken)
+    {
+        var tenantId = await _tenantProvider.GetActiveTenantIdAsync(cancellationToken);
+        if (!tenantId.HasValue)
+        {
+            return BadRequest(new { message = "برای انتشار منو ابتدا باید مستاجر فعال مشخص شود." });
+        }
+
+        try
+        {
+            var version = await _publishMenuCommandHandler.HandleAsync(
+                new PublishMenuCommand(tenantId.Value, menuId),
+                cancellationToken);
+
+            return Ok(new { version });
+        }
+        catch (NotFoundException)
+        {
+            _logger.LogWarning("Menu {MenuId} was not found for publish operation", menuId);
+            return NotFound(new { message = "منوی درخواستی یافت نشد." });
+        }
+        catch (BusinessRuleViolationException exception)
+        {
+            _logger.LogWarning(exception, "Business rule violation while publishing menu {MenuId}", menuId);
+            return UnprocessableEntity(new { message = exception.Message });
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Unexpected error while publishing menu {MenuId}", menuId);
+            return StatusCode(500, new { message = "خطای غیرمنتظره‌ای رخ داد. لطفاً دوباره تلاش کنید." });
         }
     }
 }
