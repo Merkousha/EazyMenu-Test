@@ -7,6 +7,12 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-05 (latest)
+- افزودن هندلر `AddMenuItemCommand` در لایه Application با استفاده از نگاشت‌های جدید موجودی/کانال و اتصال آن به اگریگیت `Menu`.
+- بازنگری هندلرهای آرشیو/بازگردانی/به‌روزرسانی دسته برای فراخوانی متدهای عمومی اگریگیت و جلوگیری از نقض قوانین دسترسی داخلی.
+- اجرای `dotnet build` روی کل 솔وشن (موفق، ۱۰٫۶ ثانیه) جهت اطمینان از سلامت تغییرات.
+- گام بعدی: تکمیل سایر Use Caseهای آیتم منو (ویرایش جزئیات، قیمت‌گذاری، موجودی، انتشار) و شروع نگارش کوئری‌ها.
+
 ## 2025-10-04 (latest)
 - پیاده‌سازی Value Object‌های منو (`MenuId`, `MenuCategoryId`, `MenuItemId`, `LocalizedText`, `InventoryState`, `MenuChannel`, `MenuTag`) مطابق سند طراحی.
 - ایجاد اگریگیت `Menu` همراه با موجودیت‌های داخلی `MenuCategory` و `MenuItem`، اعمال قوانین ترتیب، موجودی و رویدادهای دامنه جدید.
