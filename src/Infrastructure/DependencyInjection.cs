@@ -12,24 +12,34 @@ namespace EazyMenu.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddInfrastructureServices(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        Action<DbContextOptionsBuilder>? configureDbContext = null)
     {
         services.AddSingleton<ITenantProvisioningService, InMemoryTenantProvisioningService>();
 
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
-        if (string.IsNullOrWhiteSpace(connectionString))
+        if (configureDbContext is not null)
         {
-            throw new InvalidOperationException("تنظیم اتصال پایگاه‌داده (DefaultConnection) در فایل پیکربندی یافت نشد.");
+            services.AddDbContext<EazyMenuDbContext>(configureDbContext);
         }
-
-        services.AddDbContext<EazyMenuDbContext>(options =>
+        else
         {
-            options.UseSqlServer(connectionString, sqlOptions =>
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            if (string.IsNullOrWhiteSpace(connectionString))
             {
-                sqlOptions.MigrationsAssembly(typeof(EazyMenuDbContext).Assembly.FullName);
-                sqlOptions.EnableRetryOnFailure();
+                throw new InvalidOperationException("تنظیم اتصال پایگاه‌داده (DefaultConnection) در فایل پیکربندی یافت نشد.");
+            }
+
+            services.AddDbContext<EazyMenuDbContext>(options =>
+            {
+                options.UseSqlServer(connectionString, sqlOptions =>
+                {
+                    sqlOptions.MigrationsAssembly(typeof(EazyMenuDbContext).Assembly.FullName);
+                    sqlOptions.EnableRetryOnFailure();
+                });
             });
-        });
+        }
 
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<EazyMenuDbContext>());

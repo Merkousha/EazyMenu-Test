@@ -8,6 +8,12 @@ A running history of significant work completed in this repository.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
 ## 2025-09-30 (latest)
+- توسعه `AddInfrastructureServices` برای پذیرش پیکربندی سفارشی DbContext و پشتیبانی از ارائه‌دهنده‌های تستی.
+- افزودن تست‌های یکپارچه شعبه (`CreateBranch`, `UpdateBranchWorkingHours`) با استفاده از EF Core InMemory جهت اعتبارسنجی ذخیره‌سازی واقعی.
+- اضافه کردن پکیج `Microsoft.EntityFrameworkCore.InMemory` به پروژه تست و اجرای `dotnet build` و `dotnet test` (۵۸ تست موفق).
+- به‌روزرسانی `Docs/Todo.md` با معرفی گام بعدی (جایگزینی سرویس ثبت مستاجر با پیاده‌سازی پایگاه‌داده).
+
+## 2025-09-30 (earlier-2)
 - تکمیل پیکربندی EF Core برای دامنه مستاجر: نگاشت‌های `Tenant`, `Branch`, `Subscription` به همراه کانورژن Value Objectها و پشتیبانی از کالکشن‌های تملیکی.
 - رفع هشدارهای کامپایل و ایجاد `EazyMenuDbContext` با پیاده‌سازی `SaveChangesAsync` سازگار با `IUnitOfWork`.
 - اجرای `dotnet ef migrations add InitialCreate --project src/Infrastructure/EazyMenu.Infrastructure.csproj --startup-project src/Presentation/Web/EazyMenu.Web.csproj` و تولید اولین مایگریشن پایگاه‌داده.
@@ -18,27 +24,27 @@ A running history of significant work completed in this repository.
 - افزودن Query `GetActiveSubscription` و DTO `SubscriptionDetailsDto` جهت ارائه جزئیات اشتراک فعال (طرح، وضعیت، قیمت، تخفیف).
 - نگارش تست‌های واحد برای فرمان انقضا و Query جدید شامل سناریوهای موفق و خطا؛ اجرای `dotnet test` با موفقیت (۵۶ تست).
 
-## 2025-09-30 (earlier-4)
+## 2025-09-30 (earlier-3)
 - اضافه شدن فرمان‌های `SuspendSubscription` و `ReinstateSubscription` برای تعلیق و بازگشت اشتراک فعال به همراه اعتبارسنجی وضعیت فعلی.
 - گسترش دامنه با متدهای `SuspendActiveSubscription` و `ReinstateSuspendedSubscription` در اگریگیت مستاجر جهت پشتیبانی از جریان جدید.
 - نوشتن تست‌های واحد برای سناریوهای موفق و خطا (نبود مستاجر، نبود اشتراک فعال، بازگشت از حالت غیرمعلق) و اجرای `dotnet test` با موفقیت (۴۸ تست).
 
-## 2025-09-30 (earlier)
+## 2025-09-30 (earlier-4)
 - پیاده‌سازی فرمان و هندلر `CancelSubscription` برای لغو اشتراک فعال همراه با اعتبارسنجی شناسه مستاجر و وجود اشتراک فعال.
 - افزودن تست‌های واحد برای سناریوهای لغو موفق، نبود مستاجر و نبود اشتراک فعال.
 - اجرای `dotnet test` با موفقیت (۴۱ تست) پس از افزودن قابلیت لغو.
 
-## 2025-09-30 (earlier-2)
+## 2025-09-30 (earlier-5)
 - پیاده‌سازی جریان تمدید اشتراک در لایه Application: فرمان `RenewSubscriptionCommand` و هندلر جدید همراه با بررسی تاریخ‌ها، قیمت و امکان اعمال تخفیف.
 - افزودن تست‌های واحد برای سناریوهای موفق، نبود اشتراک فعال و تاریخ شروع نامعتبر با استفاده از انباره درون‌حافظه‌ای.
 - اجرای `dotnet test` با موفقیت (۳۸ تست) برای اطمینان از سلامت تغییرات.
 
-## 2025-09-30 (earlier)
+## 2025-09-30 (earlier-6)
 - تکمیل لایه Application برای مدیریت شعبه و میز: معرفی `ITenantRepository` و پیاده‌سازی فرمان‌های ایجاد/ویرایش/حذف شعبه، بروزرسانی ساعات کاری و مدیریت میزها (افزودن، ویرایش، حذف، خارج‌از-سرویس/بازگشت به سرویس).
 - افزودن Queryهای `GetTenantBranches` و `GetBranchDetails` برای بازگرداندن خلاصه و جزئیات شعبه به همراه DTOهای جدید.
 - نگارش تست‌های واحد برای تمام هندلرهای جدید و به‌روزرسانی پوشش آزمون‌ها؛ اجرای `dotnet test` با موفقیت (۳۴ تست).
 
-## 2025-09-30 (later)
+## 2025-09-30 (earlier-7)
 - پیاده‌سازی مدیریت میزها در دامنه: `TableId`، کلاس `Table` و متدهای شعبه برای افزودن/ویرایش/خارج‌از-سرویس کردن میزها.
 - تکمیل اگریگیت رزرو با تاریخچه وضعیت، رویدادهای دامنه (`ReservationCreated/Confirmed/Cancelled/CheckedIn/NoShow`) و نگاشت به میز مشخص.
 - افزودن Value Object های تازه (`ReservationId`, `TableId`) و متد همپوشانی `ScheduleSlot.Overlaps` برای تشخیص تداخل زمان‌ها.
@@ -46,7 +52,7 @@ A running history of significant work completed in this repository.
 - به‌روزرسانی `Docs/DomainModel.md` مطابق مدل جدید رزرو و میزها.
 - افزودن تست‌های واحد برای اگریگیت رزرو، مدیریت میز شعبه و سیاست زمان‌بندی به همراه اجرای `dotnet test` جهت اطمینان از عبور همه سناریوها.
 
-## 2025-09-30
+## 2025-09-30 (earlier-8)
 - Structured the domain foundation with `ValueObject` and `Entity` base abstractions plus a shared `DomainException` for guard clauses.
 - Added rich value objects (`Money`, `Address`, `Email`, `PhoneNumber`, `BrandProfile`, `Percentage`, `ScheduleSlot`, `QrCodeReference`) aligned with the DomainModel specification.
 - Implemented the Tenant aggregate (Tenant, Branch, Subscription, enums) complete with domain events for registration and subscription activation.

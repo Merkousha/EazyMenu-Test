@@ -14,7 +14,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [ ] Integrate external providers: Zarinpal payments, Kavenegar SMS, email/notification channels.
 - [ ] Build onboarding wizard, menu management UI, and ordering flows per user stories.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
- - [ ] Wire Application handlers to new EF persistence (repositories, unit tests, command handlers).
+- [ ] Replace in-memory tenant provisioning with persistence-backed onboarding flow.
 
 ## Done
 - [x] Convert presentation layer projects to ASP.NET Core MVC and update documentation.
@@ -22,3 +22,4 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [x] Implement core domain/value objects and sample onboarding command + tests.
 - [x] Document architecture vision, solution layout, and repo usage in `Docs/Architecture.md` and `README.md`.
 - [x] Implement tenant-aware persistence (EF Core + SQL Server) including DbContext, entity mappings, DI registration، و نخستین مایگریشن.
+- [x] اتصال هندلرهای لایه Application به لایه Persistency مبتنی بر EF Core به همراه تست‌های یکپارچه.
