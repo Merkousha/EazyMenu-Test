@@ -184,6 +184,14 @@ public sealed class Menu : Entity<MenuId>, IAggregateRoot
         return item;
     }
 
+    public void RemoveMenuItem(MenuCategoryId categoryId, MenuItemId itemId)
+    {
+        EnsureActive();
+        var category = FindCategory(categoryId);
+        category.RemoveItem(itemId);
+        Touch();
+    }
+
     public void UpdateMenuItemDetails(MenuCategoryId categoryId, MenuItemId itemId, LocalizedText name, LocalizedText? description, string? imageUrl)
     {
         Guard.AgainstNull(name, nameof(name));
@@ -191,6 +199,15 @@ public sealed class Menu : Entity<MenuId>, IAggregateRoot
 
         var item = FindItem(categoryId, itemId);
         item.UpdateDetails(name, description, imageUrl);
+        Touch();
+    }
+
+    public void UpdateMenuItemTags(MenuCategoryId categoryId, MenuItemId itemId, IEnumerable<MenuTag>? tags)
+    {
+        EnsureActive();
+
+        var item = FindItem(categoryId, itemId);
+        item.ReplaceTags(tags);
         Touch();
     }
 
