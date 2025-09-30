@@ -17,7 +17,7 @@ public static class DependencyInjection
         IConfiguration configuration,
         Action<DbContextOptionsBuilder>? configureDbContext = null)
     {
-        services.AddSingleton<ITenantProvisioningService, InMemoryTenantProvisioningService>();
+    services.AddScoped<ITenantProvisioningService, EfTenantProvisioningService>();
 
         if (configureDbContext is not null)
         {

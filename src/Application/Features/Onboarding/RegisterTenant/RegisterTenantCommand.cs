@@ -6,4 +6,10 @@ namespace EazyMenu.Application.Features.Onboarding.RegisterTenant;
 public sealed record RegisterTenantCommand(
     string RestaurantName,
     string ManagerEmail,
-    string PlanCode) : ICommand<TenantId>;
+    string ManagerPhone,
+    string PlanCode,
+    string City,
+    string Street,
+    string PostalCode,
+    bool UseTrial = false,
+    string? DiscountCode = null) : ICommand<TenantId>;
