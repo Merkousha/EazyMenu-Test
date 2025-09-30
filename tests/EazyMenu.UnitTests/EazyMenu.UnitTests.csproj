@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Domain\EazyMenu.Domain.csproj" />
     <ProjectReference Include="..\..\src\Application\EazyMenu.Application.csproj" />
+    <ProjectReference Include="..\..\src\Presentation\Web\EazyMenu.Web.csproj" />
   </ItemGroup>
 
 </Project>

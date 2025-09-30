@@ -44,7 +44,7 @@ internal sealed class EfTenantProvisioningService : ITenantProvisioningService
         var priceQuote = _pricingService.GetPriceQuote(plan, request.UseTrial, request.DiscountCode);
 
         var startUtc = _dateTimeProvider.UtcNow;
-    DateTime? endUtc = priceQuote.IsTrial ? startUtc.AddDays(14) : null;
+        DateTime? endUtc = priceQuote.IsTrial ? startUtc.AddDays(14) : null;
 
         var tenant = Tenant.Register(
             request.RestaurantName,

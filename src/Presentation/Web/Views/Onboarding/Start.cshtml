@@ -1,0 +1,102 @@
+@model EazyMenu.Web.Models.RegisterTenantViewModel
+@{
+    ViewData["Title"] ??= "آغاز ثبت‌نام";
+}
+
+<section class="onboarding-form bg-light py-5" dir="rtl">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 p-md-5">
+                        <h1 class="h3 mb-4 text-center">شروع آنبوردینگ رستوران</h1>
+                        <p class="text-muted text-center mb-4">
+                            با تکمیل فرم زیر، اشتراک شما ایجاد و در صورت نیاز به پرداخت، به صفحه زرین‌پال هدایت خواهید شد.
+                        </p>
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <form asp-action="Start" asp-controller="Onboarding" method="post" novalidate>
+                            @Html.AntiForgeryToken()
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label asp-for="RestaurantName" class="form-label"></label>
+                                    <input asp-for="RestaurantName" class="form-control" />
+                                    <span asp-validation-for="RestaurantName" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="ManagerEmail" class="form-label"></label>
+                                    <input asp-for="ManagerEmail" class="form-control" />
+                                    <span asp-validation-for="ManagerEmail" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="ManagerPhone" class="form-label"></label>
+                                    <input asp-for="ManagerPhone" class="form-control" placeholder="مثال: +989121234567" />
+                                    <span asp-validation-for="ManagerPhone" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="City" class="form-label"></label>
+                                    <input asp-for="City" class="form-control" />
+                                    <span asp-validation-for="City" class="text-danger"></span>
+                                </div>
+                                <div class="col-12">
+                                    <label asp-for="Street" class="form-label"></label>
+                                    <input asp-for="Street" class="form-control" />
+                                    <span asp-validation-for="Street" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="PostalCode" class="form-label"></label>
+                                    <input asp-for="PostalCode" class="form-control" />
+                                    <span asp-validation-for="PostalCode" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="DiscountCode" class="form-label"></label>
+                                    <input asp-for="DiscountCode" class="form-control" placeholder="کد تخفیف دارید؟" />
+                                    <span asp-validation-for="DiscountCode" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <hr class="my-4" />
+
+                            <div class="mb-3">
+                                <h2 class="h5 mb-3">انتخاب طرح اشتراک</h2>
+                                <div class="row g-3">
+                                    @foreach (var plan in Model.Plans)
+                                    {
+                                        var planId = $"plan-{plan.Value}";
+                                        <div class="col-md-4">
+                                            <div class="card h-100 border @(plan.Selected ? "border-success" : "border-light")">
+                                                <div class="card-body">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="radio" name="PlanCode" id="@planId" value="@plan.Value" @(plan.Selected ? "checked" : null) />
+                                                        <label class="form-check-label fw-semibold" for="@planId">@plan.Text</label>
+                                                    </div>
+                                                    @if (!string.IsNullOrWhiteSpace(plan.Group?.Name))
+                                                    {
+                                                        <p class="text-muted small mt-2">@plan.Group!.Name</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span asp-validation-for="PlanCode" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-check form-switch mb-4">
+                                <input asp-for="UseTrial" class="form-check-input" />
+                                <label asp-for="UseTrial" class="form-check-label"></label>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index">بازگشت</a>
+                                <button type="submit" class="btn btn-primary btn-lg">ثبت و ادامه</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

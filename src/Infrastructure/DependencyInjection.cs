@@ -59,8 +59,8 @@ public static class DependencyInjection
             });
         }
 
-    services.AddScoped<ITenantRepository, TenantRepository>();
-    services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
+        services.AddScoped<ITenantRepository, TenantRepository>();
+        services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<EazyMenuDbContext>());
 
         return services;

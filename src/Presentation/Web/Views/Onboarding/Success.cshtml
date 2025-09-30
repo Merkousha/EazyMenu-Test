@@ -1,0 +1,44 @@
+@model EazyMenu.Web.Models.ProvisioningSuccessViewModel
+@{
+    ViewData["Title"] ??= Model.Title;
+}
+
+<section class="onboarding-success py-5" dir="rtl">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4 text-center">
+                        <h1 class="h3 mb-3">@Model.Title</h1>
+                        <p class="lead mb-4">@Model.Message</p>
+
+                        <div class="row g-3 justify-content-center">
+                            @if (!string.IsNullOrWhiteSpace(Model.TenantId))
+                            {
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3">
+                                        <div class="text-muted small">شناسه مستاجر</div>
+                                        <div class="fw-semibold">@Model.TenantId</div>
+                                    </div>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.SubscriptionId))
+                            {
+                                <div class="col-md-6">
+                                    <div class="border rounded p-3">
+                                        <div class="text-muted small">شناسه اشتراک</div>
+                                        <div class="fw-semibold">@Model.SubscriptionId</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="mt-4">
+                            <a class="btn btn-primary" asp-controller="Home" asp-action="Index">بازگشت به داشبورد</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

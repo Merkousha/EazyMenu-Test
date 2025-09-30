@@ -8,14 +8,15 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - When closing an item here, log the details in `Docs/ProgressLog.md` for long-term history.
 
 ## In Progress
-- [ ] Flesh out MVC controllers/views with real application logic tied to `Application` layer use cases.
+- [ ] توسعه صفحات مدیریتی پس از ورود (داشبورد، مدیریت منو، تنظیمات) و اتصال آن‌ها به Use Caseهای لایه Application.
 
 ## Up Next
 - [ ] Integrate external providers: finalize Zarinpal production gateway callbacks, Kavenegar SMS, email/notification channels.
-- [ ] Build onboarding wizard, menu management UI, and ordering flows per user stories.
+- [ ] Build menu management UI and ordering flows per user stories.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] طراحی و پیاده‌سازی ویزارد آنبوردینگ (کنترلر، ViewModel، Viewها) با اتصال به `RegisterTenantCommand` و هدایت به پرداخت.
 - [x] نمایش نتیجه بازگشت زرین‌پال در MVC با View `Payments/Callback` و کنترلر مرتبط.
 - [x] پیاده‌سازی اعتبارسنجی پرداخت زرین‌پال و فعال‌سازی اشتراک پس از تأیید.
 - [x] اتصال جریان پرداخت به ثبت اشتراک (ایجاد فاکتور، ثبت وضعیت پرداخت، مدیریت تخفیف‌ها).

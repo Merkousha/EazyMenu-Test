@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using EazyMenu.Application.Abstractions.Messaging;
 using EazyMenu.Application.Abstractions.Persistence;
 using EazyMenu.Application.Common.Exceptions;
 using EazyMenu.Application.Features.Payments.VerifyPayment;
@@ -14,12 +15,12 @@ namespace EazyMenu.Web.Controllers;
 public sealed class PaymentsController : Controller
 {
     private readonly IPaymentTransactionRepository _paymentTransactionRepository;
-    private readonly VerifyPaymentCommandHandler _verifyPaymentCommandHandler;
+    private readonly ICommandHandler<VerifyPaymentCommand, VerifyPaymentResult> _verifyPaymentCommandHandler;
     private readonly ILogger<PaymentsController> _logger;
 
     public PaymentsController(
         IPaymentTransactionRepository paymentTransactionRepository,
-        VerifyPaymentCommandHandler verifyPaymentCommandHandler,
+        ICommandHandler<VerifyPaymentCommand, VerifyPaymentResult> verifyPaymentCommandHandler,
         ILogger<PaymentsController> logger)
     {
         _paymentTransactionRepository = paymentTransactionRepository;
