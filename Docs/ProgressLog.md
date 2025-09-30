@@ -10,8 +10,10 @@ A running history of significant work completed in this repository.
 ## 2025-10-05 (latest)
 - تکمیل سبد فرمان‌های آیتم منو: افزودن هندلرهای `UpdateMenuItemDetails`, `UpdateMenuItemPricing`, `SetMenuItemAvailability`, `AdjustMenuItemInventory`, `RemoveMenuItem`, `ReorderMenuItems` و `PublishMenu` به‌همراه تعریف رکوردهای فرمان متناظر.
 - توسعه اگریگیت `Menu` با متدهای `RemoveMenuItem` و `UpdateMenuItemTags` برای محافظت از مرز دامنه و پشتیبانی از فرمان‌های جدید.
+- پیاده‌سازی کوئری‌های `GetMenusQuery` و `GetMenuDetailsQuery` با استفاده از `MenuMapper` و فیلتر دسته‌های آرشیوشده برای مصرف داشبورد مدیریتی.
+- ثبت تمام فرمان‌ها و کوئری‌های منو در `DependencyInjection` جهت دسترس‌پذیری از طریق الگوی `ICommandHandler`/`IQueryHandler`.
 - اجرای `dotnet build` و `dotnet test` (۹۴ تست موفق، مدت ۲٫۵ ثانیه) پس از اضافه‌شدن فرمان‌ها برای اطمینان از سلامت راهکار.
-- گام بعدی: شروع پیاده‌سازی کوئری‌های منو و سراغ گرفتن از لایه Persistency (EF Core) مطابق سند طراحی.
+- گام بعدی: ورود به پیاده‌سازی Persistency منو (EF Core، مپینگ، مایگریشن) و افزودن تست‌های پوششی برای هندلرهای جدید.
 
 ## 2025-10-04 (latest)
 - پیاده‌سازی Value Object‌های منو (`MenuId`, `MenuCategoryId`, `MenuItemId`, `LocalizedText`, `InventoryState`, `MenuChannel`, `MenuTag`) مطابق سند طراحی.

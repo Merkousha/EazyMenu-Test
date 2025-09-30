@@ -21,9 +21,10 @@ internal static class MenuMapper
             menu.UpdatedAtUtc);
     }
 
-    public static MenuDetailsDto ToDetailsDto(Menu menu)
+    public static MenuDetailsDto ToDetailsDto(Menu menu, bool includeArchivedCategories = true)
     {
         var categories = menu.Categories
+            .Where(category => includeArchivedCategories || !category.IsArchived)
             .OrderBy(category => category.DisplayOrder)
             .Select(ToCategoryDto)
             .ToList();
