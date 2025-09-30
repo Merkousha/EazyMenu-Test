@@ -6,4 +6,6 @@ namespace EazyMenu.Application.Common.Interfaces.Payments;
 public interface IPaymentGatewayClient
 {
     Task<PaymentGatewayResponse> CreatePaymentAsync(PaymentGatewayRequest request, CancellationToken cancellationToken = default);
+
+    Task<PaymentVerificationResponse> VerifyPaymentAsync(PaymentVerificationRequest request, CancellationToken cancellationToken = default);
 }

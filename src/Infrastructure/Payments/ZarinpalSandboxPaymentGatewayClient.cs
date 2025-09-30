@@ -23,4 +23,20 @@ internal sealed class ZarinpalSandboxPaymentGatewayClient : IPaymentGatewayClien
 
         return Task.FromResult(new PaymentGatewayResponse(authority, redirectUri, expiresAt));
     }
+
+    public Task<PaymentVerificationResponse> VerifyPaymentAsync(PaymentVerificationRequest request, CancellationToken cancellationToken = default)
+    {
+        if (request.Authority.Contains("FAIL", StringComparison.OrdinalIgnoreCase))
+        {
+            return Task.FromResult(new PaymentVerificationResponse(false, null, "پرداخت توسط کاربر لغو شد."));
+        }
+
+        if (request.Authority.Contains("EXPIRE", StringComparison.OrdinalIgnoreCase))
+        {
+            return Task.FromResult(new PaymentVerificationResponse(false, null, "مهلت پرداخت منقضی شده است."));
+        }
+
+        var reference = $"ZP-REF-{Guid.NewGuid():N}".ToUpperInvariant();
+        return Task.FromResult(new PaymentVerificationResponse(true, reference, null));
+    }
 }

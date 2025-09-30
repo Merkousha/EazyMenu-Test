@@ -8,6 +8,13 @@ A running history of significant work completed in this repository.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
 ## 2025-10-01 (latest)
+- افزودن Use Case جدید `VerifyPaymentCommand` برای اعتبارسنجی پرداخت زرین‌پال، همراه با `PaymentVerificationRequest/Response` و انبار `IPaymentTransactionRepository`.
+- توسعه دامنه جهت فعال‌سازی اشتراک‌های در حالت Pending پس از موفقیت پرداخت و نگهداری مرجع تراکنش.
+- ارتقای کلاینت شبیه‌ساز زرین‌پال برای پشتیبانی از متد `VerifyPaymentAsync` و سناریوهای انقضا/لغو.
+- نگارش تست‌های یکپارچه برای تأیید سناریوهای موفق و ناموفق پرداخت به همراه تقویت تست واحد تراکنش پرداخت؛ اجرای `dotnet test` (۶۴ تست موفق، مدت ۳.۱ ثانیه).
+- گام بعدی: پیاده‌سازی سرویس Callback در لایه Presentation جهت دریافت پارامترهای `Authority`/`Status` و فراخوانی Use Case جدید.
+
+## 2025-10-01 (earlier-1)
 - معرفی دامنه پرداخت با `PaymentTransaction`, `PaymentId`, و Enumerationهای `PaymentStatus`/`PaymentMethod` به همراه قابلیت ثبت تخفیف و مرجع درگاه.
 - بازطراحی `EfTenantProvisioningService` برای استفاده از سرویس قیمت‌گذاری جدید، صدور تراکنش پرداخت زرین‌پال، نگهداری وضعیت اشتراک معلق و ثبت رکوردهای پرویژنینگ با شناسه‌های اشتراک/پرداخت.
 - پیاده‌سازی `SubscriptionPricingService` و کلاینت شبیه‌ساز `ZarinpalSandboxPaymentGatewayClient` به همراه `PaymentGatewayOptions` و ثبت تزریق وابستگی‌ها.

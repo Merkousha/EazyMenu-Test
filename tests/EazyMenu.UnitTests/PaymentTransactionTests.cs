@@ -65,4 +65,30 @@ public class PaymentTransactionTests
         Assert.Equal("AUTH-123", transaction.GatewayAuthority);
         Assert.Null(transaction.FailureReason);
     }
+
+    [Fact]
+    public void MarkFailed_FromPending_SetsFailureInfo()
+    {
+        var tenantId = TenantId.New();
+        var amount = Money.From(750_000m);
+        var issuedAt = DateTime.UtcNow;
+        var transaction = PaymentTransaction.Issue(
+            tenantId,
+            Guid.NewGuid(),
+            amount,
+            PaymentMethod.Zarinpal,
+            "پرداخت با خطا",
+            issuedAt,
+            amount,
+            null,
+            null,
+            null);
+
+        var failedAt = issuedAt.AddMinutes(2);
+        transaction.MarkFailed("خطای درگاه", failedAt);
+
+        Assert.Equal(PaymentStatus.Failed, transaction.Status);
+        Assert.Equal("خطای درگاه", transaction.FailureReason);
+        Assert.Equal(failedAt, transaction.CompletedAtUtc);
+    }
 }
