@@ -22,7 +22,8 @@ public sealed class CustomerSmsLoginTests
         var generator = new FakeOtpGenerator("12345");
         var store = new FakeOtpStore();
         var sms = new FakeSmsSender();
-        var handler = new RequestCustomerLoginCommandHandler(generator, store, sms, new FixedDateTimeProvider(FixedNow));
+        var fallback = new FakeSmsFailureAlertService();
+        var handler = new RequestCustomerLoginCommandHandler(generator, store, sms, fallback, new FixedDateTimeProvider(FixedNow));
 
         var result = await handler.HandleAsync(new RequestCustomerLoginCommand("+989121234567"));
 
@@ -33,6 +34,24 @@ public sealed class CustomerSmsLoginTests
         Assert.Equal(FixedNow.AddMinutes(2), store.StoredExpiry);
         Assert.Equal("+989121234567", sms.LastPhoneNumber);
         Assert.Contains("12345", sms.LastMessage);
+        Assert.Null(fallback.LastPhone);
+    }
+
+    [Fact]
+    public async Task RequestLogin_WhenSmsFails_TriggersFallbackAndThrows()
+    {
+        var generator = new FakeOtpGenerator("12345");
+        var store = new FakeOtpStore();
+        var sms = new FakeSmsSender { ShouldThrow = true };
+        var fallback = new FakeSmsFailureAlertService();
+        var handler = new RequestCustomerLoginCommandHandler(generator, store, sms, fallback, new FixedDateTimeProvider(FixedNow));
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => handler.HandleAsync(new RequestCustomerLoginCommand("+989121234567")));
+
+        Assert.Equal("send failed", exception.Message);
+        Assert.Equal("+989121234567", fallback.LastPhone);
+        Assert.Contains("12345", fallback.LastMessage);
+        Assert.NotNull(fallback.LastException);
     }
 
     [Fact]
@@ -42,6 +61,7 @@ public sealed class CustomerSmsLoginTests
             new FakeOtpGenerator("12345"),
             new FakeOtpStore(),
             new FakeSmsSender(),
+            new FakeSmsFailureAlertService(),
             new FixedDateTimeProvider(FixedNow));
 
         await Assert.ThrowsAsync<BusinessRuleViolationException>(() => handler.HandleAsync(new RequestCustomerLoginCommand("invalid")));
@@ -130,11 +150,32 @@ public sealed class CustomerSmsLoginTests
     {
         public string? LastPhoneNumber { get; private set; }
         public string? LastMessage { get; private set; }
+        public bool ShouldThrow { get; set; }
 
         public Task SendAsync(string phoneNumber, string message, CancellationToken cancellationToken = default)
         {
             LastPhoneNumber = phoneNumber;
             LastMessage = message;
+            if (ShouldThrow)
+            {
+                throw new InvalidOperationException("send failed");
+            }
+
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class FakeSmsFailureAlertService : ISmsFailureAlertService
+    {
+        public string? LastPhone { get; private set; }
+        public string? LastMessage { get; private set; }
+        public Exception? LastException { get; private set; }
+
+        public Task NotifyFailureAsync(string phoneNumber, string message, Exception exception, CancellationToken cancellationToken = default)
+        {
+            LastPhone = phoneNumber;
+            LastMessage = message;
+            LastException = exception;
             return Task.CompletedTask;
         }
     }

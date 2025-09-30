@@ -35,6 +35,18 @@ public static class DependencyInjection
     services.AddScoped<ISmsDeliveryLogReader>(sp => sp.GetRequiredService<EfSmsDeliveryStore>());
         services.AddSingleton(provider =>
         {
+            var options = new EmailOptions();
+            var section = configuration.GetSection("Notifications:Email");
+            if (section is not null)
+            {
+                options.FromAddress = section[nameof(EmailOptions.FromAddress)] ?? options.FromAddress;
+                options.SupportAddress = section[nameof(EmailOptions.SupportAddress)] ?? options.SupportAddress;
+            }
+
+            return options;
+        });
+        services.AddSingleton(provider =>
+        {
             var options = new SmsOptions();
             var section = configuration.GetSection("Notifications:Sms");
             if (section is not null)
@@ -52,6 +64,9 @@ public static class DependencyInjection
             client.BaseAddress = new Uri("https://api.kavenegar.com/");
             client.Timeout = TimeSpan.FromSeconds(10);
         });
+        services.AddScoped<IEmailSender, LoggingEmailSender>();
+    services.AddScoped<ISmsFailureAlertNotifier, SignalRSmsFailureAlertNotifier>();
+        services.AddScoped<ISmsFailureAlertService, SmsFailureAlertService>();
         services.AddScoped<ISmsSender>(provider =>
         {
             var smsOptions = provider.GetRequiredService<SmsOptions>();

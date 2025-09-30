@@ -12,11 +12,12 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 
 ## Up Next
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
-- [ ] تکمیل fallback ایمیل/اعلان برای موارد شکست ارسال پیامک و پایش آن در داشبورد.
 - [ ] Build menu management UI and ordering flows per user stories.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] راه‌اندازی هشدار زنده شکست پیامک با SignalR و اتصال آن به داشبورد مدیریتی.
+- [x] تکمیل fallback ایمیل/اعلان برای موارد شکست ارسال پیامک و ثبت آن در گزارش پیامک‌ها.
 - [x] نمایش گزارش پیامک‌ها در داشبورد مدیریتی با فیلتر وضعیت و صفحه‌بندی (NotificationsController + Razor View).
 - [x] پیاده‌سازی ورود پیامکی مشتریان (OTP) در سایت عمومی به همراه تست‌های کاربردی.
 - [x] طراحی و پیاده‌سازی ویزارد آنبوردینگ (کنترلر، ViewModel، Viewها) با اتصال به `RegisterTenantCommand` و هدایت به پرداخت.

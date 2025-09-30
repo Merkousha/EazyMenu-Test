@@ -20,17 +20,20 @@ public sealed class RequestCustomerLoginCommandHandler : ICommandHandler<Request
     private readonly IOneTimePasswordGenerator _otpGenerator;
     private readonly IOneTimePasswordStore _otpStore;
     private readonly ISmsSender _smsSender;
+    private readonly ISmsFailureAlertService _smsFailureAlertService;
     private readonly IDateTimeProvider _dateTimeProvider;
 
     public RequestCustomerLoginCommandHandler(
         IOneTimePasswordGenerator otpGenerator,
         IOneTimePasswordStore otpStore,
         ISmsSender smsSender,
+        ISmsFailureAlertService smsFailureAlertService,
         IDateTimeProvider dateTimeProvider)
     {
         _otpGenerator = otpGenerator;
         _otpStore = otpStore;
         _smsSender = smsSender;
+        _smsFailureAlertService = smsFailureAlertService;
         _dateTimeProvider = dateTimeProvider;
     }
 
@@ -57,7 +60,15 @@ public sealed class RequestCustomerLoginCommandHandler : ICommandHandler<Request
         await _otpStore.StoreAsync(phoneNumber.Value, verificationCode, expiresAt, cancellationToken);
 
         var message = $"کد ورود شما به ایزی‌منو: {verificationCode}";
-        await _smsSender.SendAsync(phoneNumber.Value, message, cancellationToken);
+        try
+        {
+            await _smsSender.SendAsync(phoneNumber.Value, message, cancellationToken);
+        }
+        catch (Exception exception)
+        {
+            await _smsFailureAlertService.NotifyFailureAsync(phoneNumber.Value, message, exception, cancellationToken);
+            throw;
+        }
 
         return new RequestCustomerLoginResult(phoneNumber.Value, expiresAt, "sms");
     }

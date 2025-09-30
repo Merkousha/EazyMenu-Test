@@ -7,6 +7,13 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-03 (latest)
+- پیاده‌سازی اعلان زنده شکست پیامک با SignalR شامل هاب `SmsAlertsHub`، سرویس `SignalRSmsFailureAlertNotifier` و اتصال آن در DI.
+- افزودن اسکریپت SignalR به صفحه `Views/Notifications/SmsLogs` برای نمایش فوری هشدارها و عضویت خودکار داشبورد در گروه.
+- به‌روزرسانی `Program.cs` برای فعال‌سازی SignalR و نگارش `FrameworkReference` در زیرساخت جهت دسترسی به هاب.
+- اجرای `dotnet build` و `dotnet test` (۸۲ تست موفق، مدت ۲.۶ ثانیه) جهت اطمینان از سلامت زنجیره اعلان.
+- گام بعدی: پایش بهره‌برداری و بررسی ارسال اعلان‌های سطح کانال‌های دیگر (مانند پیامک پشتیبان یا بات پیام‌رسان).
+
 ## 2025-10-02 (latest)
 - راه‌اندازی صفحه داشبورد «گزارش پیامک‌ها» با کنترلر `NotificationsController`، مدل‌های نمایشی جدید و جدول راست‌چین همراه با فیلتر وضعیت و صفحه‌بندی.
 - افزودن لینک ناوبری و ثبت `GetSmsDeliveryLogsQueryHandler` در DI برای اتصال UI به لایه Application.
@@ -36,28 +43,36 @@ A running history of significant work completed in this repository.
 - اجرای `dotnet build` و `dotnet test` (۷۶ تست موفق، مدت ۳.۲ ثانیه) جهت اطمینان از سلامت تغییرات.
 - گام بعدی: دریافت کلیدهای محیطی کاوه‌نگار و پیاده‌سازی fallbackهای پیامک و ایمیل برای سناریوهای خطا.
 
-## 2025-10-01 (earlier-0)
-- راه‌اندازی ویزارد آنبوردینگ در لایه Presentation با کنترلر `OnboardingController`، مدل‌های `RegisterTenantViewModel`/`ProvisioningSuccessViewModel` و صفحات Razor (`Onboarding/Start`, `Onboarding/Success`) جهت ثبت مستاجر و جمع‌آوری اطلاعات تماس، آدرس و طرح انتخابی.
-- اتصال فرم آنبوردینگ به Use Case `RegisterTenantCommand` و مدیریت سناریوهای آزمایشی و پرداختی همراه با پیام‌های فارسی و ریدایرکت خودکار به درگاه زرین‌پال یا نمایش نتیجه فعال‌سازی اشتراک.
-- افزودن تست‌های واحد `OnboardingControllerTests` برای پوشش مسیرهای موفق، اعتبارسنجی ModelState و ریدایرکت پرداخت.
-- به‌روزرسانی DI جهت ثبت Handlerها با `ICommandHandler<TCommand, TResult>` و هم‌راست‌سازی کنترلرهای پرداخت/آنبوردینگ با این الگو؛ اجرای `dotnet build` و `dotnet test` (۶۸ تست موفق، مدت ۲.۵ ثانیه).
-- گام بعدی: تکمیل صفحات مدیریتی پس از ورود (داشبورد، مدیریت منو) و آماده‌سازی جریان احراز هویت و ارتباطات بیرونی.
+## 2025-10-02 (latest)
+- پیاده‌سازی سرویس `SmsFailureAlertService` برای ارسال ایمیل هشدار به پشتیبانی هنگام شکست پیامک و ثبت لاگ «fallback-email» در پایگاه‌داده.
+- افزودن `IEmailSender`، `LoggingEmailSender` و تنظیمات `EmailOptions` به لایه زیرساخت به همراه تزریق وابستگی‌ها.
+- به‌روزرسانی `RequestCustomerLoginCommandHandler` برای فعال‌سازی fallback و پوشش تستی سناریوی شکست SMS؛ مجموع آزمون‌ها به ۸۲ رسید (تست واحد + یکپارچه برای fallback).
+- ارتقای صفحه گزارش پیامک با هایلایت ردیف‌های fallback و نمایش برچسب کانال جایگزین.
+- اجرای `dotnet build` و `dotnet test` (۸۲ تست موفق، مدت ۲.۴ ثانیه) جهت اعتبارسنجی تغییرات.
+- گام بعدی: بررسی ارسال اعلان داخلی یا UI real-time برای هشدارهای فوری پس از شکست پیامک.
 
-## 2025-10-01 (earlier-1)
+## 2025-10-02 (earlier-0)
+- راه‌اندازی صفحه داشبورد «گزارش پیامک‌ها» با کنترلر `NotificationsController`، مدل‌های نمایشی جدید و جدول راست‌چین همراه با فیلتر وضعیت و صفحه‌بندی.
+- افزودن لینک ناوبری و ثبت `GetSmsDeliveryLogsQueryHandler` در DI برای اتصال UI به لایه Application.
+- نگارش تست‌های واحد `NotificationsControllerTests` برای پوشش مسیر موفق و خطای بازیابی؛ تعداد کل آزمون‌ها به ۸۰ رسید.
+- اجرای `dotnet build` و `dotnet test` (۸۰ تست موفق، مدت ۲.۷ ثانیه) به‌منظور اطمینان از سلامت تغییرات.
+- گام بعدی: پیاده‌سازی fallback ایمیل/اعلان برای پیامک‌های ناموفق و نمایش هشدار در داشبورد.
+
+## 2025-10-02 (earlier-1)
 - تکمیل جریان بازگشت زرین‌پال در لایه Presentation با پیاده‌سازی View جدید `Views/Payments/Callback.cshtml` و اتصال آن به `PaymentsController` برای نمایش وضعیت پرداخت.
 - نمایش پیام‌های موفق/ناموفق همراه با کد پیگیری و شناسه اشتراک در رابط کاربری بر اساس `PaymentCallbackViewModel`.
 - اجرای `dotnet build` و `dotnet test` (۶۴ تست موفق، مدت ۳.۴ ثانیه) جهت اطمینان از سلامت تغییرات UI و عدم Regression.
 - گام بعدی: تکمیل سایر صفحات MVC و شروع به یکپارچه‌سازی سرویس‌های بیرونی (SMS/Email) پس از نهایی شدن فلوهای پرداخت.
 
 ## 2025-10-01 (earlier-2)
-- افزودن Use Case جدید `VerifyPaymentCommand` برای اعتبارسنجی پرداخت زرین‌پال، همراه با `PaymentVerificationRequest/Response` و انبار `IPaymentTransactionRepository`.
+## 2025-10-02 (earlier-2)
 - توسعه دامنه جهت فعال‌سازی اشتراک‌های در حالت Pending پس از موفقیت پرداخت و نگهداری مرجع تراکنش.
 - ارتقای کلاینت شبیه‌ساز زرین‌پال برای پشتیبانی از متد `VerifyPaymentAsync` و سناریوهای انقضا/لغو.
 - نگارش تست‌های یکپارچه برای تأیید سناریوهای موفق و ناموفق پرداخت به همراه تقویت تست واحد تراکنش پرداخت؛ اجرای `dotnet test` (۶۴ تست موفق، مدت ۳.۱ ثانیه).
 - گام بعدی: پیاده‌سازی سرویس Callback در لایه Presentation جهت دریافت پارامترهای `Authority`/`Status` و فراخوانی Use Case جدید.
 
 ## 2025-10-01 (earlier-3)
-- معرفی دامنه پرداخت با `PaymentTransaction`, `PaymentId`, و Enumerationهای `PaymentStatus`/`PaymentMethod` به همراه قابلیت ثبت تخفیف و مرجع درگاه.
+## 2025-10-02 (earlier-3)
 - بازطراحی `EfTenantProvisioningService` برای استفاده از سرویس قیمت‌گذاری جدید، صدور تراکنش پرداخت زرین‌پال، نگهداری وضعیت اشتراک معلق و ثبت رکوردهای پرویژنینگ با شناسه‌های اشتراک/پرداخت.
 - پیاده‌سازی `SubscriptionPricingService` و کلاینت شبیه‌ساز `ZarinpalSandboxPaymentGatewayClient` به همراه `PaymentGatewayOptions` و ثبت تزریق وابستگی‌ها.
 - ایجاد مایگریشن `AddPayments` جهت افزودن جدول `PaymentTransactions` و ستون‌های `SubscriptionId`/`PaymentId` به `TenantProvisionings`.

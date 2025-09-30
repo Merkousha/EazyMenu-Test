@@ -5,6 +5,8 @@
 }
 
 <div class="container" dir="rtl">
+    <div id="sms-alert-container" class="mb-4"></div>
+
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
             <h1 class="h3 mb-1">گزارش پیامک‌های تراکنشی</h1>
@@ -63,6 +65,7 @@
                 <tbody>
                 @foreach (var log in Model.Items)
                 {
+                    var isFallback = IsFallbackProvider(log.Provider);
                     var statusClass = log.Status switch
                     {
                         SmsDeliveryStatus.Sent => "bg-success",
@@ -70,7 +73,8 @@
                         SmsDeliveryStatus.Failed => "bg-danger",
                         _ => "bg-secondary"
                     };
-                    <tr>
+                    var rowClass = isFallback ? "table-warning" : string.Empty;
+                    <tr class="@rowClass">
                         <td class="text-nowrap">@log.OccurredAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</td>
                         <td class="fw-semibold">@log.PhoneNumber</td>
                         <td>
@@ -81,7 +85,9 @@
                         <td style="white-space: pre-line; max-width: 360px;">
                             @log.Message
                         </td>
-                        <td>@log.Provider</td>
+                        <td>
+                            <span class="badge bg-light text-dark">@GetProviderLabel(log.Provider)</span>
+                        </td>
                         <td>
                             @if (!string.IsNullOrWhiteSpace(log.ErrorMessage))
                             {
@@ -128,4 +134,86 @@
         SmsDeliveryStatus.Failed => "ناموفق",
         _ => status.ToString()
     };
+
+    private static string GetProviderLabel(string provider)
+    {
+        if (IsFallbackProvider(provider))
+        {
+            return "ایمیل جایگزین";
+        }
+
+        return provider switch
+        {
+            string p when string.Equals(p, "Kavenegar", System.StringComparison.OrdinalIgnoreCase) => "کاوه‌نگار",
+            string p when string.Equals(p, "Logging", System.StringComparison.OrdinalIgnoreCase) => "ثبت لاگ",
+            _ => provider
+        };
+    }
+
+    private static bool IsFallbackProvider(string provider) => string.Equals(provider, "fallback-email", System.StringComparison.OrdinalIgnoreCase);
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        (function () {
+            const container = document.getElementById('sms-alert-container');
+            if (!container || !window.signalR) {
+                return;
+            }
+
+            const addAlert = (payload) => {
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-warning alert-dismissible fade show shadow-sm border-start border-4 border-warning-subtle';
+                alert.setAttribute('role', 'alert');
+
+                const title = document.createElement('h2');
+                title.className = 'h6 fw-bold mb-2';
+                title.textContent = 'اخطار: ارسال پیامک ناموفق';
+
+                const message = document.createElement('p');
+                message.className = 'mb-1';
+                message.textContent = `پیامک به شماره ${payload.phoneNumber} با خطا مواجه شد و کانال ${payload.channel} فعال شد.`;
+
+                const error = document.createElement('div');
+                error.className = 'small text-muted';
+                error.textContent = `پیام خطا: ${payload.errorMessage}`;
+
+                const time = document.createElement('div');
+                time.className = 'small text-muted';
+                const occurred = new Date(payload.occurredAt);
+                time.textContent = `زمان: ${occurred.toLocaleString('fa-IR')}`;
+
+                const closeButton = document.createElement('button');
+                closeButton.type = 'button';
+                closeButton.className = 'btn-close';
+                closeButton.setAttribute('data-bs-dismiss', 'alert');
+                closeButton.setAttribute('aria-label', 'بستن');
+
+                alert.appendChild(closeButton);
+                alert.appendChild(title);
+                alert.appendChild(message);
+                alert.appendChild(error);
+                alert.appendChild(time);
+
+                container.prepend(alert);
+            };
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl('/hubs/sms-alerts')
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on('smsFailure', addAlert);
+
+            connection.start()
+                .then(() => connection.invoke('JoinDashboard').catch(() => { }))
+                .catch(() => {
+                    const fallback = document.createElement('div');
+                    fallback.className = 'alert alert-secondary';
+                    fallback.textContent = 'اتصال Real-time برقرار نشد. لطفاً صفحه را تازه‌سازی کنید.';
+                    container.appendChild(fallback);
+                });
+        })();
+    </script>
 }
