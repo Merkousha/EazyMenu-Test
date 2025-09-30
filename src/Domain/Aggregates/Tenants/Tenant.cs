@@ -180,6 +180,31 @@ public sealed class Tenant : Entity<TenantId>, IAggregateRoot
         ActiveSubscription = null;
     }
 
+    public void SuspendActiveSubscription()
+    {
+        if (ActiveSubscription is null)
+        {
+            throw new DomainException("اشتراک فعالی جهت تعلیق وجود ندارد.");
+        }
+
+        ActiveSubscription.Suspend();
+    }
+
+    public void ReinstateSuspendedSubscription()
+    {
+        if (ActiveSubscription is null)
+        {
+            throw new DomainException("اشتراک فعالی برای بازگشت وجود ندارد.");
+        }
+
+        if (ActiveSubscription.Status != SubscriptionStatus.Suspended)
+        {
+            throw new DomainException("تنها اشتراک معلق شده قابل بازگشت است.");
+        }
+
+        ActiveSubscription.Activate();
+    }
+
     public Subscription RenewSubscription(SubscriptionPlan plan, DateTime newStartUtc, DateTime? newEndUtc, Money newPrice, bool asTrial = false)
     {
         var renewal = Subscription.Create(plan, newPrice, newStartUtc, newEndUtc, asTrial);
