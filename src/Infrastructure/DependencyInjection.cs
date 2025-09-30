@@ -30,7 +30,37 @@ public static class DependencyInjection
         services.AddScoped<IPaymentGatewayClient, ZarinpalSandboxPaymentGatewayClient>();
         services.AddSingleton<IOneTimePasswordGenerator, RandomOneTimePasswordGenerator>();
         services.AddScoped<IOneTimePasswordStore, InMemoryOneTimePasswordStore>();
-        services.AddSingleton<ISmsSender, LoggingSmsSender>();
+    services.AddScoped<EfSmsDeliveryStore>();
+    services.AddScoped<ISmsDeliveryStore>(sp => sp.GetRequiredService<EfSmsDeliveryStore>());
+    services.AddScoped<ISmsDeliveryLogReader>(sp => sp.GetRequiredService<EfSmsDeliveryStore>());
+        services.AddSingleton(provider =>
+        {
+            var options = new SmsOptions();
+            var section = configuration.GetSection("Notifications:Sms");
+            if (section is not null)
+            {
+                options.Provider = section["Provider"] ?? options.Provider;
+                options.KavenegarApiKey = section["KavenegarApiKey"];
+                options.KavenegarSenderLine = section["KavenegarSenderLine"];
+            }
+
+            return options;
+        });
+        services.AddScoped<LoggingSmsSender>();
+        services.AddHttpClient<KavenegarSmsSender>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.kavenegar.com/");
+            client.Timeout = TimeSpan.FromSeconds(10);
+        });
+        services.AddScoped<ISmsSender>(provider =>
+        {
+            var smsOptions = provider.GetRequiredService<SmsOptions>();
+            return smsOptions.GetProvider() switch
+            {
+                SmsProvider.Kavenegar => provider.GetRequiredService<KavenegarSmsSender>(),
+                _ => provider.GetRequiredService<LoggingSmsSender>()
+            };
+        });
         services.AddMemoryCache();
         services.AddSingleton(provider =>
         {

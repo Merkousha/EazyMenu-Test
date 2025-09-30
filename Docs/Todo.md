@@ -9,9 +9,11 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 
 ## In Progress
 - [ ] توسعه صفحات مدیریتی پس از ورود (داشبورد، مدیریت منو، تنظیمات) و اتصال آن‌ها به Use Caseهای لایه Application.
+- [ ] نمایش گزارش پیامک‌ها در داشبورد مدیریتی (بک‌اند آماده، طراحی و پیاده‌سازی UI و فیلترها باقی‌مانده است).
 
 ## Up Next
-- [ ] Integrate external providers: finalize Zarinpal production gateway callbacks, Kavenegar SMS, email/notification channels.
+- [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
+- [ ] تکمیل fallback ایمیل/اعلان برای موارد شکست ارسال پیامک و پایش آن در داشبورد.
 - [ ] Build menu management UI and ordering flows per user stories.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
