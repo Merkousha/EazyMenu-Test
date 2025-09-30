@@ -7,6 +7,11 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-04 (latest)
+- تدوین سند طراحی «مدیریت منو» شامل مدل دامنه، Use Caseهای لایه Application، نگاشت پایگاه‌داده، APIهای داشبورد و سناریوهای انتشار در `Docs/Design/MenuManagement.md`.
+- به‌روزرسانی `Docs/Todo.md` برای اضافه‌کردن گام‌های پیاده‌سازی دامنه/پایستگی و مشخص کردن مرحله بعد UI.
+- در این مرحله فقط مستندسازی انجام شد؛ اجرای `dotnet build` و `dotnet test` لازم نبود.
+
 ## 2025-10-03 (latest)
 - افزودن متاداده مستاجر (TenantId، SubscriptionPlan) به مسیر کامل ارسال پیامک شامل `SmsDeliveryRecord`، `RequestCustomerLoginCommandHandler` و پیاده‌سازی‌های ارسال/ثبت لاگ.
 - معرفی کوئری `GetSmsUsageSummaryQuery`، هندلر آن و خوانشگر `ISmsUsageReader` مبتنی بر EF برای جمع‌آوری آمار ماهانه (ارسال موفق/ناموفق، سهمیه باقی‌مانده).

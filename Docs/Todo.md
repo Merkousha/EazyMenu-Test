@@ -9,13 +9,15 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 
 ## In Progress
 - [ ] توسعه صفحات مدیریتی پس از ورود (داشبورد، مدیریت منو، تنظیمات) و اتصال آن‌ها به Use Caseهای لایه Application.
+- [ ] پیاده‌سازی دامنه و پایستگی منو بر اساس سند طراحی جدید (Aggregate، Repository، Migration).
 
 ## Up Next
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
-- [ ] Build menu management UI and ordering flows per user stories.
+- [ ] Build menu management UI and ordering flows per user stories (پس از تکمیل دامنه/Use Caseها).
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] تدوین سند طراحی جامع مدیریت منو (دامنه، Use Case، Persistence، UI) در `Docs/Design/MenuManagement.md`.
 - [x] افزودن پایش مصرف پیامک مستاجر (کوئری خلاصه، خوانشگر EF، کارت‌های داشبورد) و به‌روزرسانی تست‌ها.
 - [x] راه‌اندازی هشدار زنده شکست پیامک با SignalR و اتصال آن به داشبورد مدیریتی.
 - [x] تکمیل fallback ایمیل/اعلان برای موارد شکست ارسال پیامک و ثبت آن در گزارش پیامک‌ها.
