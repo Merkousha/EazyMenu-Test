@@ -16,6 +16,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] افزودن پایش مصرف پیامک مستاجر (کوئری خلاصه، خوانشگر EF، کارت‌های داشبورد) و به‌روزرسانی تست‌ها.
 - [x] راه‌اندازی هشدار زنده شکست پیامک با SignalR و اتصال آن به داشبورد مدیریتی.
 - [x] تکمیل fallback ایمیل/اعلان برای موارد شکست ارسال پیامک و ثبت آن در گزارش پیامک‌ها.
 - [x] نمایش گزارش پیامک‌ها در داشبورد مدیریتی با فیلتر وضعیت و صفحه‌بندی (NotificationsController + Razor View).

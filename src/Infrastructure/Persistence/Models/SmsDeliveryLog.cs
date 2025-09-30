@@ -1,5 +1,6 @@
 using System;
 using EazyMenu.Application.Common.Notifications;
+using EazyMenu.Domain.Aggregates.Tenants;
 
 namespace EazyMenu.Infrastructure.Persistence.Models;
 
@@ -25,4 +26,8 @@ public sealed class SmsDeliveryLog
     public string? ErrorMessage { get; set; }
 
     public string? Payload { get; set; }
+
+    public Guid? TenantId { get; set; }
+
+    public SubscriptionPlan? SubscriptionPlan { get; set; }
 }

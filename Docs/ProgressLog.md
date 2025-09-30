@@ -8,6 +8,13 @@ A running history of significant work completed in this repository.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
 ## 2025-10-03 (latest)
+- افزودن متاداده مستاجر (TenantId، SubscriptionPlan) به مسیر کامل ارسال پیامک شامل `SmsDeliveryRecord`، `RequestCustomerLoginCommandHandler` و پیاده‌سازی‌های ارسال/ثبت لاگ.
+- معرفی کوئری `GetSmsUsageSummaryQuery`، هندلر آن و خوانشگر `ISmsUsageReader` مبتنی بر EF برای جمع‌آوری آمار ماهانه (ارسال موفق/ناموفق، سهمیه باقی‌مانده).
+- ارتقای داشبورد `Notifications/SmsLogs` برای نمایش کارت‌های سهمیه پیامک و ارائه اطلاعات پلن در هشدارهای لحظه‌ای SignalR.
+- به‌روزرسانی تست‌های واحد (`GetSmsUsageSummaryQueryHandlerTests`، `CustomerSmsLoginTests`، `NotificationsControllerTests`) مطابق امضاهای جدید و اجرای `dotnet build` و `dotnet test` (۸۳ تست موفق، مدت ۳.۳ ثانیه).
+- گام بعدی: افزودن پایش پیشگیرانه (هشدار نزدیک‌شدن به سقف پیامک) و یکپارچه‌سازی کانال‌های اعلان اضافی.
+
+## 2025-10-03 (earlier-0)
 - پیاده‌سازی اعلان زنده شکست پیامک با SignalR شامل هاب `SmsAlertsHub`، سرویس `SignalRSmsFailureAlertNotifier` و اتصال آن در DI.
 - افزودن اسکریپت SignalR به صفحه `Views/Notifications/SmsLogs` برای نمایش فوری هشدارها و عضویت خودکار داشبورد در گروه.
 - به‌روزرسانی `Program.cs` برای فعال‌سازی SignalR و نگارش `FrameworkReference` در زیرساخت جهت دسترسی به هاب.

@@ -30,7 +30,9 @@ internal sealed class SignalRSmsFailureAlertNotifier : ISmsFailureAlertNotifier
                     message = alert.Message,
                     occurredAt = alert.OccurredAt,
                     errorMessage = alert.ErrorMessage,
-                    channel = alert.Channel
+                    channel = alert.Channel,
+                    tenantId = alert.TenantId,
+                    subscriptionPlan = alert.SubscriptionPlan?.ToString()
                 },
                 cancellationToken);
         }

@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using EazyMenu.Application.Common.Notifications;
 
 namespace EazyMenu.Application.Common.Interfaces.Notifications;
 
@@ -8,5 +9,5 @@ namespace EazyMenu.Application.Common.Interfaces.Notifications;
 /// </summary>
 public interface ISmsSender
 {
-    Task SendAsync(string phoneNumber, string message, CancellationToken cancellationToken = default);
+    Task SendAsync(string phoneNumber, string message, SmsSendContext? context = null, CancellationToken cancellationToken = default);
 }

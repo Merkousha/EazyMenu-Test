@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EazyMenu.Application.Abstractions.Messaging;
 using EazyMenu.Application.Common.Notifications;
 using EazyMenu.Application.Features.Notifications.GetSmsDeliveryLogs;
+using EazyMenu.Application.Features.Notifications.GetSmsUsageSummary;
 using EazyMenu.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -19,13 +20,16 @@ public sealed class NotificationsController : Controller
 
     private readonly ILogger<NotificationsController> _logger;
     private readonly IQueryHandler<GetSmsDeliveryLogsQuery, SmsDeliveryLogPage> _getSmsDeliveryLogsQueryHandler;
+    private readonly IQueryHandler<GetSmsUsageSummaryQuery, SmsUsageSummary> _getSmsUsageSummaryQueryHandler;
 
     public NotificationsController(
         ILogger<NotificationsController> logger,
-        IQueryHandler<GetSmsDeliveryLogsQuery, SmsDeliveryLogPage> getSmsDeliveryLogsQueryHandler)
+        IQueryHandler<GetSmsDeliveryLogsQuery, SmsDeliveryLogPage> getSmsDeliveryLogsQueryHandler,
+        IQueryHandler<GetSmsUsageSummaryQuery, SmsUsageSummary> getSmsUsageSummaryQueryHandler)
     {
         _logger = logger;
         _getSmsDeliveryLogsQueryHandler = getSmsDeliveryLogsQueryHandler;
+        _getSmsUsageSummaryQueryHandler = getSmsUsageSummaryQueryHandler;
     }
 
     [HttpGet]
@@ -41,6 +45,8 @@ public sealed class NotificationsController : Controller
             var response = await _getSmsDeliveryLogsQueryHandler.HandleAsync(
                 new GetSmsDeliveryLogsQuery(page, DefaultPageSize, status),
                 cancellationToken);
+
+            var usageSummary = await _getSmsUsageSummaryQueryHandler.HandleAsync(new GetSmsUsageSummaryQuery(), cancellationToken);
 
             var items = response.Items
                 .Select(record => new SmsDeliveryLogEntryViewModel(
@@ -61,7 +67,8 @@ public sealed class NotificationsController : Controller
                 page,
                 DefaultPageSize,
                 response.HasMore,
-                status);
+                status,
+                usageSummary);
 
             ViewData["Title"] = "گزارش پیامک‌ها";
             return View(viewModel);
@@ -76,7 +83,8 @@ public sealed class NotificationsController : Controller
                 page,
                 DefaultPageSize,
                 hasMore: false,
-                status);
+                status,
+                usageSummary: null);
             return View(fallbackModel);
         }
     }

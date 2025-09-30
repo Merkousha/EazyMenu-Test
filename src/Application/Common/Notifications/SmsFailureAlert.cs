@@ -1,4 +1,5 @@
 using System;
+using EazyMenu.Domain.Aggregates.Tenants;
 
 namespace EazyMenu.Application.Common.Notifications;
 
@@ -10,4 +11,6 @@ public sealed record SmsFailureAlert(
     string Message,
     DateTimeOffset OccurredAt,
     string ErrorMessage,
-    string Channel);
+    string Channel,
+    Guid? TenantId = null,
+    SubscriptionPlan? SubscriptionPlan = null);

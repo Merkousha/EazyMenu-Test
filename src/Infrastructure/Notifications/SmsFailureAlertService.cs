@@ -34,7 +34,7 @@ internal sealed class SmsFailureAlertService : ISmsFailureAlertService
         _logger = logger;
     }
 
-    public async Task NotifyFailureAsync(string phoneNumber, string message, Exception exception, CancellationToken cancellationToken = default)
+    public async Task NotifyFailureAsync(string phoneNumber, string message, Exception exception, SmsSendContext? context = null, CancellationToken cancellationToken = default)
     {
         var occurredAt = new DateTimeOffset(_dateTimeProvider.UtcNow);
         var subject = "هشدار: ارسال پیامک ناموفق";
@@ -48,12 +48,12 @@ internal sealed class SmsFailureAlertService : ISmsFailureAlertService
         try
         {
             await _emailSender.SendAsync(_emailOptions.SupportAddress, subject, bodyBuilder.ToString(), cancellationToken);
-            await RecordFallbackAsync(phoneNumber, message, occurredAt, SmsDeliveryStatus.Sent, null, null, cancellationToken);
+            await RecordFallbackAsync(phoneNumber, message, occurredAt, SmsDeliveryStatus.Sent, null, null, context, cancellationToken);
         }
         catch (Exception emailException)
         {
             _logger.LogError(emailException, "ارسال ایمیل هشدار پیامک ناموفق بود.");
-            await RecordFallbackAsync(phoneNumber, message, occurredAt, SmsDeliveryStatus.Failed, "email", emailException.Message, cancellationToken);
+            await RecordFallbackAsync(phoneNumber, message, occurredAt, SmsDeliveryStatus.Failed, "email", emailException.Message, context, cancellationToken);
         }
 
         var alert = new SmsFailureAlert(
@@ -61,7 +61,9 @@ internal sealed class SmsFailureAlertService : ISmsFailureAlertService
             message,
             occurredAt,
             exception.Message,
-            "email");
+            "email",
+            context?.TenantId,
+            context?.SubscriptionPlan);
 
         try
         {
@@ -80,6 +82,7 @@ internal sealed class SmsFailureAlertService : ISmsFailureAlertService
         SmsDeliveryStatus status,
         string? errorCode,
         string? errorMessage,
+        SmsSendContext? context,
         CancellationToken cancellationToken)
     {
         var record = new SmsDeliveryRecord(
@@ -91,7 +94,9 @@ internal sealed class SmsFailureAlertService : ISmsFailureAlertService
             occurredAt,
             errorCode,
             errorMessage,
-            null);
+            null,
+            context?.TenantId,
+            context?.SubscriptionPlan);
 
         try
         {

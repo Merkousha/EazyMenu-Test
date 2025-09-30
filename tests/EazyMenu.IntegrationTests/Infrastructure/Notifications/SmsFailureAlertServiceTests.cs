@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using EazyMenu.Application.Common.Interfaces;
 using EazyMenu.Application.Common.Interfaces.Notifications;
 using EazyMenu.Application.Common.Notifications;
+using EazyMenu.Domain.Aggregates.Tenants;
 using EazyMenu.Infrastructure.Notifications;
 using EazyMenu.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -34,8 +35,9 @@ public sealed class SmsFailureAlertServiceTests
             NullLogger<SmsFailureAlertService>.Instance);
 
         var exception = new InvalidOperationException("network down");
+        var context = new SmsSendContext(Guid.Parse("22222222-2222-2222-2222-222222222222"), SubscriptionPlan.Pro);
 
-        await service.NotifyFailureAsync("+989121234567", "پیام آزمایشی", exception, CancellationToken.None);
+        await service.NotifyFailureAsync("+989121234567", "پیام آزمایشی", exception, context, CancellationToken.None);
 
         Assert.Equal("ops@eazymenu.ir", emailSender.LastRecipient);
         Assert.Contains("ارسال پیامک تراکنشی", emailSender.LastBody);
@@ -45,10 +47,14 @@ public sealed class SmsFailureAlertServiceTests
         Assert.Equal("fallback-email", fallbackLog.Provider);
         Assert.Equal(SmsDeliveryStatus.Sent, fallbackLog.Status);
         Assert.Equal("+989121234567", fallbackLog.PhoneNumber);
+    Assert.Equal(context.TenantId, fallbackLog.TenantId);
+    Assert.Equal(context.SubscriptionPlan, fallbackLog.SubscriptionPlan);
 
         Assert.NotNull(alertNotifier.LastAlert);
         Assert.Equal("+989121234567", alertNotifier.LastAlert!.PhoneNumber);
         Assert.Equal("email", alertNotifier.LastAlert.Channel);
+    Assert.Equal(context.SubscriptionPlan, alertNotifier.LastAlert.SubscriptionPlan);
+    Assert.Equal(context.TenantId, alertNotifier.LastAlert.TenantId);
     }
 
     private sealed class FakeEmailSender : IEmailSender

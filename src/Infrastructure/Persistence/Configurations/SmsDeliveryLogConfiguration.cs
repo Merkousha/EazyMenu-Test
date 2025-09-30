@@ -40,8 +40,16 @@ internal sealed class SmsDeliveryLogConfiguration : IEntityTypeConfiguration<Sms
         builder.Property(log => log.Payload)
             .HasMaxLength(2048);
 
+        builder.Property(log => log.TenantId)
+            .IsRequired(false);
+
+        builder.Property(log => log.SubscriptionPlan)
+            .HasConversion<int?>()
+            .IsRequired(false);
+
         builder.HasIndex(log => log.PhoneNumber);
         builder.HasIndex(log => log.Status);
         builder.HasIndex(log => log.OccurredAt);
+        builder.HasIndex(log => log.TenantId);
     }
 }

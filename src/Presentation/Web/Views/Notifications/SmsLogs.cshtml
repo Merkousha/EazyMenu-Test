@@ -15,6 +15,40 @@
         <span class="badge bg-light text-dark">@Model.Items.Count پیامک در این صفحه</span>
     </div>
 
+    @if (Model.UsageSummary is { } usageSummary)
+    {
+    var columnCount = usageSummary.Items.Count == 0 ? 1 : Math.Min(usageSummary.Items.Count, 4);
+        <div class="row row-cols-1 row-cols-md-@columnCount g-3 mb-4">
+            @foreach (var item in usageSummary.Items)
+            {
+                <div class="col">
+                    <div class="card shadow-sm h-100 border-0 border-start border-4 @GetUsageBorder(item.UsagePercentage)">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h2 class="h6 mb-1">@item.PlanLabel</h2>
+                                    <span class="badge bg-light text-dark">@usageSummary.Period.ToString("yyyy/MM")</span>
+                                </div>
+                                <span class="fw-semibold">@item.SentMessages / @item.IncludedMessages</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar @GetUsageBar(item.UsagePercentage)" role="progressbar" style="width: @item.UsagePercentage.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%" aria-valuenow="@item.UsagePercentage" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted mt-2">
+                                <span>مصرف: @item.SentMessages پیامک</span>
+                                <span>باقی‌مانده: @item.RemainingMessages</span>
+                            </div>
+                            @if (item.FailedMessages > 0)
+                            {
+                                <div class="small text-danger mt-2">@item.FailedMessages پیامک ناموفق</div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
     @if (!ViewData.ModelState.IsValid)
     {
         <div class="alert alert-danger" role="alert">
@@ -151,6 +185,20 @@
     }
 
     private static bool IsFallbackProvider(string provider) => string.Equals(provider, "fallback-email", System.StringComparison.OrdinalIgnoreCase);
+
+    private static string GetUsageBorder(decimal usagePercentage) => usagePercentage switch
+    {
+        >= 90m => "border-danger-subtle",
+        >= 70m and < 90m => "border-warning-subtle",
+        _ => "border-success-subtle"
+    };
+
+    private static string GetUsageBar(decimal usagePercentage) => usagePercentage switch
+    {
+        >= 90m => "bg-danger",
+        >= 70m and < 90m => "bg-warning",
+        _ => "bg-success"
+    };
 }
 
 @section Scripts {
@@ -163,6 +211,12 @@
             }
 
             const addAlert = (payload) => {
+                const planLabels = {
+                    Trial: 'پلن آزمایشی',
+                    Starter: 'پلن استارتر',
+                    Pro: 'پلن پرو',
+                    Enterprise: 'پلن اینترپرایز'
+                };
                 const alert = document.createElement('div');
                 alert.className = 'alert alert-warning alert-dismissible fade show shadow-sm border-start border-4 border-warning-subtle';
                 alert.setAttribute('role', 'alert');
@@ -183,6 +237,12 @@
                 time.className = 'small text-muted';
                 const occurred = new Date(payload.occurredAt);
                 time.textContent = `زمان: ${occurred.toLocaleString('fa-IR')}`;
+                let planInfo = null;
+                if (payload.subscriptionPlan && planLabels[payload.subscriptionPlan]) {
+                    planInfo = document.createElement('div');
+                    planInfo.className = 'small text-muted';
+                    planInfo.textContent = `پلن فعال: ${planLabels[payload.subscriptionPlan]}`;
+                }
 
                 const closeButton = document.createElement('button');
                 closeButton.type = 'button';
@@ -193,6 +253,9 @@
                 alert.appendChild(closeButton);
                 alert.appendChild(title);
                 alert.appendChild(message);
+                if (planInfo) {
+                    alert.appendChild(planInfo);
+                }
                 alert.appendChild(error);
                 alert.appendChild(time);
 

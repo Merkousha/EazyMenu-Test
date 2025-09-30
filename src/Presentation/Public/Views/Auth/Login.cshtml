@@ -16,6 +16,7 @@
 
                         <form asp-action="Login" asp-controller="Auth" method="post" novalidate>
                             @Html.AntiForgeryToken()
+                            <input asp-for="TenantId" type="hidden" />
                             <div class="mb-3">
                                 <label asp-for="PhoneNumber" class="form-label"></label>
                                 <input asp-for="PhoneNumber" class="form-control form-control-lg text-center" placeholder="مثال: +989121234567" />

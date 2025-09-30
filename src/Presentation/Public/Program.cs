@@ -1,6 +1,7 @@
 using System;
 using EazyMenu.Application;
 using EazyMenu.Infrastructure;
+using EazyMenu.Public.Options;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddApplicationServices()
     .AddInfrastructureServices(builder.Configuration);
+
+builder.Services.Configure<TenantSiteOptions>(builder.Configuration.GetSection("TenantSite"));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

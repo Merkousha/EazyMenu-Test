@@ -1,9 +1,9 @@
 using System;
 using EazyMenu.Application.Abstractions.Persistence;
+using EazyMenu.Application.Common.Interfaces.Notifications;
 using EazyMenu.Application.Common.Interfaces.Payments;
 using EazyMenu.Application.Common.Interfaces.Pricing;
 using EazyMenu.Application.Common.Interfaces.Provisioning;
-using EazyMenu.Application.Common.Interfaces.Notifications;
 using EazyMenu.Application.Common.Interfaces.Security;
 using EazyMenu.Infrastructure.Persistence;
 using EazyMenu.Infrastructure.Persistence.Repositories;
@@ -30,9 +30,10 @@ public static class DependencyInjection
         services.AddScoped<IPaymentGatewayClient, ZarinpalSandboxPaymentGatewayClient>();
         services.AddSingleton<IOneTimePasswordGenerator, RandomOneTimePasswordGenerator>();
         services.AddScoped<IOneTimePasswordStore, InMemoryOneTimePasswordStore>();
-    services.AddScoped<EfSmsDeliveryStore>();
-    services.AddScoped<ISmsDeliveryStore>(sp => sp.GetRequiredService<EfSmsDeliveryStore>());
-    services.AddScoped<ISmsDeliveryLogReader>(sp => sp.GetRequiredService<EfSmsDeliveryStore>());
+        services.AddScoped<EfSmsDeliveryStore>();
+        services.AddScoped<ISmsDeliveryStore>(sp => sp.GetRequiredService<EfSmsDeliveryStore>());
+        services.AddScoped<ISmsDeliveryLogReader>(sp => sp.GetRequiredService<EfSmsDeliveryStore>());
+        services.AddScoped<ISmsUsageReader, EfSmsUsageReader>();
         services.AddSingleton(provider =>
         {
             var options = new EmailOptions();

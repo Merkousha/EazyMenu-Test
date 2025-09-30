@@ -37,7 +37,9 @@ internal sealed class EfSmsDeliveryStore : ISmsDeliveryStore, ISmsDeliveryLogRea
             OccurredAt = record.OccurredAt,
             ErrorCode = record.ErrorCode,
             ErrorMessage = record.ErrorMessage,
-            Payload = record.Payload
+            Payload = record.Payload,
+            TenantId = record.TenantId,
+            SubscriptionPlan = record.SubscriptionPlan
         };
 
         await _dbContext.SmsDeliveryLogs.AddAsync(entity, cancellationToken);
@@ -92,7 +94,9 @@ internal sealed class EfSmsDeliveryStore : ISmsDeliveryStore, ISmsDeliveryLogRea
                 log.OccurredAt,
                 log.ErrorCode,
                 log.ErrorMessage,
-                log.Payload))
+                log.Payload,
+                log.TenantId,
+                log.SubscriptionPlan))
             .ToArray();
 
         return new SmsDeliveryLogPage(records, hasMore);

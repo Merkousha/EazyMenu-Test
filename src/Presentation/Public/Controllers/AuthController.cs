@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using EazyMenu.Public.Options;
 
 namespace EazyMenu.Public.Controllers;
 
@@ -19,29 +21,34 @@ public sealed class AuthController : Controller
     private readonly ICommandHandler<RequestCustomerLoginCommand, RequestCustomerLoginResult> _requestLoginHandler;
     private readonly ICommandHandler<VerifyCustomerLoginCommand, VerifyCustomerLoginResult> _verifyLoginHandler;
     private readonly ILogger<AuthController> _logger;
+    private readonly TenantSiteOptions _tenantOptions;
 
     public AuthController(
         ICommandHandler<RequestCustomerLoginCommand, RequestCustomerLoginResult> requestLoginHandler,
         ICommandHandler<VerifyCustomerLoginCommand, VerifyCustomerLoginResult> verifyLoginHandler,
-        ILogger<AuthController> logger)
+        ILogger<AuthController> logger,
+        IOptions<TenantSiteOptions> tenantOptions)
     {
         _requestLoginHandler = requestLoginHandler;
         _verifyLoginHandler = verifyLoginHandler;
         _logger = logger;
+        _tenantOptions = tenantOptions.Value;
     }
 
     [HttpGet("login")]
     [AllowAnonymous]
-    public IActionResult Login(string? phone = null)
+    public IActionResult Login(string? phone = null, Guid? tenantId = null)
     {
         if (User.Identity?.IsAuthenticated == true)
         {
             return RedirectToAction("Index", "Home");
         }
 
+        var resolvedTenantId = ResolveTenantId(tenantId);
         var model = new RequestLoginViewModel
         {
-            PhoneNumber = phone ?? string.Empty
+            PhoneNumber = phone ?? string.Empty,
+            TenantId = resolvedTenantId
         };
 
         ViewData["Title"] = "ورود با پیامک";
@@ -64,14 +71,16 @@ public sealed class AuthController : Controller
             return View(model);
         }
 
-        var command = new RequestCustomerLoginCommand(model.PhoneNumber);
+        model.TenantId = ResolveTenantId(model.TenantId);
+        var command = new RequestCustomerLoginCommand(model.PhoneNumber, model.TenantId);
         try
         {
             var result = await _requestLoginHandler.HandleAsync(command, cancellationToken);
             TempData["LoginPhone"] = result.PhoneNumber;
             TempData["CodeExpiresAt"] = result.ExpiresAtUtc.ToString("O");
+            TempData["TenantId"] = model.TenantId.ToString("D");
             TempData.Keep();
-            return RedirectToAction(nameof(Verify), new { phone = result.PhoneNumber });
+            return RedirectToAction(nameof(Verify), new { phone = result.PhoneNumber, tenantId = model.TenantId });
         }
         catch (Exception ex)
         {
@@ -84,7 +93,7 @@ public sealed class AuthController : Controller
 
     [HttpGet("verify")]
     [AllowAnonymous]
-    public IActionResult Verify(string? phone = null, string? returnUrl = null)
+    public IActionResult Verify(string? phone = null, string? returnUrl = null, Guid? tenantId = null)
     {
         if (User.Identity?.IsAuthenticated == true)
         {
@@ -95,6 +104,11 @@ public sealed class AuthController : Controller
         if (string.IsNullOrWhiteSpace(phoneNumber))
         {
             return RedirectToAction(nameof(Login));
+        }
+
+        if (!tenantId.HasValue && TempData.Peek("TenantId") is string tenantString && Guid.TryParse(tenantString, out var parsedTenant))
+        {
+            tenantId = parsedTenant;
         }
 
         var model = new VerifyLoginViewModel
@@ -142,6 +156,7 @@ public sealed class AuthController : Controller
 
         TempData.Remove("LoginPhone");
         TempData.Remove("CodeExpiresAt");
+        TempData.Remove("TenantId");
 
         return Redirect(model.ReturnUrl ?? Url.Action("Index", "Home")!);
     }
@@ -175,5 +190,17 @@ public sealed class AuthController : Controller
         };
 
         return HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
+    }
+
+    private Guid ResolveTenantId(Guid? tenantId)
+    {
+        if (tenantId.HasValue && tenantId.Value != Guid.Empty)
+        {
+            return tenantId.Value;
+        }
+
+        return _tenantOptions.DefaultTenantId != Guid.Empty
+            ? _tenantOptions.DefaultTenantId
+            : Guid.Parse("11111111-1111-1111-1111-111111111111");
     }
 }

@@ -16,7 +16,8 @@ public sealed class SmsDeliveryLogsViewModel
         int page,
         int pageSize,
         bool hasMore,
-        SmsDeliveryStatus? status)
+        SmsDeliveryStatus? status,
+        SmsUsageSummary? usageSummary)
     {
         Items = items;
         StatusOptions = statusOptions;
@@ -24,6 +25,7 @@ public sealed class SmsDeliveryLogsViewModel
         PageSize = pageSize;
         HasMore = hasMore;
         Status = status;
+        UsageSummary = usageSummary;
     }
 
     public IReadOnlyList<SmsDeliveryLogEntryViewModel> Items { get; }
@@ -37,6 +39,8 @@ public sealed class SmsDeliveryLogsViewModel
     public bool HasMore { get; }
 
     public SmsDeliveryStatus? Status { get; }
+
+    public SmsUsageSummary? UsageSummary { get; }
 }
 
 /// <summary>

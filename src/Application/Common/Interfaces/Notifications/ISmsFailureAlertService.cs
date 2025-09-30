@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using EazyMenu.Application.Common.Notifications;
 
 namespace EazyMenu.Application.Common.Interfaces.Notifications;
 
@@ -9,5 +10,5 @@ namespace EazyMenu.Application.Common.Interfaces.Notifications;
 /// </summary>
 public interface ISmsFailureAlertService
 {
-    Task NotifyFailureAsync(string phoneNumber, string message, Exception exception, CancellationToken cancellationToken = default);
+    Task NotifyFailureAsync(string phoneNumber, string message, Exception exception, SmsSendContext? context = null, CancellationToken cancellationToken = default);
 }

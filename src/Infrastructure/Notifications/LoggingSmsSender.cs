@@ -24,7 +24,7 @@ internal sealed class LoggingSmsSender : ISmsSender
         _dateTimeProvider = dateTimeProvider;
     }
 
-    public async Task SendAsync(string phoneNumber, string message, CancellationToken cancellationToken = default)
+    public async Task SendAsync(string phoneNumber, string message, SmsSendContext? context = null, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("ارسال پیامک به {PhoneNumber}: {Message}", phoneNumber, message);
 
@@ -34,7 +34,9 @@ internal sealed class LoggingSmsSender : ISmsSender
             message,
             nameof(SmsProvider.Logging),
             SmsDeliveryStatus.Sent,
-            new DateTimeOffset(_dateTimeProvider.UtcNow)), cancellationToken);
+            new DateTimeOffset(_dateTimeProvider.UtcNow),
+            TenantId: context?.TenantId,
+            SubscriptionPlan: context?.SubscriptionPlan), cancellationToken);
     }
 
     private async Task TryRecordAsync(SmsDeliveryRecord record, CancellationToken cancellationToken)

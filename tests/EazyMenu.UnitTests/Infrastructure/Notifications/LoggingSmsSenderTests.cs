@@ -23,7 +23,7 @@ public class LoggingSmsSenderTests
             store,
             dateTimeProvider);
 
-        await sender.SendAsync("09120000000", "کد ورود شما 1234", CancellationToken.None);
+    await sender.SendAsync("09120000000", "کد ورود شما 1234", cancellationToken: CancellationToken.None);
 
         var record = Assert.Single(store.Records);
         Assert.Equal(SmsDeliveryStatus.Sent, record.Status);
