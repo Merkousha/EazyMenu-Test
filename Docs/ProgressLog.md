@@ -8,6 +8,14 @@ A running history of significant work completed in this repository.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
 ## 2025-10-04 (latest)
+- پیاده‌سازی Value Object‌های منو (`MenuId`, `MenuCategoryId`, `MenuItemId`, `LocalizedText`, `InventoryState`, `MenuChannel`, `MenuTag`) مطابق سند طراحی.
+- ایجاد اگریگیت `Menu` همراه با موجودیت‌های داخلی `MenuCategory` و `MenuItem`، اعمال قوانین ترتیب، موجودی و رویدادهای دامنه جدید.
+- تعریف رویدادهای دامنه (`MenuCreated`, `MenuPublished`, `MenuItemAvailabilityChanged`, `MenuItemPriceChanged`, `MenuCategoriesReordered`, `MenuItemsReordered`) و افزودن اینترفیس `IMenuRepository` در لایه Application.
+- نگارش تست‌های واحد `MenuTests`, `LocalizedTextTests`, `InventoryStateTests` برای پوشش سناریوهای کلیدی دامنه جدید.
+- اجرای `dotnet test` با موفقیت (۹۴ تست، مدت ۳.۲ ثانیه) و به‌روزرسانی `Docs/Todo.md` برای تمرکز روی Use Caseها و لایه Persistency.
+- گام بعدی: پیاده‌سازی Use Caseهای Application و نگاشت EF Core/مایگریشن `AddMenus`.
+
+## 2025-10-04 (earlier-0)
 - تدوین سند طراحی «مدیریت منو» شامل مدل دامنه، Use Caseهای لایه Application، نگاشت پایگاه‌داده، APIهای داشبورد و سناریوهای انتشار در `Docs/Design/MenuManagement.md`.
 - به‌روزرسانی `Docs/Todo.md` برای اضافه‌کردن گام‌های پیاده‌سازی دامنه/پایستگی و مشخص کردن مرحله بعد UI.
 - در این مرحله فقط مستندسازی انجام شد؛ اجرای `dotnet build` و `dotnet test` لازم نبود.

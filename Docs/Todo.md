@@ -9,7 +9,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 
 ## In Progress
 - [ ] توسعه صفحات مدیریتی پس از ورود (داشبورد، مدیریت منو، تنظیمات) و اتصال آن‌ها به Use Caseهای لایه Application.
-- [ ] پیاده‌سازی دامنه و پایستگی منو بر اساس سند طراحی جدید (Aggregate، Repository، Migration).
+- [ ] پیاده‌سازی Use Caseها و ریپازیتوری EF Core منو بر اساس سند طراحی (Application + Infrastructure).
 
 ## Up Next
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
@@ -17,6 +17,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] پیاده‌سازی دامنه منو (Value Objectها، Aggregate، رویدادهای دامنه) به همراه تست‌های واحد.
 - [x] تدوین سند طراحی جامع مدیریت منو (دامنه، Use Case، Persistence، UI) در `Docs/Design/MenuManagement.md`.
 - [x] افزودن پایش مصرف پیامک مستاجر (کوئری خلاصه، خوانشگر EF، کارت‌های داشبورد) و به‌روزرسانی تست‌ها.
 - [x] راه‌اندازی هشدار زنده شکست پیامک با SignalR و اتصال آن به داشبورد مدیریتی.
