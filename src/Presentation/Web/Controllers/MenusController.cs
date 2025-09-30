@@ -97,6 +97,44 @@ public sealed class MenusController : Controller
         }
     }
 
+    [HttpGet]
+    public async Task<IActionResult> QuickUpdate(Guid menuId, CancellationToken cancellationToken)
+    {
+        var tenantId = await _tenantProvider.GetActiveTenantIdAsync(cancellationToken);
+        if (!tenantId.HasValue)
+        {
+            TempData["MenuError"] = "برای مشاهده منوها ابتدا باید مستاجر فعال ایجاد شود.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        try
+        {
+            var dto = await _getMenuDetailsQueryHandler.HandleAsync(
+                new GetMenuDetailsQuery(tenantId.Value, menuId, IncludeArchivedCategories: false),
+                cancellationToken);
+
+            var model = MenuViewModelFactory.CreateMenuDetails(tenantId.Value, dto);
+            return View(model);
+        }
+        catch (NotFoundException)
+        {
+            TempData["MenuError"] = "منوی درخواستی یافت نشد.";
+            return RedirectToAction(nameof(Index));
+        }
+        catch (BusinessRuleViolationException exception)
+        {
+            _logger.LogWarning(exception, "خطای اعتبارسنجی در دریافت QuickUpdate منو {MenuId}", menuId);
+            TempData["MenuError"] = exception.Message;
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "خطای غیرمنتظره هنگام دریافت QuickUpdate منو {MenuId}", menuId);
+            TempData["MenuError"] = "در بازیابی منوی درخواستی خطایی رخ داد.";
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Publish(Guid menuId, CancellationToken cancellationToken)

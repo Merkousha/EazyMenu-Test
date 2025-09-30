@@ -94,4 +94,20 @@ public class MenuTests
         Assert.Equal(item.Id, @event.MenuItemId);
         Assert.False(@event.IsAvailable);
     }
+
+    [Fact]
+    public void SetMenuItemInventory_ShouldUpdateAvailabilityAndRaiseEvent()
+    {
+        var menu = Menu.Create(TenantId.New(), LocalizedText.Create("منوی اصلی"));
+        var category = menu.AddCategory(LocalizedText.Create("نوشیدنی"));
+        var item = menu.AddItem(category.Id, LocalizedText.Create("موهیتو"), Money.From(70_000m));
+
+        menu.ClearDomainEvents();
+        menu.SetMenuItemInventory(category.Id, item.Id, InventoryState.Track(0));
+
+        Assert.False(item.IsAvailable);
+        var @event = Assert.IsType<MenuItemAvailabilityChangedDomainEvent>(menu.DomainEvents.Single());
+        Assert.Equal(item.Id, @event.MenuItemId);
+        Assert.False(@event.IsAvailable);
+    }
 }

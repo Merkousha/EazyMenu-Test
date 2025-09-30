@@ -7,7 +7,15 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
-## 2025-10-07 (latest)
+## 2025-09-30
+- پیاده‌سازی فرمان تجمیعی `QuickUpdateMenuItemCommand` به همراه متد دامنه `SetMenuItemInventory` برای بروزرسانی همزمان قیمت، موجودی و وضعیت آیتم در یک تراکنش.
+- افزودن اکشن‌های `MenusController.QuickUpdate` و `MenuItemsController.QuickUpdate` با ورودی JSON، بازگشت Partial و استفاده از ViewModel موجود برای بارگذاری داده‌های به‌روز.
+- ساخت View جدید `Views/Menus/QuickUpdate.cshtml` و Partial `_QuickUpdateTable.cshtml` با اسکریپت اختصاصی `menu-quick-update.js` جهت ارسال درخواست‌های AJAX و به‌روزرسانی لحظه‌ای جدول.
+- تکمیل تست‌های واحد برای حوزه (رویداد تغییر موجودی) و لایه Application/Presentation (`QuickUpdateMenuItemCommandHandlerTests`, `MenuItemsControllerTests`) جهت تضمین رفتار مسیر جدید.
+- اجرای `dotnet build` (موفق، مدت 15.4 ثانیه) و `dotnet test` (موفق، 105 تست، مدت 2.5 ثانیه) پس از اعمال تغییرات.
+- گام بعدی: راه‌اندازی همگام‌سازی بلادرنگ با SignalR و اتصال فرآیند انتشار به سایت عمومی.
+
+## 2025-10-07
 - بازنویسی کامل View `Views/Menus/Details.cshtml` برای نمایش ترکیبی دسته‌ها و آیتم‌ها با Partialهای جدید و فرم افزودن دسته، رفع خطاهای Razor و تنظیم namespaceهای لازم.
 - هم‌ترازسازی بخش اطلاعات پایه، پیام‌های بدون داده و پوشه اسکریپت‌ها با داده‌های واقعی منو و آماده‌سازی توکن ضدتقلب جهت استفاده در درخواست‌های AJAX آینده.
 - پیاده‌سازی کنترلرهای `MenuCategoriesController` و `MenuItemsController` بر پایه کلاس مشترک `MenuDashboardControllerBase` برای پوشش سناریوهای ایجاد/ویرایش/آرشیو، تغییر وضعیت، مرتب‌سازی و انتشار منو با بازگشت Partial جهت بروزرسانی آنی UI.

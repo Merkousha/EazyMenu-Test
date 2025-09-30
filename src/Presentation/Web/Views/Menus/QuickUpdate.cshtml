@@ -1,0 +1,40 @@
+@model EazyMenu.Web.Models.Menus.MenuDetailsViewModel
+@using System.Linq
+
+@{
+    var defaultName = Model.Name.TryGetValue("fa-IR", out var faTitle)
+        ? faTitle
+        : Model.Name.Values.FirstOrDefault() ?? "منو";
+    ViewData["Title"] = $"ویرایش سریع {defaultName}";
+}
+
+<div class="container" dir="rtl" data-quick-update data-menu-id="@Model.MenuId" data-tenant-id="@Model.TenantId" data-base-url="@Url.Content("~/")">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h1 class="h3 mb-1">ویرایش سریع - @defaultName</h1>
+            <p class="text-muted mb-0 small">قیمت و موجودی آیتم‌ها را بدون ترک صفحه در کمتر از چند ثانیه به‌روزرسانی کنید.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" asp-action="Details" asp-route-menuId="@Model.MenuId">بازگشت به ویرایش کامل</a>
+            <a class="btn btn-outline-primary" asp-action="Index">فهرست منوها</a>
+        </div>
+    </div>
+
+    <div id="menu-quick-alerts" class="mb-3" role="alert"></div>
+
+    <div id="menu-quick-update-wrapper">
+        @await Html.PartialAsync("~/Views/Menus/Partials/_QuickUpdateTable.cshtml", Model, new ViewDataDictionary(ViewData)
+        {
+            ["MenuId"] = Model.MenuId,
+            ["TenantId"] = Model.TenantId
+        })
+    </div>
+
+    <form id="menu-anti-forgery" class="d-none">
+        @Html.AntiForgeryToken()
+    </form>
+</div>
+
+@section Scripts {
+    <script src="~/js/menu-quick-update.js" asp-append-version="true"></script>
+}

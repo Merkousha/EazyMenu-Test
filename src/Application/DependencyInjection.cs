@@ -13,6 +13,7 @@ using EazyMenu.Application.Features.Menus.Commands.AdjustMenuItemInventory;
 using EazyMenu.Application.Features.Menus.Commands.ArchiveMenuCategory;
 using EazyMenu.Application.Features.Menus.Commands.CreateMenu;
 using EazyMenu.Application.Features.Menus.Commands.PublishMenu;
+using EazyMenu.Application.Features.Menus.Commands.QuickUpdateMenuItem;
 using EazyMenu.Application.Features.Menus.Commands.RemoveMenuCategory;
 using EazyMenu.Application.Features.Menus.Commands.RemoveMenuItem;
 using EazyMenu.Application.Features.Menus.Commands.ReorderMenuCategories;
@@ -55,6 +56,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<UpdateMenuItemDetailsCommand, bool>, UpdateMenuItemDetailsCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateMenuItemPricingCommand, bool>, UpdateMenuItemPricingCommandHandler>();
         services.AddScoped<ICommandHandler<SetMenuItemAvailabilityCommand, bool>, SetMenuItemAvailabilityCommandHandler>();
+    services.AddScoped<ICommandHandler<QuickUpdateMenuItemCommand, bool>, QuickUpdateMenuItemCommandHandler>();
         services.AddScoped<ICommandHandler<AdjustMenuItemInventoryCommand, bool>, AdjustMenuItemInventoryCommandHandler>();
         services.AddScoped<ICommandHandler<RemoveMenuItemCommand, bool>, RemoveMenuItemCommandHandler>();
         services.AddScoped<ICommandHandler<ReorderMenuItemsCommand, bool>, ReorderMenuItemsCommandHandler>();

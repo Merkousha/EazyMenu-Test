@@ -1,0 +1,167 @@
+@model EazyMenu.Web.Models.Menus.MenuDetailsViewModel
+@using System
+@using System.Collections.Generic
+@using System.Globalization
+@using System.Linq
+@{
+    var menuId = Model.MenuId;
+}
+
+@if (!Model.Categories.Any())
+{
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <h2 class="h5 mb-3">هیچ دسته فعالی برای Quick Update موجود نیست</h2>
+            <p class="text-muted mb-0">برای استفاده از ویرایش سریع، ابتدا دسته و آیتم جدید ایجاد کنید.</p>
+        </div>
+    </div>
+}
+else
+{
+    foreach (var category in Model.Categories)
+    {
+        <div class="card border-0 shadow-sm mb-4" data-quick-category data-category-id="@category.CategoryId">
+            <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="h5 mb-1">@GetLocalizedValue(category.Name)</h2>
+                    <span class="text-muted small">@category.Items.Count آیتم فعال</span>
+                </div>
+                <span class="badge bg-light text-dark">ترتیب: @category.DisplayOrder</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0" data-quick-table data-category-id="@category.CategoryId">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 20%;">آیتم</th>
+                                <th style="width: 15%;">قیمت پایه (تومان)</th>
+                                <th style="width: 25%;">قیمت‌های کانال</th>
+                                <th style="width: 25%;">موجودی</th>
+                                <th style="width: 10%;">فعال؟</th>
+                                <th style="width: 5%;" class="text-end">ذخیره</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var item in category.Items)
+                        {
+                            <tr data-quick-item data-menu-id="@menuId" data-category-id="@category.CategoryId" data-item-id="@item.ItemId" data-currency="@item.Currency">
+                                <td>
+                                    <div class="fw-semibold">@GetLocalizedValue(item.Name)</div>
+                                    @if (item.Tags.Any())
+                                    {
+                                        <div class="d-flex flex-wrap gap-1 mt-2">
+                                            @foreach (var tag in item.Tags)
+                                            {
+                                                <span class="badge bg-info text-dark">@tag</span>
+                                            }
+                                        </div>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" class="form-control" data-field="basePrice" value="@item.BasePrice.ToString("0", CultureInfo.InvariantCulture)" min="0" step="500" />
+                                        <span class="input-group-text">@item.Currency</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <label class="form-label small mb-1">سرو در محل</label>
+                                            <input type="number" class="form-control form-control-sm" data-channel="DineIn" value="@GetChannelValue(item.ChannelPrices, "DineIn")" min="0" step="500" />
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small mb-1">بیرون‌بر</label>
+                                            <input type="number" class="form-control form-control-sm" data-channel="TakeAway" value="@GetChannelValue(item.ChannelPrices, "TakeAway")" min="0" step="500" />
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small mb-1">دلیوری</label>
+                                            <input type="number" class="form-control form-control-sm" data-channel="Delivery" value="@GetChannelValue(item.ChannelPrices, "Delivery")" min="0" step="500" />
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small mb-1">آنلاین</label>
+                                            <input type="number" class="form-control form-control-sm" data-channel="OnlineExclusive" value="@GetChannelValue(item.ChannelPrices, "OnlineExclusive")" min="0" step="500" />
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="row g-2 align-items-center" data-inventory-root>
+                                        <div class="col-12">
+                                            <select class="form-select form-select-sm" data-inventory-mode>
+                                                @if (string.Equals(item.Inventory.Mode, "Infinite", StringComparison.OrdinalIgnoreCase))
+                                                {
+                                                    <option value="Infinite" selected>نامحدود</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="Infinite">نامحدود</option>
+                                                }
+
+                                                @if (string.Equals(item.Inventory.Mode, "Track", StringComparison.OrdinalIgnoreCase))
+                                                {
+                                                    <option value="Track" selected>پیگیری موجودی</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="Track">پیگیری موجودی</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small mb-1 mb-0">تعداد</label>
+                                            <input type="number" class="form-control form-control-sm" data-inventory-quantity value="@(item.Inventory.Quantity?.ToString() ?? string.Empty)" min="0" @(item.Inventory.Mode == "Track" ? null : "disabled") />
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label small mb-1 mb-0">آستانه</label>
+                                            <input type="number" class="form-control form-control-sm" data-inventory-threshold value="@(item.Inventory.Threshold?.ToString() ?? string.Empty)" min="0" @(item.Inventory.Mode == "Track" ? null : "disabled") />
+                                        </div>
+                                        <div class="col-12">
+                                            @if (item.Inventory.Mode == "Track" && item.Inventory.Quantity.HasValue)
+                                            {
+                                                var statusClass = item.Inventory.IsBelowThreshold ? "text-danger" : "text-muted";
+                                                <small class="@statusClass">موجودی فعلی: @item.Inventory.Quantity</small>
+                                            }
+                                            else
+                                            {
+                                                <small class="text-muted">موجودی نامحدود</small>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" data-field="isAvailable" @(item.IsAvailable ? "checked" : null) />
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <button type="button" class="btn btn-sm btn-primary" data-quick-save>
+                                        ذخیره
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@functions {
+    private static string GetLocalizedValue(IDictionary<string, string> values)
+    {
+        if (values.TryGetValue("fa-IR", out var fa) && !string.IsNullOrWhiteSpace(fa))
+        {
+            return fa;
+        }
+
+        return values.Values.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value)) ?? "--";
+    }
+
+    private static string GetChannelValue(IReadOnlyDictionary<string, decimal> prices, string channel)
+    {
+        return prices.TryGetValue(channel, out var value)
+            ? value.ToString("0", CultureInfo.InvariantCulture)
+            : string.Empty;
+    }
+}

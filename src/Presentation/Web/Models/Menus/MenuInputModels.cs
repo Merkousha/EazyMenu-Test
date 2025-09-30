@@ -289,3 +289,22 @@ public sealed class SetMenuItemAvailabilityInput
     [Required]
     public bool? IsAvailable { get; init; }
 }
+
+public sealed class QuickUpdateMenuItemInput
+{
+    [Display(Name = "قیمت پایه")]
+    [Range(0, double.MaxValue, ErrorMessage = "قیمت پایه نمی‌تواند منفی باشد.")]
+    public decimal? BasePrice { get; set; }
+
+    [Display(Name = "واحد پول")]
+    public string Currency { get; set; } = "IRT";
+
+    [Display(Name = "قیمت‌های کانال")]
+    public ChannelPriceInput ChannelPrices { get; set; } = new();
+
+    [Display(Name = "موجودی")]
+    public InventoryInput Inventory { get; set; } = new();
+
+    [Display(Name = "فعال است؟")]
+    public bool IsAvailable { get; set; } = true;
+}

@@ -9,6 +9,7 @@ using EazyMenu.Application.Features.Menus.Commands.ReorderMenuItems;
 using EazyMenu.Application.Features.Menus.Commands.SetMenuItemAvailability;
 using EazyMenu.Application.Features.Menus.Commands.UpdateMenuItemDetails;
 using EazyMenu.Application.Features.Menus.Commands.UpdateMenuItemPricing;
+using EazyMenu.Application.Features.Menus.Commands.QuickUpdateMenuItem;
 using EazyMenu.Application.Features.Menus.Common;
 using EazyMenu.Application.Features.Menus.Queries.GetMenuDetails;
 using EazyMenu.Web.Models.Menus;
@@ -24,6 +25,7 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
     private readonly ICommandHandler<UpdateMenuItemDetailsCommand, bool> _updateMenuItemDetailsCommandHandler;
     private readonly ICommandHandler<UpdateMenuItemPricingCommand, bool> _updateMenuItemPricingCommandHandler;
     private readonly ICommandHandler<SetMenuItemAvailabilityCommand, bool> _setMenuItemAvailabilityCommandHandler;
+    private readonly ICommandHandler<QuickUpdateMenuItemCommand, bool> _quickUpdateMenuItemCommandHandler;
     private readonly ICommandHandler<RemoveMenuItemCommand, bool> _removeMenuItemCommandHandler;
     private readonly ICommandHandler<ReorderMenuItemsCommand, bool> _reorderMenuItemsCommandHandler;
 
@@ -35,6 +37,7 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
         ICommandHandler<UpdateMenuItemDetailsCommand, bool> updateMenuItemDetailsCommandHandler,
         ICommandHandler<UpdateMenuItemPricingCommand, bool> updateMenuItemPricingCommandHandler,
         ICommandHandler<SetMenuItemAvailabilityCommand, bool> setMenuItemAvailabilityCommandHandler,
+        ICommandHandler<QuickUpdateMenuItemCommand, bool> quickUpdateMenuItemCommandHandler,
         ICommandHandler<RemoveMenuItemCommand, bool> removeMenuItemCommandHandler,
         ICommandHandler<ReorderMenuItemsCommand, bool> reorderMenuItemsCommandHandler)
         : base(logger, tenantProvider, getMenuDetailsQueryHandler)
@@ -43,6 +46,7 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
         _updateMenuItemDetailsCommandHandler = updateMenuItemDetailsCommandHandler;
         _updateMenuItemPricingCommandHandler = updateMenuItemPricingCommandHandler;
         _setMenuItemAvailabilityCommandHandler = setMenuItemAvailabilityCommandHandler;
+        _quickUpdateMenuItemCommandHandler = quickUpdateMenuItemCommandHandler;
         _removeMenuItemCommandHandler = removeMenuItemCommandHandler;
         _reorderMenuItemsCommandHandler = reorderMenuItemsCommandHandler;
     }
@@ -202,6 +206,68 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
         catch (Exception exception)
         {
             return HandleMenuException(menuId, exception, "set-item-availability");
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> QuickUpdate(Guid menuId, Guid categoryId, Guid itemId, [FromBody] QuickUpdateMenuItemInput input, CancellationToken cancellationToken)
+    {
+        var tenantId = await TryGetTenantIdAsync(cancellationToken);
+        if (!tenantId.HasValue)
+        {
+            return TenantMissingResult();
+        }
+
+        if (input is null)
+        {
+            ModelState.AddModelError(string.Empty, "داده‌های ارسال‌شده معتبر نیست.");
+            return ValidationProblem(ModelState);
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        if (!input.BasePrice.HasValue)
+        {
+            ModelState.AddModelError(nameof(input.BasePrice), "قیمت پایه الزامی است.");
+            return ValidationProblem(ModelState);
+        }
+
+        InventoryPayload? inventoryPayload = null;
+        try
+        {
+            inventoryPayload = input.Inventory?.ToPayload();
+        }
+        catch (ValidationException validationException)
+        {
+            ModelState.AddModelError(nameof(input.Inventory), validationException.Message);
+            return ValidationProblem(ModelState);
+        }
+
+        try
+        {
+            await _quickUpdateMenuItemCommandHandler.HandleAsync(
+                new QuickUpdateMenuItemCommand(
+                    tenantId.Value,
+                    menuId,
+                    categoryId,
+                    itemId,
+                    input.BasePrice.Value,
+                    input.Currency,
+                    input.ChannelPrices.ToDictionary(),
+                    inventoryPayload,
+                    input.IsAvailable),
+                cancellationToken);
+
+            var details = await LoadMenuDetailsAsync(tenantId.Value, menuId, includeArchivedCategories: false, cancellationToken: cancellationToken);
+            return CreateQuickUpdatePartial(details);
+        }
+        catch (Exception exception)
+        {
+            return HandleMenuException(menuId, exception, "quick-update-item");
         }
     }
 

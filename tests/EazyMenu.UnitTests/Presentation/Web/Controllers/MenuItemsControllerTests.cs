@@ -10,6 +10,7 @@ using EazyMenu.Application.Features.Menus.Commands.ReorderMenuItems;
 using EazyMenu.Application.Features.Menus.Commands.SetMenuItemAvailability;
 using EazyMenu.Application.Features.Menus.Commands.UpdateMenuItemDetails;
 using EazyMenu.Application.Features.Menus.Commands.UpdateMenuItemPricing;
+using EazyMenu.Application.Features.Menus.Commands.QuickUpdateMenuItem;
 using EazyMenu.Application.Features.Menus.Common;
 using EazyMenu.Application.Features.Menus.Queries.GetMenuDetails;
 using EazyMenu.Web.Controllers;
@@ -30,6 +31,7 @@ public sealed class MenuItemsControllerTests
     private readonly Mock<ICommandHandler<UpdateMenuItemDetailsCommand, bool>> _updateDetailsHandler = new();
     private readonly Mock<ICommandHandler<UpdateMenuItemPricingCommand, bool>> _updatePricingHandler = new();
     private readonly Mock<ICommandHandler<SetMenuItemAvailabilityCommand, bool>> _availabilityHandler = new();
+    private readonly Mock<ICommandHandler<QuickUpdateMenuItemCommand, bool>> _quickUpdateHandler = new();
     private readonly Mock<ICommandHandler<RemoveMenuItemCommand, bool>> _removeHandler = new();
     private readonly Mock<ICommandHandler<ReorderMenuItemsCommand, bool>> _reorderHandler = new();
 
@@ -42,6 +44,9 @@ public sealed class MenuItemsControllerTests
         _detailsHandler
             .Setup(handler => handler.HandleAsync(It.IsAny<GetMenuDetailsQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(_sampleDetails);
+        _quickUpdateHandler
+            .Setup(handler => handler.HandleAsync(It.IsAny<QuickUpdateMenuItemCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
     }
 
     [Fact]
@@ -100,9 +105,27 @@ public sealed class MenuItemsControllerTests
 
         var result = await controller.Reorder(Guid.NewGuid(), Guid.NewGuid(), new ReorderItemsInput(), CancellationToken.None);
 
-    var validation = Assert.IsType<ObjectResult>(result);
-    var details = Assert.IsType<ValidationProblemDetails>(validation.Value);
-    Assert.Contains(nameof(ReorderItemsInput.ItemIds), details.Errors.Keys);
+        var validation = Assert.IsType<ObjectResult>(result);
+        var details = Assert.IsType<ValidationProblemDetails>(validation.Value);
+        Assert.Contains(nameof(ReorderItemsInput.ItemIds), details.Errors.Keys);
+    }
+
+    [Fact]
+    public async Task QuickUpdate_WhenValid_ReturnsQuickUpdatePartial()
+    {
+        var controller = CreateController();
+
+        var input = new QuickUpdateMenuItemInput
+        {
+            BasePrice = 180000m,
+            Inventory = new InventoryInput { Mode = "Infinite" },
+            ChannelPrices = new ChannelPriceInput()
+        };
+
+        var result = await controller.QuickUpdate(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), input, CancellationToken.None);
+
+        var partial = Assert.IsType<PartialViewResult>(result);
+        Assert.Equal("~/Views/Menus/Partials/_QuickUpdateTable.cshtml", partial.ViewName);
     }
 
     private MenuItemsController CreateController()
@@ -115,6 +138,7 @@ public sealed class MenuItemsControllerTests
             _updateDetailsHandler.Object,
             _updatePricingHandler.Object,
             _availabilityHandler.Object,
+            _quickUpdateHandler.Object,
             _removeHandler.Object,
             _reorderHandler.Object);
     }

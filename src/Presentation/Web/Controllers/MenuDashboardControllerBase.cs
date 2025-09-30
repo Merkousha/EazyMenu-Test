@@ -34,10 +34,15 @@ public abstract class MenuDashboardControllerBase<TController> : Controller
         return _tenantProvider.GetActiveTenantIdAsync(cancellationToken);
     }
 
-    protected async Task<MenuDetailsViewModel> LoadMenuDetailsAsync(Guid tenantId, Guid menuId, CancellationToken cancellationToken)
+    protected Task<MenuDetailsViewModel> LoadMenuDetailsAsync(Guid tenantId, Guid menuId, CancellationToken cancellationToken)
+    {
+        return LoadMenuDetailsAsync(tenantId, menuId, includeArchivedCategories: true, cancellationToken: cancellationToken);
+    }
+
+    protected async Task<MenuDetailsViewModel> LoadMenuDetailsAsync(Guid tenantId, Guid menuId, bool includeArchivedCategories, CancellationToken cancellationToken)
     {
         var dto = await _getMenuDetailsQueryHandler.HandleAsync(
-            new GetMenuDetailsQuery(tenantId, menuId, IncludeArchivedCategories: true),
+            new GetMenuDetailsQuery(tenantId, menuId, includeArchivedCategories),
             cancellationToken);
 
         return MenuViewModelFactory.CreateMenuDetails(tenantId, dto);
@@ -53,6 +58,13 @@ public abstract class MenuDashboardControllerBase<TController> : Controller
     protected IActionResult TenantMissingResult()
     {
         return BadRequest(new { message = "برای مدیریت منو ابتدا باید مستاجر فعال مشخص شود." });
+    }
+
+    protected PartialViewResult CreateQuickUpdatePartial(MenuDetailsViewModel detailsViewModel)
+    {
+        ViewData["MenuId"] = detailsViewModel.MenuId;
+        ViewData["TenantId"] = detailsViewModel.TenantId;
+        return PartialView("~/Views/Menus/Partials/_QuickUpdateTable.cshtml", detailsViewModel);
     }
 
     protected IActionResult HandleMenuException(Guid menuId, Exception exception, string context)

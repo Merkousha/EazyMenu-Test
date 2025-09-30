@@ -257,6 +257,22 @@ public sealed class Menu : Entity<MenuId>, IAggregateRoot
         }
     }
 
+    public void SetMenuItemInventory(MenuCategoryId categoryId, MenuItemId itemId, InventoryState inventory)
+    {
+        Guard.AgainstNull(inventory, nameof(inventory));
+        EnsureActive();
+
+        var item = FindItem(categoryId, itemId);
+        var wasAvailable = item.IsAvailable;
+        item.SetInventory(inventory);
+        Touch();
+
+        if (item.IsAvailable != wasAvailable)
+        {
+            RaiseDomainEvent(new MenuItemAvailabilityChangedDomainEvent(Id, itemId, item.IsAvailable));
+        }
+    }
+
     public void ReorderCategories(IReadOnlyList<MenuCategoryId> orderedIds)
     {
         EnsureActive();
