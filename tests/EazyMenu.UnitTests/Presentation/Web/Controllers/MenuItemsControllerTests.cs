@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using EazyMenu.Application.Abstractions.Messaging;
+using EazyMenu.Application.Common.Interfaces.Menus;
 using EazyMenu.Application.Common.Exceptions;
 using EazyMenu.Application.Features.Menus.Commands.AddMenuItem;
 using EazyMenu.Application.Features.Menus.Commands.RemoveMenuItem;
@@ -34,6 +35,7 @@ public sealed class MenuItemsControllerTests
     private readonly Mock<ICommandHandler<QuickUpdateMenuItemCommand, bool>> _quickUpdateHandler = new();
     private readonly Mock<ICommandHandler<RemoveMenuItemCommand, bool>> _removeHandler = new();
     private readonly Mock<ICommandHandler<ReorderMenuItemsCommand, bool>> _reorderHandler = new();
+    private readonly Mock<IMenuRealtimeNotifier> _menuRealtimeNotifier = new();
 
     private readonly MenuDetailsDto _sampleDetails;
 
@@ -47,6 +49,9 @@ public sealed class MenuItemsControllerTests
         _quickUpdateHandler
             .Setup(handler => handler.HandleAsync(It.IsAny<QuickUpdateMenuItemCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
+        _menuRealtimeNotifier
+            .Setup(notifier => notifier.PublishMenuChangedAsync(It.IsAny<MenuRealtimeNotification>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
     }
 
     [Fact]
@@ -83,8 +88,8 @@ public sealed class MenuItemsControllerTests
 
         var result = await controller.Update(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), input, CancellationToken.None);
 
-    var errorResult = Assert.IsType<UnprocessableEntityObjectResult>(result);
-    Assert.Equal(422, errorResult.StatusCode);
+        var errorResult = Assert.IsType<UnprocessableEntityObjectResult>(result);
+        Assert.Equal(422, errorResult.StatusCode);
     }
 
     [Fact]
@@ -140,7 +145,8 @@ public sealed class MenuItemsControllerTests
             _availabilityHandler.Object,
             _quickUpdateHandler.Object,
             _removeHandler.Object,
-            _reorderHandler.Object);
+        _reorderHandler.Object,
+        _menuRealtimeNotifier.Object);
     }
 
     private static class MenuDetailsDtoFactory

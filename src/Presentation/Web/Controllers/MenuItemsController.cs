@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 using EazyMenu.Application.Abstractions.Messaging;
+using EazyMenu.Application.Common.Interfaces.Menus;
 using EazyMenu.Application.Features.Menus.Commands.AddMenuItem;
 using EazyMenu.Application.Features.Menus.Commands.RemoveMenuItem;
 using EazyMenu.Application.Features.Menus.Commands.ReorderMenuItems;
@@ -28,6 +29,7 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
     private readonly ICommandHandler<QuickUpdateMenuItemCommand, bool> _quickUpdateMenuItemCommandHandler;
     private readonly ICommandHandler<RemoveMenuItemCommand, bool> _removeMenuItemCommandHandler;
     private readonly ICommandHandler<ReorderMenuItemsCommand, bool> _reorderMenuItemsCommandHandler;
+    private readonly IMenuRealtimeNotifier _menuRealtimeNotifier;
 
     public MenuItemsController(
         ILogger<MenuItemsController> logger,
@@ -39,7 +41,8 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
         ICommandHandler<SetMenuItemAvailabilityCommand, bool> setMenuItemAvailabilityCommandHandler,
         ICommandHandler<QuickUpdateMenuItemCommand, bool> quickUpdateMenuItemCommandHandler,
         ICommandHandler<RemoveMenuItemCommand, bool> removeMenuItemCommandHandler,
-        ICommandHandler<ReorderMenuItemsCommand, bool> reorderMenuItemsCommandHandler)
+        ICommandHandler<ReorderMenuItemsCommand, bool> reorderMenuItemsCommandHandler,
+        IMenuRealtimeNotifier menuRealtimeNotifier)
         : base(logger, tenantProvider, getMenuDetailsQueryHandler)
     {
         _addMenuItemCommandHandler = addMenuItemCommandHandler;
@@ -49,6 +52,7 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
         _quickUpdateMenuItemCommandHandler = quickUpdateMenuItemCommandHandler;
         _removeMenuItemCommandHandler = removeMenuItemCommandHandler;
         _reorderMenuItemsCommandHandler = reorderMenuItemsCommandHandler;
+        _menuRealtimeNotifier = menuRealtimeNotifier;
     }
 
     [HttpPost]
@@ -103,6 +107,9 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
                 cancellationToken);
 
             var details = await LoadMenuDetailsAsync(tenantId.Value, menuId, cancellationToken);
+            await _menuRealtimeNotifier.PublishMenuChangedAsync(
+                new MenuRealtimeNotification(tenantId.Value, menuId, "item-created", categoryId),
+                cancellationToken);
             return CreateCategoryListPartial(details);
         }
         catch (Exception exception)
@@ -164,6 +171,9 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
                 cancellationToken);
 
             var details = await LoadMenuDetailsAsync(tenantId.Value, menuId, cancellationToken);
+            await _menuRealtimeNotifier.PublishMenuChangedAsync(
+                new MenuRealtimeNotification(tenantId.Value, menuId, "item-updated", categoryId),
+                cancellationToken);
             return CreateCategoryListPartial(details);
         }
         catch (Exception exception)
@@ -201,6 +211,9 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
                 cancellationToken);
 
             var details = await LoadMenuDetailsAsync(tenantId.Value, menuId, cancellationToken);
+            await _menuRealtimeNotifier.PublishMenuChangedAsync(
+                new MenuRealtimeNotification(tenantId.Value, menuId, "item-availability", categoryId),
+                cancellationToken);
             return CreateCategoryListPartial(details);
         }
         catch (Exception exception)
@@ -263,6 +276,9 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
                 cancellationToken);
 
             var details = await LoadMenuDetailsAsync(tenantId.Value, menuId, includeArchivedCategories: false, cancellationToken: cancellationToken);
+            await _menuRealtimeNotifier.PublishMenuChangedAsync(
+                new MenuRealtimeNotification(tenantId.Value, menuId, "item-quick-update", categoryId),
+                cancellationToken);
             return CreateQuickUpdatePartial(details);
         }
         catch (Exception exception)
@@ -288,6 +304,9 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
                 cancellationToken);
 
             var details = await LoadMenuDetailsAsync(tenantId.Value, menuId, cancellationToken);
+            await _menuRealtimeNotifier.PublishMenuChangedAsync(
+                new MenuRealtimeNotification(tenantId.Value, menuId, "item-removed", categoryId),
+                cancellationToken);
             return CreateCategoryListPartial(details);
         }
         catch (Exception exception)
@@ -329,6 +348,9 @@ public sealed class MenuItemsController : MenuDashboardControllerBase<MenuItemsC
                 cancellationToken);
 
             var details = await LoadMenuDetailsAsync(tenantId.Value, menuId, cancellationToken);
+            await _menuRealtimeNotifier.PublishMenuChangedAsync(
+                new MenuRealtimeNotification(tenantId.Value, menuId, "items-reordered", categoryId),
+                cancellationToken);
             return CreateCategoryListPartial(details);
         }
         catch (Exception exception)

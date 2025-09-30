@@ -1,5 +1,6 @@
 using EazyMenu.Application;
 using EazyMenu.Infrastructure;
+using EazyMenu.Infrastructure.Menus;
 using EazyMenu.Infrastructure.Notifications;
 using EazyMenu.Infrastructure.Persistence;
 using EazyMenu.Infrastructure.Persistence.Seed;
@@ -45,5 +46,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapHub<SmsAlertsHub>("/hubs/sms-alerts");
+app.MapHub<MenuUpdatesHub>("/hubs/menu-updates");
 
 app.Run();

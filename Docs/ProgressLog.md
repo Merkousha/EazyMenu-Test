@@ -7,6 +7,12 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-08
+- اتصال SignalR به جریان آیتم‌های منو با تزریق `IMenuRealtimeNotifier` در `MenuItemsController` و انتشار رویدادهای `item-created`, `item-updated`, `item-availability`, `item-quick-update`, `item-removed`, `items-reordered` پس از هر فرمان موفق.
+- به‌روزرسانی تست واحد `MenuItemsControllerTests` با موک نوتیفایر جدید و اصلاح عدم تطابق امضا پس از افزودن وابستگی.
+- اجرای `dotnet build` (موفق، مدت 3.0 ثانیه) و `dotnet test` (موفق، 105 تست، مدت 5.1 ثانیه) برای تضمین سلامت تغییرات.
+- گام بعدی: تعمیم اعلان‌های SignalR به `MenuCategoriesController` و سناریوهای انتشار منو برای همگام‌سازی داشبورد و سایت عمومی.
+
 ## 2025-09-30
 - پیاده‌سازی فرمان تجمیعی `QuickUpdateMenuItemCommand` به همراه متد دامنه `SetMenuItemInventory` برای بروزرسانی همزمان قیمت، موجودی و وضعیت آیتم در یک تراکنش.
 - افزودن اکشن‌های `MenusController.QuickUpdate` و `MenuItemsController.QuickUpdate` با ورودی JSON، بازگشت Partial و استفاده از ViewModel موجود برای بارگذاری داده‌های به‌روز.
