@@ -1,5 +1,6 @@
 using EazyMenu.Application.Abstractions.Messaging;
 using EazyMenu.Domain.ValueObjects;
+using EazyMenu.Application.Common.Interfaces.Provisioning;
 
 namespace EazyMenu.Application.Features.Onboarding.RegisterTenant;
 
@@ -12,4 +13,4 @@ public sealed record RegisterTenantCommand(
     string Street,
     string PostalCode,
     bool UseTrial = false,
-    string? DiscountCode = null) : ICommand<TenantId>;
+    string? DiscountCode = null) : ICommand<TenantProvisioningResult>;

@@ -12,6 +12,14 @@ internal sealed class TenantProvisioningRecordConfiguration : IEntityTypeConfigu
 
         builder.HasKey(record => record.TenantId);
 
+        builder.Property(record => record.SubscriptionId)
+            .IsRequired();
+
+        builder.Property(record => record.PaymentId);
+
+        builder.HasIndex(record => record.SubscriptionId);
+        builder.HasIndex(record => record.PaymentId);
+
         builder.Property(record => record.RestaurantName)
             .HasMaxLength(200)
             .IsRequired();

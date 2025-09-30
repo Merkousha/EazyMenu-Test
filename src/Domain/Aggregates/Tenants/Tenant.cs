@@ -130,15 +130,17 @@ public sealed class Tenant : Entity<TenantId>, IAggregateRoot
     {
         Guard.AgainstNull(subscription, nameof(subscription));
 
-        if (_subscriptions.All(existing => existing.Id != subscription.Id))
-        {
-            _subscriptions.Add(subscription);
-        }
-
+        EnsureSubscriptionRegistered(subscription);
         subscription.Activate();
         ActiveSubscription = subscription;
 
         RaiseDomainEvent(new SubscriptionActivatedDomainEvent(Id, subscription.Id, subscription.Plan, DateTime.UtcNow));
+    }
+
+    public void RegisterPendingSubscription(Subscription subscription)
+    {
+        Guard.AgainstNull(subscription, nameof(subscription));
+        EnsureSubscriptionRegistered(subscription);
     }
 
     public void SuspendTenant()
@@ -215,5 +217,13 @@ public sealed class Tenant : Entity<TenantId>, IAggregateRoot
         var renewal = Subscription.Create(plan, newPrice, newStartUtc, newEndUtc, asTrial);
         ActivateSubscription(renewal);
         return renewal;
+    }
+
+    private void EnsureSubscriptionRegistered(Subscription subscription)
+    {
+        if (_subscriptions.All(existing => existing.Id != subscription.Id))
+        {
+            _subscriptions.Add(subscription);
+        }
     }
 }

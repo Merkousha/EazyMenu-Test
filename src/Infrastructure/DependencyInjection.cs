@@ -1,8 +1,12 @@
 using System;
 using EazyMenu.Application.Abstractions.Persistence;
+using EazyMenu.Application.Common.Interfaces.Payments;
+using EazyMenu.Application.Common.Interfaces.Pricing;
 using EazyMenu.Application.Common.Interfaces.Provisioning;
 using EazyMenu.Infrastructure.Persistence;
 using EazyMenu.Infrastructure.Persistence.Repositories;
+using EazyMenu.Infrastructure.Payments;
+using EazyMenu.Infrastructure.Pricing;
 using EazyMenu.Infrastructure.Provisioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +21,21 @@ public static class DependencyInjection
         IConfiguration configuration,
         Action<DbContextOptionsBuilder>? configureDbContext = null)
     {
-    services.AddScoped<ITenantProvisioningService, EfTenantProvisioningService>();
+        services.AddScoped<ITenantProvisioningService, EfTenantProvisioningService>();
+        services.AddScoped<ISubscriptionPricingService, SubscriptionPricingService>();
+        services.AddScoped<IPaymentGatewayClient, ZarinpalSandboxPaymentGatewayClient>();
+        services.AddSingleton(provider =>
+        {
+            var options = new PaymentGatewayOptions();
+            var section = configuration.GetSection("Payments");
+            var callback = section?["CallbackUri"];
+            if (!string.IsNullOrWhiteSpace(callback))
+            {
+                options.CallbackUri = callback!;
+            }
+
+            return options;
+        });
 
         if (configureDbContext is not null)
         {

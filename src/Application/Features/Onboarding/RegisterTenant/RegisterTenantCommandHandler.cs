@@ -6,7 +6,7 @@ using EazyMenu.Domain.ValueObjects;
 
 namespace EazyMenu.Application.Features.Onboarding.RegisterTenant;
 
-public sealed class RegisterTenantCommandHandler : ICommandHandler<RegisterTenantCommand, TenantId>
+public sealed class RegisterTenantCommandHandler : ICommandHandler<RegisterTenantCommand, TenantProvisioningResult>
 {
     private readonly ITenantProvisioningService _tenantProvisioningService;
 
@@ -15,7 +15,7 @@ public sealed class RegisterTenantCommandHandler : ICommandHandler<RegisterTenan
         _tenantProvisioningService = tenantProvisioningService;
     }
 
-    public Task<TenantId> HandleAsync(RegisterTenantCommand command, CancellationToken cancellationToken = default)
+    public Task<TenantProvisioningResult> HandleAsync(RegisterTenantCommand command, CancellationToken cancellationToken = default)
     {
         var address = Address.Create(command.City, command.Street, command.PostalCode);
         var request = new TenantProvisioningRequest(

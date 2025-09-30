@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using System;
 using EazyMenu.Application.Common.Interfaces.Provisioning;
 using EazyMenu.Domain.ValueObjects;
 
@@ -14,9 +15,10 @@ public sealed class InMemoryTenantProvisioningService : ITenantProvisioningServi
 {
     private readonly ConcurrentDictionary<TenantId, TenantProvisioningSnapshot> _tenants = new();
 
-    public Task<TenantId> ProvisionAsync(TenantProvisioningRequest request, CancellationToken cancellationToken = default)
+    public Task<TenantProvisioningResult> ProvisionAsync(TenantProvisioningRequest request, CancellationToken cancellationToken = default)
     {
         var tenantId = TenantId.New();
+        var subscriptionId = Guid.NewGuid();
 
         var snapshot = new TenantProvisioningSnapshot(
             request.RestaurantName,
@@ -28,7 +30,8 @@ public sealed class InMemoryTenantProvisioningService : ITenantProvisioningServi
             request.DiscountCode);
 
         _tenants.AddOrUpdate(tenantId, snapshot, (_, _) => snapshot);
-        return Task.FromResult(tenantId);
+        var result = new TenantProvisioningResult(tenantId, subscriptionId, null);
+        return Task.FromResult(result);
     }
 
     private sealed record TenantProvisioningSnapshot(

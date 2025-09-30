@@ -6,6 +6,10 @@ public sealed class TenantProvisioningRecord
 {
     public Guid TenantId { get; private set; }
 
+    public Guid SubscriptionId { get; private set; }
+
+    public Guid? PaymentId { get; private set; }
+
     public string RestaurantName { get; private set; } = string.Empty;
 
     public string RestaurantSlug { get; private set; } = string.Empty;
@@ -44,9 +48,13 @@ public sealed class TenantProvisioningRecord
         string postalCode,
         bool useTrial,
         string? discountCode,
-        DateTime createdAtUtc)
+        DateTime createdAtUtc,
+        Guid subscriptionId,
+        Guid? paymentId)
     {
         TenantId = tenantId;
+        SubscriptionId = subscriptionId;
+        PaymentId = paymentId;
         RestaurantName = restaurantName;
         RestaurantSlug = restaurantSlug;
         ManagerEmail = managerEmail;
@@ -72,7 +80,9 @@ public sealed class TenantProvisioningRecord
         string postalCode,
         bool useTrial,
         string? discountCode,
-        DateTime createdAtUtc)
+        DateTime createdAtUtc,
+        Guid subscriptionId,
+        Guid? paymentId)
     {
         return new TenantProvisioningRecord(
             tenantId,
@@ -86,6 +96,8 @@ public sealed class TenantProvisioningRecord
             postalCode.Trim(),
             useTrial,
             discountCode,
-            createdAtUtc);
+            createdAtUtc,
+            subscriptionId,
+            paymentId);
     }
 }

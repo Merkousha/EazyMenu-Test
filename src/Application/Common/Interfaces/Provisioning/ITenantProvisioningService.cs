@@ -6,5 +6,5 @@ namespace EazyMenu.Application.Common.Interfaces.Provisioning;
 
 public interface ITenantProvisioningService
 {
-    Task<TenantId> ProvisionAsync(TenantProvisioningRequest request, CancellationToken cancellationToken = default);
+    Task<TenantProvisioningResult> ProvisionAsync(TenantProvisioningRequest request, CancellationToken cancellationToken = default);
 }

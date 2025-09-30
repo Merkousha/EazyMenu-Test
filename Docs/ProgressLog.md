@@ -7,7 +7,15 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
-## 2025-09-30 (latest)
+## 2025-10-01 (latest)
+- معرفی دامنه پرداخت با `PaymentTransaction`, `PaymentId`, و Enumerationهای `PaymentStatus`/`PaymentMethod` به همراه قابلیت ثبت تخفیف و مرجع درگاه.
+- بازطراحی `EfTenantProvisioningService` برای استفاده از سرویس قیمت‌گذاری جدید، صدور تراکنش پرداخت زرین‌پال، نگهداری وضعیت اشتراک معلق و ثبت رکوردهای پرویژنینگ با شناسه‌های اشتراک/پرداخت.
+- پیاده‌سازی `SubscriptionPricingService` و کلاینت شبیه‌ساز `ZarinpalSandboxPaymentGatewayClient` به همراه `PaymentGatewayOptions` و ثبت تزریق وابستگی‌ها.
+- ایجاد مایگریشن `AddPayments` جهت افزودن جدول `PaymentTransactions` و ستون‌های `SubscriptionId`/`PaymentId` به `TenantProvisionings`.
+- نگارش تست واحد `PaymentTransactionTests` و توسعه تست‌های یکپارچه ثبت مستاجر برای سناریوهای آزمایشی و غیرآزمایشی؛ اجرای `dotnet build` و `dotnet test` (۶۱ تست موفق، مدت ۴.۹ ثانیه).
+- فرض‌های جاری: کدهای تخفیف ثابت (`WELCOME10=10%`, `SPRING15=15%`, `SUMMER20=20%`) و آدرس بازگشت پیش‌فرض زرین‌پال (`https://eazymenu.ir/payments/callback`) تا زمان دریافت تنظیمات محیطی.
+
+## 2025-09-30 (earlier-0)
 - بازطراحی فرایند ثبت مستاجر با پیاده‌سازی `EfTenantProvisioningService` و ذخیره رکوردهای درخواست در جدول `TenantProvisionings`.
 - گسترش قرارداد ثبت‌نام (`RegisterTenantCommand`) برای دریافت شماره تماس، آدرس کامل و ترجیحات آزمایشی/کد تخفیف.
 - فعال‌سازی خودکار اشتراک اولیه بر اساس `PlanCode` با قیمت‌گذاری پیش‌فرض، دوره آزمایشی ۱۴ روزه و ثبت رکورد پرویژنینگ.
