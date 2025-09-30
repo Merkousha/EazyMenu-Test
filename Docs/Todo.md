@@ -8,16 +8,15 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - When closing an item here, log the details in `Docs/ProgressLog.md` for long-term history.
 
 ## In Progress
-- [ ] توسعه صفحات مدیریتی پس از ورود (داشبورد، مدیریت منو، تنظیمات) و اتصال آن‌ها به Use Caseهای لایه Application.
-- [ ] پیاده‌سازی Use Caseها و ریپازیتوری EF Core منو بر اساس سند طراحی (Application + Infrastructure).
-	- پیشرفت: فرمان‌ها و کوئری‌های Application کامل، نگاشت EF Core، ریپازیتوری `MenuRepository` و مایگریشن `AddMenus` آماده شد؛ گام بعد تهیه داده نمونه و اتصال UI مدیریت منو است.
+- [ ] اتصال UI مدیریت منو به ریپازیتوری EF Core و داده نمونه توسعه؛ طراحی ViewModelها و اسکلت صفحات مدیریتی در دست آماده‌سازی.
 
 ## Up Next
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
-- [ ] Build menu management UI and ordering flows per user stories (پس از تکمیل دامنه/Use Caseها).
+- [ ] تکمیل جریان‌های سفارش مشتری و کانال‌های آنلاین پس از آماده‌سازی UI مدیریت منو و اتصال آن به داده واقعی.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] تکمیل لایه Persistency منو و آماده‌سازی داده توسعه (Use Caseها، ریپازیتوری EF Core، مایگریشن `AddMenus`، Seed خودکار در محیط Development).
 - [x] پیاده‌سازی دامنه منو (Value Objectها، Aggregate، رویدادهای دامنه) به همراه تست‌های واحد.
 - [x] تدوین سند طراحی جامع مدیریت منو (دامنه، Use Case، Persistence، UI) در `Docs/Design/MenuManagement.md`.
 - [x] افزودن پایش مصرف پیامک مستاجر (کوئری خلاصه، خوانشگر EF، کارت‌های داشبورد) و به‌روزرسانی تست‌ها.

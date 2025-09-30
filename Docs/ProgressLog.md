@@ -12,16 +12,9 @@ A running history of significant work completed in this repository.
 - افزودن و اصلاح کانورترها و ValueComparerهای `LocalizedText` (شامل حالت‌های nullable)، `InventoryState`, قیمت‌های کانال و برچسب‌ها جهت پشتیبانی از ردیابی تغییرات و ذخیره‌سازی JSON.
 - ایجاد `MenuRepository` مبتنی بر EF Core، افزودن `DbSet<Menu>` به `EazyMenuDbContext` و ثبت آن در DI برای پاسخ‌گویی به فرمان‌ها و کوئری‌های لایه Application.
 - تولید مایگریشن `AddMenus` با روابط کلید خارجی به مستاجر و ایجاد جداول `Menus`, `MenuCategories`, `MenuItems` همراه با شاخص‌های ترتیب.
-- اجرای `dotnet build` و `dotnet test` (۹۴ تست موفق، مدت ۲٫۵ ثانیه) پس از ایجاد مایگریشن برای اطمینان از سلامت زنجیره.
-- گام بعدی: آماده‌سازی داده نمونه و اتصال لایه UI مدیریت منو به ریپازیتوری جدید.
-
-## 2025-10-05
-- تکمیل سبد فرمان‌های آیتم منو: افزودن هندلرهای `UpdateMenuItemDetails`, `UpdateMenuItemPricing`, `SetMenuItemAvailability`, `AdjustMenuItemInventory`, `RemoveMenuItem`, `ReorderMenuItems` و `PublishMenu` به‌همراه تعریف رکوردهای فرمان متناظر.
-- توسعه اگریگیت `Menu` با متدهای `RemoveMenuItem` و `UpdateMenuItemTags` برای محافظت از مرز دامنه و پشتیبانی از فرمان‌های جدید.
-- پیاده‌سازی کوئری‌های `GetMenusQuery` و `GetMenuDetailsQuery` با استفاده از `MenuMapper` و فیلتر دسته‌های آرشیوشده برای مصرف داشبورد مدیریتی.
-- ثبت تمام فرمان‌ها و کوئری‌های منو در `DependencyInjection` جهت دسترس‌پذیری از طریق الگوی `ICommandHandler`/`IQueryHandler`.
-- اجرای `dotnet build` و `dotnet test` (۹۴ تست موفق، مدت ۲٫۵ ثانیه) پس از اضافه‌شدن فرمان‌ها برای اطمینان از سلامت راهکار.
-- گام بعدی: ورود به پیاده‌سازی Persistency منو (EF Core، مپینگ، مایگریشن) و افزودن تست‌های پوششی برای هندلرهای جدید.
+- پیاده‌سازی `EazyMenuDbContextSeeder` برای تولید داده نمونه (مستاجر نمایشی، دسته‌ها و آیتم‌های منو) و اجرای خودکار آن به‌همراه `Database.MigrateAsync` در پروژه‌های وب هنگام توسعه.
+- اجرای `dotnet build` و `dotnet test` (۹۴ تست موفق، مدت ۲٫۶ ثانیه) پس از افزودن فرآیند Seed جهت اطمینان از سلامت زنجیره.
+- گام بعدی: اتصال UI مدیریت منو به داده نمونه و تکمیل صفحات رابط کاربری.
 
 ## 2025-10-04 (latest)
 - پیاده‌سازی Value Object‌های منو (`MenuId`, `MenuCategoryId`, `MenuItemId`, `LocalizedText`, `InventoryState`, `MenuChannel`, `MenuTag`) مطابق سند طراحی.
@@ -30,6 +23,14 @@ A running history of significant work completed in this repository.
 - نگارش تست‌های واحد `MenuTests`, `LocalizedTextTests`, `InventoryStateTests` برای پوشش سناریوهای کلیدی دامنه جدید.
 - اجرای `dotnet test` با موفقیت (۹۴ تست، مدت ۳.۲ ثانیه) و به‌روزرسانی `Docs/Todo.md` برای تمرکز روی Use Caseها و لایه Persistency.
 - گام بعدی: پیاده‌سازی Use Caseهای Application و نگاشت EF Core/مایگریشن `AddMenus`.
+
+## 2025-10-05
+- تکمیل سبد فرمان‌های آیتم منو: افزودن هندلرهای `UpdateMenuItemDetails`, `UpdateMenuItemPricing`, `SetMenuItemAvailability`, `AdjustMenuItemInventory`, `RemoveMenuItem`, `ReorderMenuItems` و `PublishMenu` به‌همراه تعریف رکوردهای فرمان متناظر.
+- توسعه اگریگیت `Menu` با متدهای `RemoveMenuItem` و `UpdateMenuItemTags` برای محافظت از مرز دامنه و پشتیبانی از فرمان‌های جدید.
+- پیاده‌سازی کوئری‌های `GetMenusQuery` و `GetMenuDetailsQuery` با استفاده از `MenuMapper` و فیلتر دسته‌های آرشیوشده برای مصرف داشبورد مدیریتی.
+- ثبت تمام فرمان‌ها و کوئری‌های منو در `DependencyInjection` جهت دسترس‌پذیری از طریق الگوی `ICommandHandler`/`IQueryHandler`.
+- اجرای `dotnet build` و `dotnet test` (۹۴ تست موفق، مدت ۲٫۵ ثانیه) پس از اضافه‌شدن فرمان‌ها برای اطمینان از سلامت راهکار.
+- گام بعدی: ورود به پیاده‌سازی Persistency منو (EF Core، مپینگ، مایگریشن) و افزودن تست‌های پوششی برای هندلرهای جدید.
 
 ## 2025-10-04 (earlier-0)
 - تدوین سند طراحی «مدیریت منو» شامل مدل دامنه، Use Caseهای لایه Application، نگاشت پایگاه‌داده، APIهای داشبورد و سناریوهای انتشار در `Docs/Design/MenuManagement.md`.
