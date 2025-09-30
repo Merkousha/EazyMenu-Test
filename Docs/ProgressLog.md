@@ -7,7 +7,13 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
-## 2025-10-05 (latest)
+## 2025-10-06 (latest)
+- پیکربندی کامل EF Core برای اگریگیت منو همراه با نگاشت دسته‌ها و آیتم‌ها به جداول تملیکی و استفاده از ناوبری‌های field-backed برای حفظ قوانین دامنه.
+- افزودن و اصلاح کانورترها و ValueComparerهای `LocalizedText` (شامل حالت‌های nullable)، `InventoryState`, قیمت‌های کانال و برچسب‌ها جهت پشتیبانی از ردیابی تغییرات و ذخیره‌سازی JSON.
+- اجرای `dotnet build` و `dotnet test` (۹۴ تست موفق، مدت ۲٫۵ ثانیه) برای اطمینان از سلامت نگاشت‌های تازه.
+- گام بعدی: تکمیل پیاده‌سازی ریپازیتوری EF Core منو و آماده‌سازی مایگریشن `AddMenus`.
+
+## 2025-10-05
 - تکمیل سبد فرمان‌های آیتم منو: افزودن هندلرهای `UpdateMenuItemDetails`, `UpdateMenuItemPricing`, `SetMenuItemAvailability`, `AdjustMenuItemInventory`, `RemoveMenuItem`, `ReorderMenuItems` و `PublishMenu` به‌همراه تعریف رکوردهای فرمان متناظر.
 - توسعه اگریگیت `Menu` با متدهای `RemoveMenuItem` و `UpdateMenuItemTags` برای محافظت از مرز دامنه و پشتیبانی از فرمان‌های جدید.
 - پیاده‌سازی کوئری‌های `GetMenusQuery` و `GetMenuDetailsQuery` با استفاده از `MenuMapper` و فیلتر دسته‌های آرشیوشده برای مصرف داشبورد مدیریتی.
