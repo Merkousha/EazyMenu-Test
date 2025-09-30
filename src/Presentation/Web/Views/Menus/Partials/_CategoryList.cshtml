@@ -1,0 +1,15 @@
+@model IReadOnlyCollection<EazyMenu.Web.Models.Menus.MenuCategoryViewModel>
+@{
+    var menuId = (Guid)ViewData["MenuId"]!;
+    var tenantId = (Guid)ViewData["TenantId"]!;
+}
+<div class="menu-categories" data-sortable="categories" data-menu-id="@menuId">
+@foreach (var category in Model)
+{
+    @await Html.PartialAsync("~/Views/Menus/Partials/_CategoryCard.cshtml", category, new ViewDataDictionary(ViewData)
+    {
+        ["MenuId"] = menuId,
+        ["TenantId"] = tenantId
+    })
+}
+</div>

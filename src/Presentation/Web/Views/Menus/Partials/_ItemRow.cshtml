@@ -1,0 +1,162 @@
+@model EazyMenu.Web.Models.Menus.MenuItemViewModel
+@using System.Collections.Generic
+@using System.Globalization
+@using System.Linq
+@{
+    var menuId = (Guid)ViewData["MenuId"]!;
+    var categoryId = (Guid)ViewData["CategoryId"]!;
+    var editCollapseId = $"item-edit-{Model.ItemId}";
+}
+<tr class="menu-item-row" data-item-id="@Model.ItemId" data-menu-id="@menuId" data-category-id="@categoryId">
+    <td style="width: 28%;">
+        <div class="fw-semibold">@GetLocalizedValue(Model.Name)</div>
+        @if (Model.Description is not null && Model.Description.Count > 0)
+        {
+            <div class="text-muted small">@GetLocalizedValue(Model.Description)</div>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <div class="small"><a href="@Model.ImageUrl" target="_blank" rel="noopener">مشاهده تصویر</a></div>
+        }
+        <div class="collapse mt-3" id="@editCollapseId" data-menu-panel="item-edit">
+            <form method="post" asp-controller="MenuItems" asp-action="Update" asp-route-menuId="@menuId" asp-route-categoryId="@categoryId" asp-route-itemId="@Model.ItemId" data-menu-form="item-edit">
+                @Html.AntiForgeryToken()
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label class="form-label" for="item-edit-fa-@Model.ItemId">نام فارسی</label>
+                        <input id="item-edit-fa-@Model.ItemId" class="form-control" name="Name.Fa" value="@GetDictionaryValue(Model.Name, "fa-IR")" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="item-edit-en-@Model.ItemId">نام انگلیسی</label>
+                        <input id="item-edit-en-@Model.ItemId" class="form-control" name="Name.En" value="@GetDictionaryValue(Model.Name, "en-US")" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="item-edit-desc-fa-@Model.ItemId">توضیح فارسی</label>
+                        <textarea id="item-edit-desc-fa-@Model.ItemId" class="form-control" name="Description.Fa" rows="2">@GetDictionaryValue(Model.Description ?? new Dictionary<string,string>(), "fa-IR")</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="item-edit-desc-en-@Model.ItemId">توضیح انگلیسی</label>
+                        <textarea id="item-edit-desc-en-@Model.ItemId" class="form-control" name="Description.En" rows="2">@GetDictionaryValue(Model.Description ?? new Dictionary<string,string>(), "en-US")</textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="item-edit-image-@Model.ItemId">تصویر (URL)</label>
+                        <input id="item-edit-image-@Model.ItemId" class="form-control" name="ImageUrl" value="@Model.ImageUrl" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="item-edit-tags-@Model.ItemId">برچسب‌ها (جدا با کاما)</label>
+                        <input id="item-edit-tags-@Model.ItemId" class="form-control" name="Tags" value="@string.Join(',', Model.Tags)" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="item-edit-base-@Model.ItemId">قیمت پایه (تومان)</label>
+                        <input id="item-edit-base-@Model.ItemId" class="form-control" name="BasePrice" type="number" step="1000" min="0" value="@Model.BasePrice.ToString("0", CultureInfo.InvariantCulture)" required />
+                        <input type="hidden" name="Currency" value="@Model.Currency" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">قیمت بیرون‌بر</label>
+                        <input class="form-control" name="ChannelPrices.TakeAway" type="number" step="1000" min="0" value="@GetChannelPrice(Model.ChannelPrices, "TakeAway")" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">قیمت دلیوری</label>
+                        <input class="form-control" name="ChannelPrices.Delivery" type="number" step="1000" min="0" value="@GetChannelPrice(Model.ChannelPrices, "Delivery")" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">قیمت سرو در محل</label>
+                        <input class="form-control" name="ChannelPrices.DineIn" type="number" step="1000" min="0" value="@GetChannelPrice(Model.ChannelPrices, "DineIn")" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">قیمت آنلاین</label>
+                        <input class="form-control" name="ChannelPrices.OnlineExclusive" type="number" step="1000" min="0" value="@GetChannelPrice(Model.ChannelPrices, "OnlineExclusive")" />
+                    </div>
+                    <div class="col-md-4 d-flex align-items-center">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="IsAvailable" id="item-edit-available-@Model.ItemId" @(Model.IsAvailable ? "checked" : string.Empty) />
+                            <label class="form-check-label" for="item-edit-available-@Model.ItemId">فعال</label>
+                        </div>
+                    </div>
+                    <div class="col-md-12 d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#@editCollapseId">بستن</button>
+                        <button type="submit" class="btn btn-primary">ذخیره</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </td>
+    <td>
+        @Model.BasePrice.ToString("N0", CultureInfo.CreateSpecificCulture("fa-IR"))
+        <div class="text-muted small">@Model.Currency</div>
+    </td>
+    <td>
+        @if (Model.ChannelPrices.Any())
+        {
+            <ul class="list-unstyled mb-0 small">
+                @foreach (var price in Model.ChannelPrices)
+                {
+                    <li><span class="badge bg-light text-dark">@price.Key</span> @price.Value.ToString("N0", CultureInfo.CreateSpecificCulture("fa-IR"))</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <span class="text-muted small">قیمت اضافی ثبت نشده است</span>
+        }
+    </td>
+    <td>
+        @if (string.Equals(Model.Inventory.Mode, "Infinite", StringComparison.OrdinalIgnoreCase))
+        {
+            <span class="badge bg-light text-dark">نامحدود</span>
+        }
+        else
+        {
+            <div>@(Model.Inventory.Quantity ?? 0) عدد</div>
+            @if (Model.Inventory.Threshold.HasValue)
+            {
+                var css = Model.Inventory.IsBelowThreshold ? "text-danger" : "text-muted";
+                <small class="@css">آستانه: @Model.Inventory.Threshold</small>
+            }
+        }
+    </td>
+    <td>
+        @if (Model.Tags.Any())
+        {
+            <div class="d-flex flex-wrap gap-2">
+                @foreach (var tag in Model.Tags)
+                {
+                    <span class="badge bg-info text-dark">@tag</span>
+                }
+            </div>
+        }
+        else
+        {
+            <span class="text-muted small">برچسبی ثبت نشده</span>
+        }
+    </td>
+    <td class="text-end" style="width: 160px;">
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#@editCollapseId" aria-expanded="false" aria-controls="@editCollapseId">ویرایش</button>
+            <button type="button" class="btn btn-sm @(Model.IsAvailable ? "btn-outline-success" : "btn-outline-warning")" data-menu-action="toggle-item-availability" data-menu-id="@menuId" data-category-id="@categoryId" data-item-id="@Model.ItemId" data-current="@(Model.IsAvailable ? "true" : "false")">@(Model.IsAvailable ? "تعطیل" : "فعال")</button>
+            <button type="button" class="btn btn-sm btn-outline-danger" data-menu-action="remove-item" data-menu-id="@menuId" data-category-id="@categoryId" data-item-id="@Model.ItemId">حذف</button>
+        </div>
+    </td>
+</tr>
+
+@functions {
+    private static string GetLocalizedValue(IDictionary<string, string> values)
+    {
+        if (values.TryGetValue("fa-IR", out var faValue) && !string.IsNullOrWhiteSpace(faValue))
+        {
+            return faValue;
+        }
+
+        return values.Values.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value)) ?? "--";
+    }
+
+    private static string GetDictionaryValue(IDictionary<string, string> values, string culture)
+    {
+        return values.TryGetValue(culture, out var value) ? value : string.Empty;
+    }
+
+    private static string GetChannelPrice(IReadOnlyDictionary<string, decimal> prices, string channel)
+    {
+        return prices.TryGetValue(channel, out var value) ? value.ToString("0", CultureInfo.InvariantCulture) : string.Empty;
+    }
+}

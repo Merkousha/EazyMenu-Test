@@ -1,18 +1,21 @@
-@using System.Linq
 @model EazyMenu.Web.Models.Menus.MenuDetailsViewModel
+@using System.Linq
+@using Microsoft.AspNetCore.Mvc.ViewFeatures
+
 @{
     var defaultName = Model.Name.TryGetValue("fa-IR", out var faTitle)
         ? faTitle
         : Model.Name.Values.FirstOrDefault() ?? "منو";
     ViewData["Title"] ??= $"مدیریت {defaultName}";
 }
-<div class="container" dir="rtl">
+
+<div class="container" dir="rtl" data-menu-details data-menu-id="@Model.MenuId">
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <div>
             <h1 class="h3 mb-1">@defaultName</h1>
             <div class="d-flex flex-wrap gap-2">
                 <span class="badge bg-light text-dark">کد منو: @Model.MenuId</span>
-                <span class="badge bg-light text-dark">نسخه منتشرشده: v@Model.PublishedVersion</span>
+                <span class="badge bg-light text-dark">نسخه منتشرشده: <span data-published-version>v@Model.PublishedVersion</span></span>
                 @if (Model.IsDefault)
                 {
                     <span class="badge bg-success">منوی پیش‌فرض</span>
@@ -25,9 +28,11 @@
         </div>
         <div class="d-flex gap-2">
             <a class="btn btn-outline-secondary" asp-action="Index">بازگشت به لیست</a>
-            <button class="btn btn-primary" type="button" disabled title="به‌زودی">انتشار تغییرات</button>
+            <button class="btn btn-primary" type="button" data-menu-action="publish-menu" data-menu-id="@Model.MenuId">انتشار تغییرات</button>
         </div>
     </div>
+
+    <div id="menu-alerts" class="mb-3" role="alert"></div>
 
     <div class="row gy-4">
         <div class="col-12 col-lg-4">
@@ -67,6 +72,7 @@
                                         <p class="mb-0 mt-2">@description.Value</p>
                                     </li>
                                 }
+                            }
                             </ul>
                         </div>
                     }
@@ -78,151 +84,68 @@
             </div>
         </div>
         <div class="col-12 col-lg-8">
-            @if (!Model.Categories.Any())
-            {
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body text-center py-5">
-                        <h2 class="h5 mb-3">دسته‌ای برای این منو وجود ندارد</h2>
-                        <p class="text-muted mb-0">برای افزودن دسته و آیتم از جریان فرمان‌ها در لایه Application استفاده کنید. نسخه UI کامل به‌زودی اضافه می‌شود.</p>
-                    </div>
-                </div>
-            }
-            else
-            {
-                @foreach (var category in Model.Categories)
-                {
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                            <div>
-                                <h2 class="h5 mb-1">@GetLocalizedValue(category.Name)</h2>
-                                <div class="text-muted small">ترتیب نمایش: @category.DisplayOrder</div>
-                                <div class="d-flex gap-2 mt-2">
-                                    @if (!string.IsNullOrWhiteSpace(category.IconUrl))
-                                    {
-                                        <span class="badge bg-light text-dark">آیکون: @category.IconUrl</span>
-                                    }
-                                    @if (category.IsArchived)
-                                    {
-                                        <span class="badge bg-secondary">آرشیو شده</span>
-                                    }
-                                </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 mb-0">دسته‌ها و آیتم‌ها</h2>
+                <button class="btn btn-sm btn-outline-primary" type="button" data-menu-action="show-create-category">افزودن دسته جدید</button>
+            </div>
+            <div id="menu-category-create" class="card border-0 shadow-sm mb-4 collapse" data-menu-panel="category-create">
+                <div class="card-body">
+                    <form method="post" asp-controller="MenuCategories" asp-action="Create" asp-route-menuId="@Model.MenuId" data-menu-form="category-create">
+                        @Html.AntiForgeryToken()
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label" for="new-category-fa">نام فارسی</label>
+                                <input id="new-category-fa" class="form-control" name="Name.Fa" required />
                             </div>
-                            <button class="btn btn-sm btn-outline-primary" type="button" disabled title="به‌زودی">افزودن آیتم</button>
+                            <div class="col-md-4">
+                                <label class="form-label" for="new-category-en">نام انگلیسی</label>
+                                <input id="new-category-en" class="form-control" name="Name.En" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="new-category-ar">نام عربی</label>
+                                <input id="new-category-ar" class="form-control" name="Name.Ar" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="new-category-icon">آیکون (URL)</label>
+                                <input id="new-category-icon" class="form-control" name="IconUrl" />
+                            </div>
+                            <div class="col-md-6 d-flex justify-content-end align-items-end gap-2">
+                                <button type="button" class="btn btn-outline-secondary" data-menu-action="hide-create-category">بستن</button>
+                                <button type="submit" class="btn btn-success">افزودن دسته</button>
+                            </div>
                         </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table mb-0 align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th scope="col">آیتم</th>
-                                            <th scope="col">قیمت پایه</th>
-                                            <th scope="col">قیمت‌های کانال</th>
-                                            <th scope="col">موجودی</th>
-                                            <th scope="col">برچسب‌ها</th>
-                                            <th scope="col">وضعیت</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach (var item in category.Items)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex flex-column">
-                                                    <span class="fw-semibold">@GetLocalizedValue(item.Name)</span>
-                                                    @if (item.Description is not null && item.Description.Count > 0)
-                                                    {
-                                                        <small class="text-muted">@GetLocalizedValue(item.Description)</small>
-                                                    }
-                                                </div>
-                                            </td>
-                                            <td>
-                                                @item.BasePrice.ToString("N0")
-                                                <span class="text-muted small">@item.Currency</span>
-                                            </td>
-                                            <td>
-                                                @if (item.ChannelPrices.Any())
-                                                {
-                                                    <ul class="list-unstyled mb-0 small">
-                                                        @foreach (var price in item.ChannelPrices)
-                                                        {
-                                                            <li><span class="badge bg-light text-dark">@price.Key</span> @price.Value.ToString("N0")</li>
-                                                        }
-                                                    </ul>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted small">قیمت اضافی ثبت نشده است</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                @DisplayInventory(item.Inventory)
-                                            </td>
-                                            <td>
-                                                @if (item.Tags.Any())
-                                                {
-                                                    <div class="d-flex flex-wrap gap-2">
-                                                        @foreach (var tag in item.Tags)
-                                                        {
-                                                            <span class="badge bg-info text-dark">@tag</span>
-                                                        }
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted small">برچسبی ثبت نشده</span>
-                                                }
-                                            </td>
-                                            <td>
-                                                @if (item.IsAvailable)
-                                                {
-                                                    <span class="badge bg-success">فعال</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge bg-danger">غیرفعال</span>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                    </tbody>
-                                </table>
-                            </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="menu-categories-wrapper">
+                @if (!Model.Categories.Any())
+                {
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body text-center py-5">
+                            <h2 class="h5 mb-3">دسته‌ای برای این منو وجود ندارد</h2>
+                            <p class="text-muted mb-0">برای شروع روی «افزودن دسته جدید» کلیک کنید تا اولین دسته ایجاد شود.</p>
                         </div>
                     </div>
                 }
-            }
+                else
+                {
+                    @await Html.PartialAsync("~/Views/Menus/Partials/_CategoryList.cshtml", Model.Categories, new ViewDataDictionary(ViewData)
+                    {
+                        ["MenuId"] = Model.MenuId,
+                        ["TenantId"] = Model.TenantId
+                    })
+                }
+            </div>
         </div>
     </div>
+
+    <form id="menu-anti-forgery" class="d-none">
+        @Html.AntiForgeryToken()
+    </form>
 </div>
 
-@functions {
-    private static string GetLocalizedValue(IDictionary<string, string> values)
-    {
-        if (values.TryGetValue("fa-IR", out var faValue) && !string.IsNullOrWhiteSpace(faValue))
-        {
-            return faValue;
-        }
-
-        var firstValue = values.Values.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value));
-        return firstValue ?? "--";
-    }
-
-    private static Microsoft.AspNetCore.Html.IHtmlContent DisplayInventory(EazyMenu.Web.Models.Menus.InventoryViewModel inventory)
-    {
-        var builder = new Microsoft.AspNetCore.Html.HtmlContentBuilder();
-        if (string.Equals(inventory.Mode, "Infinite", System.StringComparison.OrdinalIgnoreCase))
-        {
-            builder.AppendHtml("<span class=\"badge bg-light text-dark\">نامحدود</span>");
-            return builder;
-        }
-
-        builder.AppendHtml($"<div>{inventory.Quantity ?? 0} عدد</div>");
-        if (inventory.Threshold.HasValue)
-        {
-            var thresholdClass = inventory.IsBelowThreshold ? "text-danger" : "text-muted";
-            builder.AppendHtml($"<small class=\"{thresholdClass}\">آستانه هشدار: {inventory.Threshold.Value}</small>");
-        }
-
-        return builder;
-    }
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js" integrity="sha384-u3F6UtBYX6iFc4aZe5evQgwK1d7XzVhuvqUvVfGP9E5WlmacCIUMVa4NoZ+LZp9d" crossorigin="anonymous"></script>
+    <script src="~/js/menu-management.js" asp-append-version="true"></script>
 }

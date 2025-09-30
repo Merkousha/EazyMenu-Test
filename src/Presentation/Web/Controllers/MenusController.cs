@@ -47,13 +47,7 @@ public sealed class MenusController : Controller
         }
 
         var menus = await _getMenusQueryHandler.HandleAsync(new GetMenusQuery(tenantId.Value), cancellationToken);
-        var summaries = menus
-            .Select(MapSummary)
-            .OrderByDescending(menu => menu.IsDefault)
-            .ThenBy(menu => menu.Name)
-            .ToList();
-
-        var model = new MenuListViewModel(tenantId.Value, summaries, summaries.Count == 0);
+        var model = MenuViewModelFactory.CreateMenuList(tenantId.Value, menus);
         return View(model);
     }
 
@@ -77,7 +71,7 @@ public sealed class MenusController : Controller
                 ? $"ویرایش {nameFa}"
                 : "جزئیات منو";
 
-            var model = MapDetails(tenantId.Value, dto);
+            var model = MenuViewModelFactory.CreateMenuDetails(tenantId.Value, dto);
             return View(model);
         }
         catch (NotFoundException)
@@ -97,74 +91,5 @@ public sealed class MenusController : Controller
             TempData["MenuError"] = "در بازیابی منوی درخواستی خطایی رخ داد.";
             return RedirectToAction(nameof(Index));
         }
-    }
-
-    private static MenuSummaryViewModel MapSummary(MenuSummaryDto dto)
-    {
-        return new MenuSummaryViewModel(
-            dto.MenuId,
-            dto.Name,
-            dto.IsDefault,
-            dto.IsArchived,
-            dto.CategoryCount,
-            dto.ItemCount,
-            dto.PublishedVersion,
-            dto.UpdatedAtUtc);
-    }
-
-    private static MenuDetailsViewModel MapDetails(Guid tenantId, MenuDetailsDto dto)
-    {
-        var categories = dto.Categories
-            .Select(MapCategory)
-            .OrderBy(category => category.DisplayOrder)
-            .ToList();
-
-        return new MenuDetailsViewModel(
-            tenantId,
-            dto.MenuId,
-            new Dictionary<string, string>(dto.Name),
-            dto.Description is null ? null : new Dictionary<string, string>(dto.Description),
-            dto.IsDefault,
-            dto.IsArchived,
-            dto.PublishedVersion,
-            dto.CreatedAtUtc,
-            dto.UpdatedAtUtc,
-            categories);
-    }
-
-    private static MenuCategoryViewModel MapCategory(MenuCategoryDetailsDto dto)
-    {
-        var items = dto.Items
-            .Select(MapItem)
-            .OrderBy(item => item.DisplayOrder)
-            .ToList();
-
-        return new MenuCategoryViewModel(
-            dto.CategoryId,
-            new Dictionary<string, string>(dto.Name),
-            dto.DisplayOrder,
-            dto.IconUrl,
-            dto.IsArchived,
-            items);
-    }
-
-    private static MenuItemViewModel MapItem(MenuItemDetailsDto dto)
-    {
-        var channelPrices = new Dictionary<string, decimal>(dto.ChannelPrices);
-        var tags = dto.Tags.ToList();
-        var inventory = new InventoryViewModel(dto.Inventory.Mode, dto.Inventory.Quantity, dto.Inventory.Threshold, dto.Inventory.IsBelowThreshold);
-
-        return new MenuItemViewModel(
-            dto.ItemId,
-            new Dictionary<string, string>(dto.Name),
-            dto.Description is null ? null : new Dictionary<string, string>(dto.Description),
-            dto.BasePrice,
-            dto.Currency,
-            dto.IsAvailable,
-            inventory,
-            dto.ImageUrl,
-            dto.DisplayOrder,
-            channelPrices,
-            tags);
     }
 }

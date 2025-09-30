@@ -7,6 +7,12 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-07 (latest)
+- بازنویسی کامل View `Views/Menus/Details.cshtml` برای نمایش ترکیبی دسته‌ها و آیتم‌ها با Partialهای جدید و فرم افزودن دسته، رفع خطاهای Razor و تنظیم namespaceهای لازم.
+- هم‌ترازسازی بخش اطلاعات پایه، پیام‌های بدون داده و پوشه اسکریپت‌ها با داده‌های واقعی منو و آماده‌سازی توکن ضدتقلب جهت استفاده در درخواست‌های AJAX آینده.
+- اجرای `dotnet build` (موفق، مدت 14.3 ثانیه) و `dotnet test` (موفق، 94 تست، مدت 5.2 ثانیه) پس از اصلاح View به‌منظور تضمین سلامت سراسری.
+- گام بعدی: پیاده‌سازی Endpointهای AJAX برای CRUD دسته/آیتم، تکمیل اسکریپت `menu-management.js` و اتصال دوباره به رویداد انتشار.
+
 ## 2025-09-30 (latest)
 - افزودن سرویس `DashboardTenantProvider` برای استخراج شناسه مستاجر فعال از پایگاه‌داده و ثبت آن در DI پروژه وب.
 - پیاده‌سازی `MenusController` به‌همراه ViewModelهای مدیریت منو جهت نمایش فهرست و جزئیات منو با داده نمونه توسعه.

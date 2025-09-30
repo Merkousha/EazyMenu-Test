@@ -1,0 +1,181 @@
+@model EazyMenu.Web.Models.Menus.MenuCategoryViewModel
+@using System.Linq
+@{
+    var menuId = (Guid)ViewData["MenuId"]!;
+    var editCollapseId = $"category-edit-{Model.CategoryId}";
+    var addItemCollapseId = $"category-add-item-{Model.CategoryId}";
+}
+<div class="card menu-category-card mb-4" data-category-id="@Model.CategoryId" data-menu-id="@menuId">
+    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-start gap-3">
+        <div>
+            <h2 class="h5 mb-1">@GetLocalizedValue(Model.Name)</h2>
+            <div class="text-muted small">ترتیب نمایش: <span class="category-order" data-display-order>@Model.DisplayOrder</span></div>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+                @if (!string.IsNullOrWhiteSpace(Model.IconUrl))
+                {
+                    <span class="badge bg-light text-dark">آیکون: @Model.IconUrl</span>
+                }
+                @if (Model.IsArchived)
+                {
+                    <span class="badge bg-secondary">آرشیو شده</span>
+                }
+            </div>
+        </div>
+        <div class="btn-group" role="group" aria-label="دستورات دسته">
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#@editCollapseId" aria-expanded="false" aria-controls="@editCollapseId">ویرایش</button>
+            @if (Model.IsArchived)
+            {
+                <button type="button" class="btn btn-sm btn-outline-success" data-menu-action="restore-category" data-menu-id="@menuId" data-category-id="@Model.CategoryId">بازگردانی</button>
+            }
+            else
+            {
+                <button type="button" class="btn btn-sm btn-outline-warning" data-menu-action="archive-category" data-menu-id="@menuId" data-category-id="@Model.CategoryId">آرشیو</button>
+            }
+        </div>
+    </div>
+    <div class="collapse" id="@editCollapseId" data-menu-panel="category-edit">
+        <div class="card-body border-top">
+            <form method="post" asp-controller="MenuCategories" asp-action="Update" asp-route-menuId="@menuId" asp-route-categoryId="@Model.CategoryId" data-menu-form="category-edit" data-category-id="@Model.CategoryId">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="DisplayOrder" value="@Model.DisplayOrder" />
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label" for="category-fa-@Model.CategoryId">نام فارسی</label>
+                        <input id="category-fa-@Model.CategoryId" class="form-control" name="Name.Fa" value="@GetDictionaryValue(Model.Name, "fa-IR")" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="category-en-@Model.CategoryId">نام انگلیسی</label>
+                        <input id="category-en-@Model.CategoryId" class="form-control" name="Name.En" value="@GetDictionaryValue(Model.Name, "en-US")" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="category-ar-@Model.CategoryId">نام عربی</label>
+                        <input id="category-ar-@Model.CategoryId" class="form-control" name="Name.Ar" value="@GetDictionaryValue(Model.Name, "ar-SA")" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" asp-for="IconUrl">آیکون (URL)</label>
+                        <input class="form-control" name="IconUrl" value="@Model.IconUrl" />
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#@editCollapseId">انصراف</button>
+                        <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card-body pt-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 menu-items-table" data-category-id="@Model.CategoryId">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">آیتم</th>
+                        <th scope="col">قیمت پایه</th>
+                        <th scope="col">قیمت‌های کانال</th>
+                        <th scope="col">موجودی</th>
+                        <th scope="col">برچسب‌ها</th>
+                        <th scope="col" class="text-end">دستورات</th>
+                    </tr>
+                </thead>
+                <tbody data-sortable="items" data-menu-id="@menuId" data-category-id="@Model.CategoryId">
+                @foreach (var item in Model.Items)
+                {
+                    @await Html.PartialAsync("~/Views/Menus/Partials/_ItemRow.cshtml", item, new ViewDataDictionary(ViewData) { ["MenuId"] = menuId, ["CategoryId"] = Model.CategoryId })
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-white">
+        <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#@addItemCollapseId" aria-expanded="false" aria-controls="@addItemCollapseId">افزودن آیتم جدید</button>
+        <div class="collapse mt-3" id="@addItemCollapseId">
+            <form method="post" asp-controller="MenuItems" asp-action="Create" asp-route-menuId="@menuId" asp-route-categoryId="@Model.CategoryId" data-menu-form="item-create">
+                @Html.AntiForgeryToken()
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label" for="item-name-fa-@Model.CategoryId">نام فارسی</label>
+                        <input id="item-name-fa-@Model.CategoryId" name="Name.Fa" class="form-control" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="item-name-en-@Model.CategoryId">نام انگلیسی</label>
+                        <input id="item-name-en-@Model.CategoryId" name="Name.En" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label" for="item-base-price-@Model.CategoryId">قیمت پایه (تومان)</label>
+                        <input id="item-base-price-@Model.CategoryId" name="BasePrice" class="form-control" type="number" step="1000" min="0" value="0" required />
+                        <input type="hidden" name="Currency" value="IRT" />
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label" for="item-description-fa-@Model.CategoryId">توضیح فارسی</label>
+                        <textarea id="item-description-fa-@Model.CategoryId" name="Description.Fa" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="item-image-@Model.CategoryId">آدرس تصویر</label>
+                        <input id="item-image-@Model.CategoryId" name="ImageUrl" class="form-control" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">برچسب‌ها (جدا با کاما)</label>
+                        <input name="Tags" class="form-control" placeholder="مثال: Popular,Vegan" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label" for="inventory-mode-@Model.CategoryId">نوع موجودی</label>
+                        <select id="inventory-mode-@Model.CategoryId" class="form-select" name="Inventory.Mode" data-inventory-mode>
+                            <option value="Infinite">نامحدود</option>
+                            <option value="Track">پیگیری موجودی</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">تعداد موجودی</label>
+                        <input class="form-control" name="Inventory.Quantity" type="number" min="0" data-inventory-quantity disabled />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">آستانه هشدار</label>
+                        <input class="form-control" name="Inventory.Threshold" type="number" min="0" data-inventory-threshold disabled />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">قیمت سرو در محل</label>
+                        <input class="form-control" name="ChannelPrices.DineIn" type="number" step="1000" min="0" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">قیمت بیرون‌بر</label>
+                        <input class="form-control" name="ChannelPrices.TakeAway" type="number" step="1000" min="0" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">قیمت دلیوری</label>
+                        <input class="form-control" name="ChannelPrices.Delivery" type="number" step="1000" min="0" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">قیمت آنلاین</label>
+                        <input class="form-control" name="ChannelPrices.OnlineExclusive" type="number" step="1000" min="0" />
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end gap-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="IsAvailable" id="item-available-@Model.CategoryId" checked />
+                            <label class="form-check-label" for="item-available-@Model.CategoryId">فعال</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6 d-flex justify-content-end align-items-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#@addItemCollapseId">بستن</button>
+                        <button type="submit" class="btn btn-success">افزودن آیتم</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private static string GetLocalizedValue(IDictionary<string, string> values)
+    {
+        if (values.TryGetValue("fa-IR", out var faValue) && !string.IsNullOrWhiteSpace(faValue))
+        {
+            return faValue;
+        }
+
+        return values.Values.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value)) ?? "--";
+    }
+
+    private static string GetDictionaryValue(IDictionary<string, string> values, string culture)
+    {
+        return values.TryGetValue(culture, out var value) ? value : string.Empty;
+    }
+}
