@@ -8,13 +8,20 @@ A running history of significant work completed in this repository.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
 ## 2025-10-02 (latest)
+- راه‌اندازی صفحه داشبورد «گزارش پیامک‌ها» با کنترلر `NotificationsController`، مدل‌های نمایشی جدید و جدول راست‌چین همراه با فیلتر وضعیت و صفحه‌بندی.
+- افزودن لینک ناوبری و ثبت `GetSmsDeliveryLogsQueryHandler` در DI برای اتصال UI به لایه Application.
+- نگارش تست‌های واحد `NotificationsControllerTests` برای پوشش مسیر موفق و خطای بازیابی؛ تعداد کل آزمون‌ها به ۸۰ رسید.
+- اجرای `dotnet build` و `dotnet test` (۸۰ تست موفق، مدت ۲.۷ ثانیه) به‌منظور اطمینان از سلامت تغییرات.
+- گام بعدی: پیاده‌سازی fallback ایمیل/اعلان برای پیامک‌های ناموفق و نمایش هشدار در داشبورد.
+
+## 2025-10-02 (earlier-0)
 - تکمیل قرارداد خوانش لاگ پیامک با پیاده‌سازی `ISmsDeliveryLogReader` در `EfSmsDeliveryStore` شامل صفحه‌بندی، مرتب‌سازی بر اساس زمان و فیلتر وضعیت.
 - ثبت چندگانه‌ی وابستگی‌ها در DI تا هر دو رابط `ISmsDeliveryStore` و `ISmsDeliveryLogReader` از پیاده‌سازی EF استفاده کنند.
 - نگارش تست یکپارچه `EfSmsDeliveryStoreTests` با استفاده از پایگاه‌داده InMemory برای اعتبارسنجی ترتیب، صفحه‌بندی و فیلتر وضعیت لاگ‌ها.
 - اجرای `dotnet build` و `dotnet test` (۷۸ تست موفق، مدت ۲.۸ ثانیه) برای اطمینان از سلامت تغییرات.
 - گام بعدی: نمایش صفحه گزارش پیامک در داشبورد مدیریتی و افزودن فیلترهای UI.
 
-## 2025-10-02 (earlier-0)
+## 2025-10-02 (earlier-1)
 - طراحی قرارداد جدید `ISmsDeliveryStore` به همراه مدل‌های `SmsDeliveryRecord` و `SmsDeliveryStatus` برای ثبت وضعیت ارسال پیامک‌ها در لایه Application.
 - افزودن موجودیت `SmsDeliveryLog`، پیکربندی EF Core و مایگریشن `AddSmsDeliveryLogs` جهت ذخیره‌سازی نتایج ارسال پیامک در پایگاه‌داده.
 - پیاده‌سازی `EfSmsDeliveryStore` و اتصال آن به سرویس‌های `LoggingSmsSender` و `KavenegarSmsSender` با ثبت موفقیت/خطا و مدیریت خطاهای شبکه.
@@ -22,7 +29,7 @@ A running history of significant work completed in this repository.
 - اجرای `dotnet build` و `dotnet test` (۷۷ تست موفق، مدت ۲.۸ ثانیه) برای اعتبارسنجی تغییرات.
 - گام بعدی: نمایش گزارش پیامک‌ها در داشبورد و آماده‌سازی fallback ایمیلی هنگام شکست ارسال پیامک.
 
-## 2025-10-02 (earlier-0)
+## 2025-10-02 (earlier-2)
 - تکمیل پیکربندی چندارائه‌دهنده پیامک با افزودن `SmsOptions`، `SmsProvider` و ثبت آن‌ها در `DependencyInjection` به‌همراه پیش‌فرض‌های پیکربندی در `appsettings` پروژه‌های وب و عمومی.
 - پیاده‌سازی کلاینت `KavenegarSmsSender` مبتنی بر `HttpClient` با مدیریت خطا، ثبت لاگ و اعتبارسنجی ورودی‌ها.
 - نگارش تست‌های یکپارچه `KavenegarSmsSenderTests` برای پوشش سناریوهای موفق، نبود کلید API و خطای درگاه با استفاده از هندلر ساختگی.

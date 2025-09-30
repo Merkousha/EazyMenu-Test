@@ -1,0 +1,131 @@
+@model SmsDeliveryLogsViewModel
+@{
+    ViewData["Title"] = "گزارش پیامک‌ها";
+    var statusParameter = Model.Status?.ToString() ?? string.Empty;
+}
+
+<div class="container" dir="rtl">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-1">گزارش پیامک‌های تراکنشی</h1>
+            <p class="text-muted mb-0">وضعیت ارسال پیامک‌های OTP، سفارش و رزرو را در یک نگاه بررسی کنید.</p>
+        </div>
+        <span class="badge bg-light text-dark">@Model.Items.Count پیامک در این صفحه</span>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger" role="alert">
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+
+    <form method="get" class="row g-3 align-items-end mb-4">
+        <div class="col-md-4">
+            <label class="form-label" for="status">وضعیت ارسال</label>
+            <select class="form-select" id="status" name="status">
+                @foreach (var option in Model.StatusOptions)
+                {
+                    <option value="@option.Value" selected="@(option.Selected ? "selected" : null)">@option.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label" for="page">شماره صفحه</label>
+            <input type="number" class="form-control" id="page" name="page" value="@Model.Page" min="1" />
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">اعمال فیلتر</button>
+            <a class="btn btn-outline-secondary ms-2" asp-action="SmsLogs">بازنشانی</a>
+        </div>
+    </form>
+
+    @if (Model.Items.Count == 0)
+    {
+        <div class="alert alert-info" role="alert">
+            تاکنون لاگی برای نمایش وجود ندارد.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">زمان ثبت</th>
+                        <th scope="col">گیرنده</th>
+                        <th scope="col">وضعیت</th>
+                        <th scope="col">متن پیام</th>
+                        <th scope="col">ارائه‌دهنده</th>
+                        <th scope="col">جزئیات خطا</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var log in Model.Items)
+                {
+                    var statusClass = log.Status switch
+                    {
+                        SmsDeliveryStatus.Sent => "bg-success",
+                        SmsDeliveryStatus.Pending => "bg-warning text-dark",
+                        SmsDeliveryStatus.Failed => "bg-danger",
+                        _ => "bg-secondary"
+                    };
+                    <tr>
+                        <td class="text-nowrap">@log.OccurredAt.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</td>
+                        <td class="fw-semibold">@log.PhoneNumber</td>
+                        <td>
+                            <span class="badge @statusClass">
+                                @GetStatusLabel(log.Status)
+                            </span>
+                        </td>
+                        <td style="white-space: pre-line; max-width: 360px;">
+                            @log.Message
+                        </td>
+                        <td>@log.Provider</td>
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(log.ErrorMessage))
+                            {
+                                <div class="small text-danger">@log.ErrorMessage</div>
+                                if (!string.IsNullOrWhiteSpace(log.ErrorCode))
+                                {
+                                    <div class="small text-muted">کد خطا: @log.ErrorCode</div>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+
+        <nav class="d-flex justify-content-between" aria-label="صفحات گزارش پیامک">
+            <a class="btn btn-outline-primary @(Model.Page <= 1 ? "disabled" : string.Empty)"
+               asp-action="SmsLogs"
+               asp-route-page="@(Model.Page - 1)"
+               asp-route-status="@statusParameter">
+                صفحه قبل
+            </a>
+            <span class="align-self-center text-muted">صفحه @Model.Page</span>
+            <a class="btn btn-outline-primary @(Model.HasMore ? string.Empty : "disabled")"
+               asp-action="SmsLogs"
+               asp-route-page="@(Model.Page + 1)"
+               asp-route-status="@statusParameter">
+                صفحه بعد
+            </a>
+        </nav>
+    }
+</div>
+
+@functions {
+    private static string GetStatusLabel(SmsDeliveryStatus status) => status switch
+    {
+        SmsDeliveryStatus.Pending => "در صف ارسال",
+        SmsDeliveryStatus.Sent => "ارسال موفق",
+        SmsDeliveryStatus.Failed => "ناموفق",
+        _ => status.ToString()
+    };
+}

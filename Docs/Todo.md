@@ -9,7 +9,6 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 
 ## In Progress
 - [ ] توسعه صفحات مدیریتی پس از ورود (داشبورد، مدیریت منو، تنظیمات) و اتصال آن‌ها به Use Caseهای لایه Application.
-- [ ] نمایش گزارش پیامک‌ها در داشبورد مدیریتی (بک‌اند آماده، طراحی و پیاده‌سازی UI و فیلترها باقی‌مانده است).
 
 ## Up Next
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
@@ -18,6 +17,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] نمایش گزارش پیامک‌ها در داشبورد مدیریتی با فیلتر وضعیت و صفحه‌بندی (NotificationsController + Razor View).
 - [x] پیاده‌سازی ورود پیامکی مشتریان (OTP) در سایت عمومی به همراه تست‌های کاربردی.
 - [x] طراحی و پیاده‌سازی ویزارد آنبوردینگ (کنترلر، ViewModel، Viewها) با اتصال به `RegisterTenantCommand` و هدایت به پرداخت.
 - [x] نمایش نتیجه بازگشت زرین‌پال در MVC با View `Payments/Callback` و کنترلر مرتبط.
