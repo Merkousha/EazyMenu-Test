@@ -7,7 +7,7 @@ Shared guide for humans and automation working on the EazyMenu platform (`eazyme
 | Agent | Responsibility | Key Touchpoints |
 |-------|----------------|------------------|
 | Product Owner (you) | Define requirements, review deliverables, prioritize backlog. | PRD, User Stories, `Docs/Todo.md`, UI/UX feedback. |
-| Automation Assistant (GitHub Copilot) | Pair-programming support: scaffolding, refactors, documentation, tests, CI hygiene. | `Docs/ProgressLog.md`, `Docs/copilot-instructions.md`, pull requests. |
+| Automation Assistant (GitHub Copilot) | Pair-programming support: scaffolding, refactors, documentation, tests, CI hygiene. | `Docs/ProgressLog.md`, `copilot-instructions.md`, pull requests. |
 | Backend Engineer (future) | Domain modeling, application services, persistence & integrations. | `src/Domain`, `src/Application`, `src/Infrastructure`, database migrations. |
 | Frontend Engineer (future) | MVC UI, responsive design, component library, accessibility. | `src/Presentation/Web`, `src/Presentation/Public`, Tailwind/Bootstrap assets. |
 | DevOps Engineer (future) | CI/CD, infrastructure, observability, security compliance. | GitHub Actions, deployment manifests, monitoring dashboards. |
@@ -22,6 +22,6 @@ Shared guide for humans and automation working on the EazyMenu platform (`eazyme
 
 ## How to Join / Update
 
-1. Review `Docs/copilot-instructions.md` to follow repo-specific conventions.
+1. Review `copilot-instructions.md` to follow repo-specific conventions.
 2. Add your name/role in the table above.
 3. Capture relevant rituals (standups, code review expectations) if the workflow evolves.

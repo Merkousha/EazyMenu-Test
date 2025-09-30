@@ -10,7 +10,7 @@ Guidelines for AI assistants collaborating on the EazyMenu Clean Architecture so
 
 ## Workflow Expectations
 1. **Plan first:** Use the Todo list tool to track tasks. Break down work into actionable todos.
-2. **Gather context:** Consult `Docs/PRD.md`, user stories, `Docs/Todo.md`, and `Docs/AGENTS.md` before coding.
+2. **Gather context:** Consult `Docs/PRD.md`, user stories, `Docs/Todo.md`, and `AGENTS.md` before coding.
 3. **Implementation:** Use Clean Architecture boundaries; surface new interfaces in Application before adding infrastructure implementations.
 4. **Validation:** Run `dotnet build` and `dotnet test` after meaningful code changes. Record results in the session summary.
 5. **Documentation:** Update `Docs/ProgressLog.md` after each work session and adjust `Docs/Todo.md` to reflect status changes.
