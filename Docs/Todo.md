@@ -10,7 +10,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 ## In Progress
 - [ ] توسعه صفحات مدیریتی پس از ورود (داشبورد، مدیریت منو، تنظیمات) و اتصال آن‌ها به Use Caseهای لایه Application.
 - [ ] پیاده‌سازی Use Caseها و ریپازیتوری EF Core منو بر اساس سند طراحی (Application + Infrastructure).
-	- پیشرفت: فرمان‌ها و کوئری‌های Application کامل، نگاشت EF Core و ریپازیتوری `MenuRepository` پیاده‌سازی و در DI ثبت شد؛ گام بعد تولید مایگریشن `AddMenus` و پوشش تست‌های پایگاه‌داده است.
+	- پیشرفت: فرمان‌ها و کوئری‌های Application کامل، نگاشت EF Core، ریپازیتوری `MenuRepository` و مایگریشن `AddMenus` آماده شد؛ گام بعد تهیه داده نمونه و اتصال UI مدیریت منو است.
 
 ## Up Next
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.

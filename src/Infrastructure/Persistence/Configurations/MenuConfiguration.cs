@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using EazyMenu.Domain.Aggregates.Menus;
+using EazyMenu.Domain.Aggregates.Tenants;
 using EazyMenu.Domain.ValueObjects;
 using EazyMenu.Infrastructure.Persistence.Converters;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,11 @@ internal sealed class MenuConfiguration : IEntityTypeConfiguration<Menu>
 
         builder.HasIndex(menu => new { menu.TenantId, menu.IsDefault })
             .HasDatabaseName("IX_Menus_Tenant_Default");
+
+        builder.HasOne<Tenant>()
+            .WithMany()
+            .HasForeignKey(menu => menu.TenantId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.OwnsMany(menu => menu.Categories, categoryBuilder =>
         {
