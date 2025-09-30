@@ -14,7 +14,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [ ] Integrate external providers: Zarinpal payments, Kavenegar SMS, email/notification channels.
 - [ ] Build onboarding wizard, menu management UI, and ordering flows per user stories.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
-- [ ] Activate subscription lifecycle during onboarding (plan selection, trial/discount handling).
+- [ ] اتصال جریان پرداخت به ثبت اشتراک (ایجاد فاکتور، ثبت وضعیت پرداخت، مدیریت تخفیف‌ها).
 
 ## Done
 - [x] Convert presentation layer projects to ASP.NET Core MVC and update documentation.
@@ -24,3 +24,4 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [x] Implement tenant-aware persistence (EF Core + SQL Server) including DbContext, entity mappings, DI registration، و نخستین مایگریشن.
 - [x] اتصال هندلرهای لایه Application به لایه Persistency مبتنی بر EF Core به همراه تست‌های یکپارچه.
 - [x] جایگزینی سرویس ثبت مستاجر با پیاده‌سازی EF Core و ذخیره رکوردهای Provisioning.
+- [x] فعال‌سازی چرخه اشتراک در فرایند ثبت مستاجر با قیمت‌گذاری اولیه و دوره آزمایشی.

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using EazyMenu.Application;
 using EazyMenu.Application.Common.Interfaces.Provisioning;
 using EazyMenu.Application.Features.Onboarding.RegisterTenant;
+using EazyMenu.Domain.Aggregates.Tenants;
 using EazyMenu.Infrastructure;
 using EazyMenu.Infrastructure.Persistence;
 using EazyMenu.Infrastructure.Persistence.Models;
@@ -50,11 +51,20 @@ public class RegisterTenantFlowTests
         Assert.NotEqual(Guid.Empty, tenantId.Value);
 
         var dbContext = scope.ServiceProvider.GetRequiredService<EazyMenuDbContext>();
-        var tenant = await dbContext.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId);
+        var tenant = await dbContext.Tenants
+            .Include(t => t.Subscriptions)
+            .Include(t => t.ActiveSubscription)
+            .FirstOrDefaultAsync(t => t.Id == tenantId);
+
         Assert.NotNull(tenant);
+        Assert.NotNull(tenant!.ActiveSubscription);
+        Assert.Equal(SubscriptionPlan.Starter, tenant.ActiveSubscription!.Plan);
+        Assert.True(tenant.ActiveSubscription.IsTrial);
+        Assert.Single(tenant.Subscriptions);
 
         var provisioningRecord = await dbContext.TenantProvisionings.FirstOrDefaultAsync(r => r.TenantId == tenantId.Value);
         Assert.NotNull(provisioningRecord);
         Assert.Equal("starter", provisioningRecord!.PlanCode);
+        Assert.True(provisioningRecord.UseTrial);
     }
 }

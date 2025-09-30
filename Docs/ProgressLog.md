@@ -9,7 +9,8 @@ A running history of significant work completed in this repository.
 
 ## 2025-09-30 (latest)
 - بازطراحی فرایند ثبت مستاجر با پیاده‌سازی `EfTenantProvisioningService` و ذخیره رکوردهای درخواست در جدول `TenantProvisionings`.
-- گسترش قرارداد ثبت‌نام (`RegisterTenantCommand`) برای دریافت شماره تماس و آدرس کامل و ذخیره آن در دامنه.
+- گسترش قرارداد ثبت‌نام (`RegisterTenantCommand`) برای دریافت شماره تماس، آدرس کامل و ترجیحات آزمایشی/کد تخفیف.
+- فعال‌سازی خودکار اشتراک اولیه بر اساس `PlanCode` با قیمت‌گذاری پیش‌فرض، دوره آزمایشی ۱۴ روزه و ثبت رکورد پرویژنینگ.
 - افزودن مایگریشن `AddTenantProvisioning` و تست یکپارچه ثبت مستاجر با EF Core InMemory جهت تضمین ذخیره‌سازی واقعی.
 - اجرای `dotnet build` و `dotnet test` پس از اعمال تغییرات (۵۸ تست موفق).
 
