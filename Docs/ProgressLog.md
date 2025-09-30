@@ -93,19 +93,23 @@ A running history of significant work completed in this repository.
 - Implemented the Tenant aggregate (Tenant, Branch, Subscription, enums) complete with domain events for registration and subscription activation.
 - Ran `dotnet build` on the full solution to confirm the domain enhancements compile cleanly.
 
-## 2025-09-29 (later)
-- Added coordination documents for multi-agent collaboration: `Docs/AGENTS.md` and `Docs/copilot-instructions.md`.
-- Documented roles, coding conventions, workflow expectations, and updated guidance for future contributors.
+## 2025-10-01 (latest)
+- پیاده‌سازی احراز هویت پیامکی مشتریان در لایه Application با معرفی سرویس‌های `IOneTimePasswordGenerator`/`IOneTimePasswordStore` و فرمان‌های `RequestCustomerLogin` و `VerifyCustomerLogin`.
+- ایجاد پیاده‌سازی زیرساختی مبتنی بر حافظه (`InMemoryOneTimePasswordStore`) و ارسال پیامک لاگ محور (`LoggingSmsSender`) به همراه تولیدکننده کد تصادفی.
+- افزودن کنترلر `AuthController`، مدل‌های `RequestLoginViewModel` و `VerifyLoginViewModel` و صفحات Razor (`Auth/Login`, `Auth/Verify`) در پروژه عمومی برای ورود صرفاً با SMS؛ پیکربندی کوکی احراز هویت و دکمه خروج در ناوبری.
+- نگارش تست‌های واحد `CustomerSmsLoginTests` برای فرمان‌های جدید و اجرای `dotnet build` و `dotnet test` (۷۳ تست موفق، مدت ۲.۸ ثانیه) جهت اطمینان از سلامت جریان.
+- گام بعدی: اتصال به ارائه‌دهنده پیامک واقعی (کاوه‌نگار) و تکمیل تجربه مشتری (داشبورد شخصی، سفارش سریع بدون ثبت‌نام تکراری).
 
-## 2025-09-29
-- Converted both `EazyMenu.Web` and `EazyMenu.Public` presentation projects from Razor Pages to ASP.NET Core MVC (controllers, views, layouts, updated startup pipelines).
-- Updated `Docs/Architecture.md` and `README.md` to reflect the MVC presentation approach.
-- Added clean scaffolding artifacts for the admin and public MVC apps (layouts, view imports, placeholder screens).
-- Ensured solution builds and automated tests run successfully after the conversion.
-
+## 2025-10-01 (earlier-1)
+- راه‌اندازی ویزارد آنبوردینگ در لایه Presentation با کنترلر `OnboardingController`، مدل‌های `RegisterTenantViewModel`/`ProvisioningSuccessViewModel` و صفحات Razor (`Onboarding/Start`, `Onboarding/Success`) جهت ثبت مستاجر و جمع‌آوری اطلاعات تماس، آدرس و طرح انتخابی.
+- اتصال فرم آنبوردینگ به Use Case `RegisterTenantCommand` و مدیریت سناریوهای آزمایشی و پرداختی همراه با پیام‌های فارسی و ریدایرکت خودکار به درگاه زرین‌پال یا نمایش نتیجه فعال‌سازی اشتراک.
+- افزودن تست‌های واحد `OnboardingControllerTests` برای پوشش مسیرهای موفق، اعتبارسنجی ModelState و ریدایرکت پرداخت.
+- به‌روزرسانی DI جهت ثبت Handlerها با `ICommandHandler<TCommand, TResult>` و هم‌راست‌سازی کنترلرهای پرداخت/آنبوردینگ با این الگو؛ اجرای `dotnet build` و `dotnet test` (۶۸ تست موفق، مدت ۲.۵ ثانیه).
+- گام بعدی: تکمیل صفحات مدیریتی پس از ورود (داشبورد، مدیریت منو) و آماده‌سازی جریان احراز هویت و ارتباطات بیرونی.
+## 2025-10-01 (earlier-2)
 ## 2025-09-29 (earlier)
 - Scaffolded the Clean Architecture solution: Domain, Application, Infrastructure, Presentation (Web/Public), and `tests` projects.
 - Implemented initial domain primitives (`TenantId`, `Money`, `Restaurant`, `MenuCategory`, `MenuItem`) and a sample onboarding use case with an in-memory provisioning service.
 - Created architecture overview documentation plus README with structure, commands, and domain context (`eazymenu.ir`).
 - Replaced template tests with unit/integration tests covering value objects and the onboarding command flow.
-- Ran `dotnet build` and `dotnet test` to validate the initial scaffold.
+## 2025-10-01 (earlier-3)

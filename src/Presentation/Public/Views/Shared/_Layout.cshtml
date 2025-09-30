@@ -25,6 +25,21 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Reserve">رزرو</a>
                     </li>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="nav-item">
+                            <form class="d-inline" asp-area="" asp-controller="Auth" asp-action="Logout" method="post">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-link nav-link">خروج</button>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Auth" asp-action="Login">ورود</a>
+                        </li>
+                    }
                 </ul>
             </div>
         </nav>

@@ -1,0 +1,58 @@
+@model EazyMenu.Public.Models.VerifyLoginViewModel
+@{
+    ViewData["Title"] ??= "تأیید کد";
+    var expiresAt = ViewData["CodeExpiresAt"] as DateTime?;
+}
+
+<section class="auth-verify py-5" dir="rtl">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-xl-5">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h1 class="h4 mb-3 text-center">تأیید ورود</h1>
+                        <p class="text-muted text-center mb-4">کد پیامک‌شده به شماره <strong>@Model.PhoneNumber</strong> را در کادر زیر وارد کنید.</p>
+
+                        @if (expiresAt is DateTime expiration)
+                        {
+                            <div class="alert alert-info text-center" role="alert">
+                                کد ارسال شده تا <span>@expiration.ToLocalTime().ToString("HH:mm")</span> معتبر است.
+                            </div>
+                        }
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <form asp-action="Verify" asp-controller="Auth" method="post" novalidate>
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" asp-for="PhoneNumber" />
+                            <input type="hidden" asp-for="ReturnUrl" />
+
+                            <div class="mb-3">
+                                <label asp-for="Code" class="form-label"></label>
+                                <input asp-for="Code" class="form-control form-control-lg text-center" maxlength="6" />
+                                <span asp-validation-for="Code" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-check form-switch mb-4 justify-content-end d-flex">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label ms-2"></label>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-success btn-lg">ورود به حساب</button>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-4">
+                            <form asp-action="Login" asp-controller="Auth" method="post" class="d-inline" novalidate>
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="PhoneNumber" value="@Model.PhoneNumber" />
+                                <button type="submit" class="btn btn-link">ارسال مجدد کد</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
