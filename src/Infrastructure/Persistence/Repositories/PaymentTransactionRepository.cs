@@ -23,6 +23,13 @@ internal sealed class PaymentTransactionRepository : IPaymentTransactionReposito
             .FirstOrDefaultAsync(transaction => transaction.Id == paymentId, cancellationToken);
     }
 
+    public Task<PaymentTransaction?> GetByGatewayAuthorityAsync(string authority, CancellationToken cancellationToken = default)
+    {
+        return _dbContext.PaymentTransactions
+            .AsTracking()
+            .FirstOrDefaultAsync(transaction => transaction.GatewayAuthority == authority, cancellationToken);
+    }
+
     public Task UpdateAsync(PaymentTransaction paymentTransaction, CancellationToken cancellationToken = default)
     {
         _dbContext.PaymentTransactions.Update(paymentTransaction);

@@ -16,6 +16,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] نمایش نتیجه بازگشت زرین‌پال در MVC با View `Payments/Callback` و کنترلر مرتبط.
 - [x] پیاده‌سازی اعتبارسنجی پرداخت زرین‌پال و فعال‌سازی اشتراک پس از تأیید.
 - [x] اتصال جریان پرداخت به ثبت اشتراک (ایجاد فاکتور، ثبت وضعیت پرداخت، مدیریت تخفیف‌ها).
 - [x] Convert presentation layer projects to ASP.NET Core MVC and update documentation.

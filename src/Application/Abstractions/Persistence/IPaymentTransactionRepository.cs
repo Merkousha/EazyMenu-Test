@@ -9,5 +9,7 @@ public interface IPaymentTransactionRepository
 {
     Task<PaymentTransaction?> GetByIdAsync(PaymentId paymentId, CancellationToken cancellationToken = default);
 
+    Task<PaymentTransaction?> GetByGatewayAuthorityAsync(string authority, CancellationToken cancellationToken = default);
+
     Task UpdateAsync(PaymentTransaction paymentTransaction, CancellationToken cancellationToken = default);
 }

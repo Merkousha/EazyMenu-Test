@@ -47,6 +47,8 @@ public sealed class VerifyPaymentCommandHandler : ICommandHandler<VerifyPaymentC
             throw new BusinessRuleViolationException("شناسه مرجع زرین‌پال ارسال نشده است.");
         }
 
+        var normalizedStatus = command.Status?.Trim() ?? string.Empty;
+
         var paymentTransaction = await _paymentTransactionRepository.GetByIdAsync(paymentId, cancellationToken);
         if (paymentTransaction is null)
         {
@@ -71,6 +73,18 @@ public sealed class VerifyPaymentCommandHandler : ICommandHandler<VerifyPaymentC
         if (!paymentTransaction.GatewayAuthority.Equals(command.Authority, StringComparison.OrdinalIgnoreCase))
         {
             throw new BusinessRuleViolationException("شناسه درگاه با تراکنش مطابقت ندارد.");
+        }
+
+        if (!string.Equals(normalizedStatus, "OK", StringComparison.OrdinalIgnoreCase))
+        {
+            var statusFailureReason = ResolveFailureReason(normalizedStatus);
+
+            paymentTransaction.MarkFailed(statusFailureReason, _dateTimeProvider.UtcNow);
+
+            await _paymentTransactionRepository.UpdateAsync(paymentTransaction, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return new VerifyPaymentResult(false, paymentTransaction.Status, null, statusFailureReason);
         }
 
         var verificationRequest = new PaymentVerificationRequest(paymentTransaction.GatewayAuthority, paymentTransaction.Amount);
@@ -123,5 +137,21 @@ public sealed class VerifyPaymentCommandHandler : ICommandHandler<VerifyPaymentC
 
         tenant.ActivateSubscription(subscription);
         await _tenantRepository.UpdateAsync(tenant, cancellationToken);
+    }
+
+    private static string ResolveFailureReason(string status)
+    {
+        if (string.IsNullOrWhiteSpace(status))
+        {
+            return "پرداخت توسط کاربر لغو شد.";
+        }
+
+        return status.ToUpperInvariant() switch
+        {
+            "NOK" => "پرداخت توسط کاربر لغو شد.",
+            "CANCELED" => "پرداخت توسط کاربر لغو شد.",
+            "EXPIRED" => "مهلت پرداخت به پایان رسیده است.",
+            _ => "پرداخت توسط درگاه تأیید نشد."
+        };
     }
 }

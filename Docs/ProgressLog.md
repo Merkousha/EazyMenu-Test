@@ -8,6 +8,12 @@ A running history of significant work completed in this repository.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
 ## 2025-10-01 (latest)
+- تکمیل جریان بازگشت زرین‌پال در لایه Presentation با پیاده‌سازی View جدید `Views/Payments/Callback.cshtml` و اتصال آن به `PaymentsController` برای نمایش وضعیت پرداخت.
+- نمایش پیام‌های موفق/ناموفق همراه با کد پیگیری و شناسه اشتراک در رابط کاربری بر اساس `PaymentCallbackViewModel`.
+- اجرای `dotnet build` و `dotnet test` (۶۴ تست موفق، مدت ۳.۴ ثانیه) جهت اطمینان از سلامت تغییرات UI و عدم Regression.
+- گام بعدی: تکمیل سایر صفحات MVC و شروع به یکپارچه‌سازی سرویس‌های بیرونی (SMS/Email) پس از نهایی شدن فلوهای پرداخت.
+
+## 2025-10-01 (earlier-0)
 - افزودن Use Case جدید `VerifyPaymentCommand` برای اعتبارسنجی پرداخت زرین‌پال، همراه با `PaymentVerificationRequest/Response` و انبار `IPaymentTransactionRepository`.
 - توسعه دامنه جهت فعال‌سازی اشتراک‌های در حالت Pending پس از موفقیت پرداخت و نگهداری مرجع تراکنش.
 - ارتقای کلاینت شبیه‌ساز زرین‌پال برای پشتیبانی از متد `VerifyPaymentAsync` و سناریوهای انقضا/لغو.

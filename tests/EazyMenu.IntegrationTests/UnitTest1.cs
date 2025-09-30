@@ -154,7 +154,8 @@ public class RegisterTenantFlowTests
 
         var verifyResult = await verifyHandler.HandleAsync(new VerifyPaymentCommand(
             registerResult.Payment!.PaymentId.Value,
-            registerResult.Payment.GatewayAuthority!));
+            registerResult.Payment.GatewayAuthority!,
+            "OK"));
 
         Assert.True(verifyResult.IsSuccessful);
         Assert.Equal(PaymentStatus.Succeeded, verifyResult.PaymentStatus);
@@ -220,7 +221,8 @@ public class RegisterTenantFlowTests
 
         var verifyResult = await verifyHandler.HandleAsync(new VerifyPaymentCommand(
             registerResult.Payment.PaymentId.Value,
-            failureAuthority));
+            failureAuthority,
+            "NOK"));
 
         Assert.False(verifyResult.IsSuccessful);
         Assert.Equal(PaymentStatus.Failed, verifyResult.PaymentStatus);

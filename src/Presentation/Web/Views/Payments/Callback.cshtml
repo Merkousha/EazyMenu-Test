@@ -1,0 +1,34 @@
+@model EazyMenu.Web.Models.PaymentCallbackViewModel
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<section class="payment-result @(Model.IsSuccessful ? "payment-result--success" : "payment-result--failure")">
+    <div class="container py-5">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <h1 class="h3 mb-3">@Model.Title</h1>
+                <p class="lead">@Model.Message</p>
+
+                @if (!string.IsNullOrWhiteSpace(Model.ReferenceCode))
+                {
+                    <div class="alert alert-info mt-4" role="alert">
+                        <strong>شناسه پیگیری:</strong>
+                        <span class="ms-2">@Model.ReferenceCode</span>
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Model.SubscriptionId))
+                {
+                    <p class="text-muted mt-3">
+                        شناسه اشتراک: <span class="fw-semibold">@Model.SubscriptionId</span>
+                    </p>
+                }
+
+                <div class="mt-4">
+                    <a class="btn btn-primary" href="/">بازگشت به صفحه اصلی</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
