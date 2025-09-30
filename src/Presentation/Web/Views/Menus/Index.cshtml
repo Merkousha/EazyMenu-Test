@@ -1,0 +1,88 @@
+@model EazyMenu.Web.Models.Menus.MenuListViewModel
+@{
+    ViewData["Title"] ??= "مدیریت منوها";
+    var errorMessage = TempData["MenuError"] as string;
+}
+<div class="container" dir="rtl">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">مدیریت منوها</h1>
+            <p class="text-muted mb-0">منوهای فعال برای مستاجر فعلی را در اینجا مشاهده و مدیریت کنید.</p>
+        </div>
+        <div>
+            <a class="btn btn-outline-primary disabled" title="به‌زودی">ایجاد منوی جدید</a>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+
+    @if (Model.IsEmpty)
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <h2 class="h5 mb-3">هنوز منویی ثبت نشده است</h2>
+                <p class="text-muted mb-4">
+                    برای شروع، ابتدا از طریق فرآیند آنبوردینگ یک مستاجر ایجاد کنید یا از داده نمونه توسعه استفاده نمایید.
+                </p>
+                <a class="btn btn-primary" asp-controller="Onboarding" asp-action="Start">شروع آنبوردینگ</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-sm">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">نام منو</th>
+                        <th scope="col" class="text-center">دسته‌ها</th>
+                        <th scope="col" class="text-center">آیتم‌ها</th>
+                        <th scope="col" class="text-center">نسخه منتشرشده</th>
+                        <th scope="col">آخرین بروزرسانی</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var menu in Model.Menus)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fw-semibold">@menu.Name</span>
+                                @if (menu.IsDefault)
+                                {
+                                    <span class="badge bg-success">پیش‌فرض</span>
+                                }
+                                @if (menu.IsArchived)
+                                {
+                                    <span class="badge bg-secondary">آرشیو شده</span>
+                                }
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            @menu.CategoryCount.ToString("N0")
+                        </td>
+                        <td class="text-center">
+                            @menu.ItemCount.ToString("N0")
+                        </td>
+                        <td class="text-center">
+                            v@menu.PublishedVersion
+                        </td>
+                        <td>
+                            @menu.UpdatedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-menuId="@menu.MenuId">مدیریت</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

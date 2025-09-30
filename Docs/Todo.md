@@ -8,14 +8,16 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - When closing an item here, log the details in `Docs/ProgressLog.md` for long-term history.
 
 ## In Progress
-- [ ] اتصال UI مدیریت منو به ریپازیتوری EF Core و داده نمونه توسعه؛ طراحی ViewModelها و اسکلت صفحات مدیریتی در دست آماده‌سازی.
+- [ ] توسعه قابلیت‌های تعاملی مدیریت منو (CRUD کامل، مرتب‌سازی، انتشار) با تکیه بر فرمان‌های Application و Endpointهای AJAX.
 
 ## Up Next
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
 - [ ] تکمیل جریان‌های سفارش مشتری و کانال‌های آنلاین پس از آماده‌سازی UI مدیریت منو و اتصال آن به داده واقعی.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
+- [ ] طراحی مسیر Quick Update قیمت/موجودی و همگام‌سازی آن با SignalR طبق سند طراحی.
 
 ## Done
+- [x] اتصال UI مدیریت منو به داده نمونه و Queries لایه Application (Controller، ViewModel، Viewها، ناوبری).
 - [x] تکمیل لایه Persistency منو و آماده‌سازی داده توسعه (Use Caseها، ریپازیتوری EF Core، مایگریشن `AddMenus`، Seed خودکار در محیط Development).
 - [x] پیاده‌سازی دامنه منو (Value Objectها، Aggregate، رویدادهای دامنه) به همراه تست‌های واحد.
 - [x] تدوین سند طراحی جامع مدیریت منو (دامنه، Use Case، Persistence، UI) در `Docs/Design/MenuManagement.md`.
