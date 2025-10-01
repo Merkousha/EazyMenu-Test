@@ -6,6 +6,9 @@ using EazyMenu.Application.Common.Interfaces.Provisioning;
 using EazyMenu.Application.Common.Notifications;
 using EazyMenu.Application.Common.Time;
 using EazyMenu.Application.Features.Customers.Login;
+using EazyMenu.Application.Features.Identity.ChangePassword;
+using EazyMenu.Application.Features.Identity.Login;
+using EazyMenu.Application.Features.Identity.RegisterUser;
 using EazyMenu.Application.Features.Menus.Common;
 using EazyMenu.Application.Features.Menus.Commands.AddMenuCategory;
 using EazyMenu.Application.Features.Menus.Commands.AddMenuItem;
@@ -83,6 +86,11 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CancelOrderCommand, bool>, CancelOrderCommandHandler>();
         services.AddScoped<IQueryHandler<GetOrdersQuery, IReadOnlyCollection<OrderSummaryDto>>, GetOrdersQueryHandler>();
         services.AddScoped<IQueryHandler<GetOrderDetailsQuery, OrderDetailsDto>, GetOrderDetailsQueryHandler>();
+        
+        // Identity commands
+        services.AddScoped<RegisterUserCommandHandler>();
+        services.AddScoped<LoginCommandHandler>();
+        services.AddScoped<ChangePasswordCommandHandler>();
         
         return services;
     }

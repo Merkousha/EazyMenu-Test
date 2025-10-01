@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "دسترسی محدود";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 text-center">
+        <div class="card shadow">
+            <div class="card-body">
+                <i class="bi bi-shield-exclamation text-danger" style="font-size: 5rem;"></i>
+                <h2 class="mt-3">دسترسی محدود</h2>
+                <p class="lead">شما اجازه دسترسی به این صفحه را ندارید.</p>
+                <p>این بخش فقط برای کاربران با نقش خاص قابل دسترسی است.</p>
+                <hr />
+                <div class="d-grid gap-2">
+                    <a asp-action="Index" asp-controller="Dashboard" class="btn btn-primary">بازگشت به داشبورد</a>
+                    <a asp-action="Logout" asp-controller="Account" class="btn btn-outline-secondary">خروج از حساب کاربری</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
