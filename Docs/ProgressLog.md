@@ -7,6 +7,22 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-01 (authentication-complete)
+- **پیاده‌سازی کامل سیستم احراز هویت و مجوزدهی برای مدیران رستوران**: یکپارچه‌سازی Cookie-Based Authentication با Authorization Policies مبتنی بر نقش (Owner، Manager، Staff).
+- **لایه Domain**: ایجاد User aggregate با نقش‌ها (UserRole enum)، وضعیت‌ها (UserStatus enum)، PasswordHash value object و متدهای کامل (Create، ChangeRole، ChangePassword، UpdateProfile، RecordLogin، Activate/Deactivate/Block، CanLogin). تعریف ۳ رویداد دامنه (UserCreated، UserRoleChanged، UserPasswordChanged).
+- **لایه Application**: پیاده‌سازی Commands (RegisterUser، Login، ChangePassword) با Handlers مربوطه، Queries (GetUserProfile، GetUsersByTenant) و تعریف Interfaces (IPasswordHasher، IUserRepository). UserDto برای انتقال اطلاعات امن کاربر. حذف JWT و ساده‌سازی LoginResult به Cookie-based authentication.
+- **لایه Infrastructure**: BCryptPasswordHasher با work factor 12 برای امنیت بالا، UserRepository با EF Core شامل GetByEmail/GetByTenantId/ExistsWithEmail، UserConfiguration با UsePropertyAccessMode برای حل مشکل constructor binding، Migration AddUsers با indexهای unique روی Email و composite روی TenantId+Status.
+- **Cookie Authentication**: پیکربندی در Program.cs با LoginPath=/Account/Login، ExpireTimeSpan=12h، SlidingExpiration=true، HttpOnly/Secure/SameSite cookies. تعریف ۳ Authorization Policy: OwnerOnly (Owner فقط)، ManagerAccess (Owner+Manager)، StaffAccess (Owner+Manager+Staff).
+- **AccountController**: اکشن‌های کامل Login (GET/POST با RememberMe)، Register (GET/POST با first user = Owner)، Logout (POST)، ChangePassword (GET/POST)، AccessDenied (GET). ایجاد Claims برای NameIdentifier، Email، Name، Role، TenantId، MobilePhone.
+- **ViewModels و Views**: LoginViewModel (Email، Password، RememberMe)، RegisterViewModel (FullName، Email، PhoneNumber، Password، ConfirmPassword)، ChangePasswordViewModel (CurrentPassword، NewPassword، ConfirmNewPassword). Views کامل با Bootstrap 5، validation scripts و طراحی RTL فارسی.
+- **محافظت Controllers**: افزودن [Authorize] به DashboardController، MenusController (StaffAccess)، OrdersController (StaffAccess)، NotificationsController (ManagerAccess)، MenuDashboardControllerBase (StaffAccess). OnboardingController و PaymentsController عمومی باقی ماندند.
+- **Dashboard و UI Updates**: DashboardController جدید با نمایش اطلاعات کاربر و کارت‌های دسترسی سریع، Views/Dashboard/Index.cshtml با لینک‌های Menus/Orders/Notifications، به‌روزرسانی _Layout.cshtml با user dropdown menu (نمایش نام، ایمیل، نقش، تغییر رمز، خروج) و conditional navigation.
+- **Helper Extensions**: ClaimsPrincipalExtensions با متدهای GetUserId()، GetTenantId()، GetUserRole()، GetUserEmail()، IsOwner()، IsManagerOrAbove() برای استخراج راحت Claims.
+- **Home/Index Update**: نمایش شرطی بر اساس وضعیت authentication - لینک به Dashboard برای کاربران logged-in و لینک‌های Login/Register برای مهمان‌ها.
+- ثبت تمام Handlers در DI Container (RegisterUserCommandHandler، LoginCommandHandler، ChangePasswordCommandHandler) و Services (BCryptPasswordHasher، UserRepository).
+- اجرای `dotnet build` (موفق، مدت 4.0 ثانیه) و `dotnet test` (موفق، 153 تست شامل تمام تست‌های قبلی، مدت 2.5 ثانیه).
+- **نتیجه**: سیستم احراز هویت و مجوزدهی کامل با Cookie-Based Authentication، BCrypt password hashing، Role-Based Authorization و UI کامل فارسی آماده استفاده در Production است. داشبورد و تمام بخش‌های مدیریتی محافظت شده و فقط کاربران مجاز با نقش‌های مناسب دسترسی دارند.
+
 ## 2025-10-01 (sms-notification-complete)
 - **افزودن اعلان پیامکی پس از ثبت سفارش**: یکپارچه‌سازی ISmsSender در PlaceOrderCommandHandler برای ارسال پیامک تأییدیه به مشتری پس از ثبت موفق سفارش.
 - **پیام SMS فارسی با فرمت‌بندی کامل**: ارسال پیامک شامل شماره سفارش (OrderNumber)، مبلغ کل با فرمت فارسی (fa-IR culture) و پیام تشکر.
