@@ -4,6 +4,7 @@ using EazyMenu.Infrastructure;
 using EazyMenu.Infrastructure.Persistence;
 using EazyMenu.Infrastructure.Persistence.Seed;
 using EazyMenu.Public.Options;
+using EazyMenu.Public.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,18 @@ builder.Services
     .AddInfrastructureServices(builder.Configuration);
 
 builder.Services.Configure<TenantSiteOptions>(builder.Configuration.GetSection("TenantSite"));
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IShoppingCartService, SessionShoppingCartService>();
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(2);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.Name = "EazyMenu.Session";
+});
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -51,6 +64,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 

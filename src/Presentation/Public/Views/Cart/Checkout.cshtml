@@ -1,0 +1,217 @@
+@model EazyMenu.Public.ViewModels.Cart.CheckoutViewModel
+@{
+    ViewData["Title"] = "تکمیل سفارش";
+}
+
+<div class="container py-4" dir="rtl">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a asp-controller="Menus" asp-action="Index">منو</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-action="Index">سبد خرید</a>
+                    </li>
+                    <li class="breadcrumb-item active">تکمیل سفارش</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="bi bi-check-circle"></i>
+                تکمیل سفارش
+            </h2>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <form asp-action="Checkout" method="post">
+        @Html.AntiForgeryToken()
+        
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">اطلاعات تماس</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CustomerName" class="form-label"></label>
+                                <input asp-for="CustomerName" class="form-control" placeholder="نام و نام خانوادگی خود را وارد کنید" />
+                                <span asp-validation-for="CustomerName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CustomerPhone" class="form-label"></label>
+                                <input asp-for="CustomerPhone" class="form-control" placeholder="09XX-XXX-XXXX" dir="ltr" />
+                                <span asp-validation-for="CustomerPhone" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">نوع تحویل</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-check card p-3">
+                                    <input class="form-check-input" type="radio" asp-for="FulfillmentMethod" value="DineIn" id="fulfillmentDineIn" checked />
+                                    <label class="form-check-label w-100" for="fulfillmentDineIn">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-shop fs-3 me-3 text-primary"></i>
+                                            <div>
+                                                <strong>صرف در محل</strong>
+                                                <br />
+                                                <small class="text-muted">رزرو میز و صرف غذا در رستوران</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check card p-3">
+                                    <input class="form-check-input" type="radio" asp-for="FulfillmentMethod" value="Pickup" id="fulfillmentPickup" />
+                                    <label class="form-check-label w-100" for="fulfillmentPickup">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-bag fs-3 me-3 text-secondary"></i>
+                                            <div>
+                                                <strong>بیرون‌بر</strong>
+                                                <br />
+                                                <small class="text-muted">تحویل در محل رستوران</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check card p-3">
+                                    <input class="form-check-input" type="radio" asp-for="FulfillmentMethod" value="Delivery" id="fulfillmentDelivery" />
+                                    <label class="form-check-label w-100" for="fulfillmentDelivery">
+                                        <div class="d-flex align-items-center">
+                                            <i class="bi bi-truck fs-3 me-3 text-success"></i>
+                                            <div>
+                                                <strong>ارسال</strong>
+                                                <br />
+                                                <small class="text-muted">ارسال به آدرس شما (+20,000 تومان)</small>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <span asp-validation-for="FulfillmentMethod" class="text-danger small d-block mt-2"></span>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">یادداشت (اختیاری)</h5>
+                    </div>
+                    <div class="card-body">
+                        <label asp-for="CustomerNote" class="form-label"></label>
+                        <textarea asp-for="CustomerNote" class="form-control" rows="3" placeholder="درخواست‌های خاص خود را اینجا بنویسید..."></textarea>
+                        <span asp-validation-for="CustomerNote" class="text-danger small"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm sticky-top" style="top: 20px;">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">خلاصه سفارش</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6 class="border-bottom pb-2">آیتم‌های سفارش (@Model.Items.Count)</h6>
+                            @foreach (var item in Model.Items)
+                            {
+                                <div class="d-flex justify-content-between mb-2 small">
+                                    <span>@item.Quantity × @item.DisplayName</span>
+                                    <span>@item.TotalPrice.ToString("N0") تومان</span>
+                                </div>
+                            }
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>جمع آیتم‌ها:</span>
+                            <strong>@Model.SubtotalAmount.ToString("N0") تومان</strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2" id="deliveryFeeRow">
+                            <span>هزینه ارسال:</span>
+                            <strong id="deliveryFeeAmount">0 تومان</strong>
+                        </div>
+
+                        @if (Model.TaxAmount > 0)
+                        {
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>مالیات:</span>
+                                <strong>@Model.TaxAmount.ToString("N0") تومان</strong>
+                            </div>
+                        }
+
+                        <hr />
+
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fs-5">مبلغ کل:</span>
+                            <strong class="fs-4 text-success" id="totalAmount">@Model.TotalAmount.ToString("N0") تومان</strong>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 btn-lg">
+                            <i class="bi bi-check-circle me-2"></i>
+                            ثبت نهایی سفارش
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-outline-secondary w-100 mt-2">
+                            <i class="bi bi-arrow-right me-2"></i>
+                            بازگشت به سبد خرید
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        // Update delivery fee dynamically based on fulfillment method
+        document.querySelectorAll('input[name="FulfillmentMethod"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const deliveryFeeAmount = document.getElementById('deliveryFeeAmount');
+                const totalAmount = document.getElementById('totalAmount');
+                const subtotal = @Model.SubtotalAmount;
+                const tax = @Model.TaxAmount;
+                
+                let deliveryFee = 0;
+                if (this.value === 'Delivery') {
+                    deliveryFee = 20000;
+                }
+                
+                deliveryFeeAmount.textContent = deliveryFee.toLocaleString('fa-IR') + ' تومان';
+                const total = subtotal + deliveryFee + tax;
+                totalAmount.textContent = total.toLocaleString('fa-IR') + ' تومان';
+            });
+        });
+    </script>
+}

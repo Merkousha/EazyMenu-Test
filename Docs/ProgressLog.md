@@ -7,6 +7,17 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-10 (checkout-flow)
+- پیاده‌سازی کامل جریان سبد خرید و checkout برای مشتریان شامل Models (CartItemModel, ShoppingCartModel)، ViewModels (CartViewModel, CheckoutViewModel, OrderConfirmationViewModel).
+- ایجاد سرویس سبد خرید مبتنی بر Session (`SessionShoppingCartService`) با قابلیت Add/Remove/Update/Clear items و ذخیره‌سازی MenuContext.
+- پیاده‌سازی `CartController` با اکشن‌های AddToCart، RemoveFromCart، UpdateQuantity، ClearCart، Checkout (GET/POST) و OrderConfirmation.
+- ساخت سه View کامل: Cart/Index (سبد خرید با جدول آیتم‌ها و خلاصه سفارش)، Cart/Checkout (فرم اطلاعات مشتری و انتخاب نوع تحویل)، Cart/OrderConfirmation (صفحه تأیید سفارش).
+- افزودن دکمه "افزودن به سبد" به هر آیتم منوی عمومی با ارسال MenuId و TenantId برای حفظ Context.
+- اضافه کردن لینک سبد خرید با آیکون به منوی ناوبری سایت عمومی و افزودن Bootstrap Icons.
+- پیکربندی Session middleware در Public/Program.cs با DistributedMemoryCache و ثبت ShoppingCartService در DI.
+- اجرای `dotnet build` (موفق، مدت 4.6 ثانیه) و `dotnet test` (موفق، 110 تست، مدت 3.0 ثانیه) جهت اطمینان از سلامت تغییرات.
+- گام بعدی: پیاده‌سازی SignalR برای اعلان بلادرنگ سفارش‌های جدید به داشبورد مدیریتی.
+
 ## 2025-10-10 (final)
 - ساخت کامل UI داشبورد مدیریت سفارش‌ها شامل Razor Views (`Index.cshtml` با جدول، فیلترها و صفحه‌بندی، `Details.cshtml` با جزئیات سفارش و modal لغو).
 - افزودن Bootstrap Icons به Layout، ثبت `DashboardOrderViewModelFactory` در DI و تبدیل آن از static به instance-based.

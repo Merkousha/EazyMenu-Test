@@ -1,0 +1,98 @@
+@model EazyMenu.Public.ViewModels.Cart.OrderConfirmationViewModel
+@{
+    ViewData["Title"] = "سفارش با موفقیت ثبت شد";
+}
+
+<div class="container py-5" dir="rtl">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-lg border-0">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                    </div>
+                    
+                    <h2 class="mb-3">سفارش شما با موفقیت ثبت شد!</h2>
+                    
+                    <div class="alert alert-success" role="alert">
+                        <h4 class="alert-heading">شماره پیگیری سفارش:</h4>
+                        <h3 class="mb-0">
+                            <strong>@Model.OrderNumber</strong>
+                        </h3>
+                    </div>
+
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <div class="row text-start">
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-person-circle fs-4 me-3 text-primary"></i>
+                                        <div>
+                                            <small class="text-muted d-block">نام مشتری</small>
+                                            <strong>@Model.CustomerName</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-telephone fs-4 me-3 text-primary"></i>
+                                        <div>
+                                            <small class="text-muted d-block">شماره تماس</small>
+                                            <strong dir="ltr">@Model.CustomerPhone</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-truck fs-4 me-3 text-primary"></i>
+                                        <div>
+                                            <small class="text-muted d-block">نوع تحویل</small>
+                                            <strong>@Model.FulfillmentMethod</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-cash-stack fs-4 me-3 text-primary"></i>
+                                        <div>
+                                            <small class="text-muted d-block">مبلغ کل</small>
+                                            <strong class="text-success">@Model.TotalAmount.ToString("N0") تومان</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info" role="alert">
+                        <div class="d-flex align-items-center justify-content-center">
+                            <i class="bi bi-clock-history fs-4 me-3"></i>
+                            <div>
+                                <strong>زمان تخمینی آماده‌سازی:</strong>
+                                <span class="fs-5">@Model.EstimatedReadyTime</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-muted mb-4">
+                        سفارش شما در حال آماده‌سازی است. با شماره تماسی که ثبت کردید می‌توانید وضعیت سفارش خود را پیگیری کنید.
+                    </p>
+
+                    <div class="d-grid gap-2 d-md-block">
+                        <a asp-controller="Menus" asp-action="Index" class="btn btn-primary btn-lg me-md-2">
+                            <i class="bi bi-house-door me-2"></i>
+                            بازگشت به منو
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    این صفحه را برای مرجع بعدی ذخیره کنید یا از شماره پیگیری عکس بگیرید.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>

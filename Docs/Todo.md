@@ -8,14 +8,17 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - When closing an item here, log the details in `Docs/ProgressLog.md` for long-term history.
 
 ## In Progress
-- [ ] ساخت جریان checkout مشتری برای ثبت سفارش از سایت عمومی.
+- [ ] پیاده‌سازی SignalR برای اعلان بلادرنگ سفارش‌های جدید به داشبورد مدیریتی.
 
 ## Up Next
-- [ ] پیاده‌سازی SignalR برای اعلان بلادرنگ سفارش‌های جدید به داشبورد مدیریتی.
+- [ ] نوشتن تست‌های واحد برای CartController و SessionShoppingCartService.
+- [ ] بهبود OrderConfirmation برای دریافت اطلاعات واقعی سفارش از GetOrderDetailsQuery.
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] پیاده‌سازی کامل جریان Checkout مشتری شامل Models، ViewModels، CartService، CartController و Views (Index، Checkout، OrderConfirmation).
+- [x] افزودن دکمه "افزودن به سبد" به منوی عمومی با ارسال MenuId و TenantId.
 - [x] ساخت کامل UI داشبورد مدیریت سفارش‌ها (OrdersController، Views با فیلتر و pagination، ثبت ViewModelFactory در DI).
 - [x] پیاده‌سازی کامل Commands و Queries لایه Application برای سفارش‌گیری به همراه OrderNumberGenerator و DTOها.
 - [x] ایجاد Order Persistence layer با EF Core configurations، Repository و Migration AddOrders.

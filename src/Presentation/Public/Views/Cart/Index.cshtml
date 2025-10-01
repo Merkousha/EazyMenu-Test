@@ -1,0 +1,157 @@
+@model EazyMenu.Public.ViewModels.Cart.CartViewModel
+@{
+    ViewData["Title"] = "سبد خرید";
+}
+
+<div class="container py-4" dir="rtl">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="bi bi-cart"></i>
+                سبد خرید شما
+            </h2>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (Model.IsEmpty)
+    {
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card text-center py-5">
+                    <div class="card-body">
+                        <i class="bi bi-cart-x display-1 text-muted"></i>
+                        <h3 class="mt-4">سبد خرید شما خالی است</h3>
+                        <p class="text-muted">برای شروع سفارش، از منوی دیجیتال محصولات مورد نظر خود را اضافه کنید.</p>
+                        <a asp-controller="Menus" asp-action="Index" class="btn btn-primary mt-3">
+                            <i class="bi bi-arrow-right me-2"></i>
+                            مشاهده منو
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>محصول</th>
+                                    <th class="text-center">تعداد</th>
+                                    <th class="text-end">قیمت واحد</th>
+                                    <th class="text-end">جمع</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>
+                                            <strong>@item.DisplayName</strong>
+                                            @if (!string.IsNullOrEmpty(item.Note))
+                                            {
+                                                <br />
+                                                <small class="text-muted">
+                                                    <i class="bi bi-chat-left-text"></i>
+                                                    @item.Note
+                                                </small>
+                                            }
+                                        </td>
+                                        <td class="text-center">
+                                            <form asp-action="UpdateQuantity" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
+                                                <div class="input-group input-group-sm" style="max-width: 120px; margin: auto;">
+                                                    <button type="submit" name="quantity" value="@(item.Quantity - 1)" class="btn btn-outline-secondary" @(item.Quantity <= 1 ? "disabled" : "")>
+                                                        <i class="bi bi-dash"></i>
+                                                    </button>
+                                                    <input type="number" class="form-control text-center" value="@item.Quantity" readonly style="max-width: 50px;" />
+                                                    <button type="submit" name="quantity" value="@(item.Quantity + 1)" class="btn btn-outline-secondary">
+                                                        <i class="bi bi-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </td>
+                                        <td class="text-end">@item.UnitPrice.ToString("N0") تومان</td>
+                                        <td class="text-end">
+                                            <strong>@item.TotalPrice.ToString("N0") تومان</strong>
+                                        </td>
+                                        <td class="text-end">
+                                            <form asp-action="RemoveFromCart" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-controller="Menus" asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-right me-2"></i>
+                        بازگشت به منو
+                    </a>
+                    <form asp-action="ClearCart" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('آیا مطمئن هستید که می‌خواهید سبد خرید را خالی کنید؟')">
+                            <i class="bi bi-trash me-2"></i>
+                            خالی کردن سبد
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">خلاصه سفارش</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>تعداد آیتم‌ها:</span>
+                            <strong>@Model.TotalItemCount</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>جمع کل:</span>
+                            <strong class="fs-5 text-primary">@Model.SubtotalAmount.ToString("N0") تومان</strong>
+                        </div>
+                        <hr />
+                        <a asp-action="Checkout" class="btn btn-success w-100 btn-lg">
+                            <i class="bi bi-check-circle me-2"></i>
+                            ادامه و تکمیل سفارش
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
