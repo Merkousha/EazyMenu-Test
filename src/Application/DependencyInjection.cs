@@ -30,7 +30,15 @@ using EazyMenu.Application.Features.Menus.Queries.GetMenus;
 using EazyMenu.Application.Features.Notifications.GetSmsDeliveryLogs;
 using EazyMenu.Application.Features.Notifications.GetSmsUsageSummary;
 using EazyMenu.Application.Features.Onboarding.RegisterTenant;
+using EazyMenu.Application.Features.Orders.CancelOrder;
+using EazyMenu.Application.Features.Orders.Common;
+using EazyMenu.Application.Features.Orders.ConfirmOrder;
+using EazyMenu.Application.Features.Orders.CompleteOrder;
+using EazyMenu.Application.Features.Orders.GetOrderDetails;
+using EazyMenu.Application.Features.Orders.GetOrders;
+using EazyMenu.Application.Features.Orders.PlaceOrder;
 using EazyMenu.Application.Features.Payments.VerifyPayment;
+using EazyMenu.Domain.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EazyMenu.Application;
@@ -67,6 +75,15 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<GetPublishedMenuQuery, PublishedMenuDto?>, GetPublishedMenuQueryHandler>();
         services.AddScoped<IQueryHandler<GetSmsDeliveryLogsQuery, SmsDeliveryLogPage>, GetSmsDeliveryLogsQueryHandler>();
         services.AddScoped<IQueryHandler<GetSmsUsageSummaryQuery, SmsUsageSummary>, GetSmsUsageSummaryQueryHandler>();
+        
+        // Order commands and queries
+        services.AddScoped<ICommandHandler<PlaceOrderCommand, OrderId>, PlaceOrderCommandHandler>();
+        services.AddScoped<ICommandHandler<ConfirmOrderCommand, bool>, ConfirmOrderCommandHandler>();
+        services.AddScoped<ICommandHandler<CompleteOrderCommand, bool>, CompleteOrderCommandHandler>();
+        services.AddScoped<ICommandHandler<CancelOrderCommand, bool>, CancelOrderCommandHandler>();
+        services.AddScoped<IQueryHandler<GetOrdersQuery, IReadOnlyCollection<OrderSummaryDto>>, GetOrdersQueryHandler>();
+        services.AddScoped<IQueryHandler<GetOrderDetailsQuery, OrderDetailsDto>, GetOrderDetailsQueryHandler>();
+        
         return services;
     }
 }

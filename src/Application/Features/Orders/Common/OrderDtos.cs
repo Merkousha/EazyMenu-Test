@@ -44,6 +44,27 @@ public sealed record OrderSummaryDto(
     string CustomerName,
     string CustomerPhone);
 
+public sealed record OrderDetailsDto(
+    Guid OrderId,
+    Guid TenantId,
+    Guid MenuId,
+    string OrderNumber,
+    OrderStatus Status,
+    FulfillmentMethod FulfillmentMethod,
+    string CustomerName,
+    string CustomerPhone,
+    string? CustomerNote,
+    decimal SubtotalAmount,
+    decimal TaxAmount,
+    decimal DeliveryFee,
+    decimal TotalAmount,
+    DateTime CreatedAtUtc,
+    DateTime? ConfirmedAtUtc,
+    DateTime? CompletedAtUtc,
+    DateTime? CancelledAtUtc,
+    string? CancellationReason,
+    IReadOnlyCollection<OrderItemDto> Items);
+
 public sealed record CreateOrderResultDto(
     Guid OrderId,
     string OrderNumber,

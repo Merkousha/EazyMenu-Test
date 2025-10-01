@@ -7,6 +7,23 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-10 (final)
+- ساخت کامل UI داشبورد مدیریت سفارش‌ها شامل Razor Views (`Index.cshtml` با جدول، فیلترها و صفحه‌بندی، `Details.cshtml` با جزئیات سفارش و modal لغو).
+- افزودن Bootstrap Icons به Layout، ثبت `DashboardOrderViewModelFactory` در DI و تبدیل آن از static به instance-based.
+- اتصال کنترلر Orders به ViewModelFactory، اصلاح enum `FulfillmentMethod` از TakeAway به Pickup و افزودن لینک سفارش‌ها به منوی ناوبری.
+- اجرای مایگریشن `AddOrders` برای ایجاد جداول Orders و OrderItems در SQL Server (پایگاه EazyMenu با ۸ مایگریشن).
+- اجرای `dotnet build` (موفق، مدت 3.6 ثانیه) و `dotnet test` (موفق، 110 تست، مدت 3.2 ثانیه) جهت اطمینان از سلامت تغییرات.
+- گام بعدی: اتصال سایت عمومی برای ثبت سفارش مشتریان (Customer Checkout Flow)، سپس پیاده‌سازی SignalR برای اعلان بلادرنگ سفارش‌های جدید به داشبورد.
+
+## 2025-10-10 (later)
+- پیاده‌سازی کامل لایه Application برای سفارش‌گیری شامل Commands (PlaceOrder، ConfirmOrder، CompleteOrder، CancelOrder) و Queries (GetOrders، GetOrderDetails) به همراه Handlers و DTOها.
+- افزودن `SequentialOrderNumberGenerator` برای تولید شماره سفارش به فرمت `ORD-YYYYMMDD-NNNN` با الگوریتم thread-safe.
+- ایجاد لایه Persistence با `OrderConfiguration` (EF Core mapping)، `OrderRepository` و ثبت `DbSet<Order>` در DbContext.
+- تولید Migration `AddOrders` برای ایجاد جداول Orders و OrderItems با روابط owned entity و indexهای مناسب.
+- ثبت تمام Command/Query Handlerها در DI container و اتصال OrderRepository و OrderNumberGenerator.
+- اجرای `dotnet build` (موفق، مدت 6.0 ثانیه) و `dotnet test` (موفق، 110 تست، مدت 7.8 ثانیه) برای اطمینان از سلامت تغییرات.
+- گام بعدی: ساخت UI داشبورد مدیریت سفارش‌ها (OrdersController + Views) و جریان checkout مشتری.
+
 ## 2025-10-10
 - رفع نگاشت `OrderMapper` برای تبدیل شناسه مستاجر به Guid هنگام تولید `OrderSummaryDto` و جلوگیری از بروز استثناهای زمان اجرا در صفحه داشبورد سفارش‌ها.
 - به‌روزرسانی رویداد دامنه `OrderCreatedDomainEvent` به رکورد برای هماهنگی با کلاس پایه `DomainEventBase` و ساده‌سازی مقداردهی.

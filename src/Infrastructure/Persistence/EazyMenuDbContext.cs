@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EazyMenu.Application.Abstractions.Persistence;
 using EazyMenu.Domain.Aggregates.Menus;
+using EazyMenu.Domain.Aggregates.Orders;
 using EazyMenu.Domain.Aggregates.Payments;
 using EazyMenu.Domain.Aggregates.Tenants;
 using EazyMenu.Infrastructure.Persistence.Models;
@@ -19,6 +20,8 @@ public sealed class EazyMenuDbContext : DbContext, IUnitOfWork
     public DbSet<Menu> Menus => Set<Menu>();
 
     public DbSet<Tenant> Tenants => Set<Tenant>();
+
+    public DbSet<Order> Orders => Set<Order>();
 
     public DbSet<TenantProvisioningRecord> TenantProvisionings => Set<TenantProvisioningRecord>();
 

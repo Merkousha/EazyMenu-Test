@@ -14,6 +14,16 @@ public readonly record struct TenantId
 
     public static TenantId New() => new(Guid.NewGuid());
 
+    public static TenantId FromGuid(Guid value)
+    {
+        if (!TryCreate(value, out var id))
+        {
+            throw new ArgumentException("شناسه مستاجر معتبر نیست.", nameof(value));
+        }
+
+        return id;
+    }
+
     public static bool TryCreate(Guid value, [NotNullWhen(true)] out TenantId tenantId)
     {
         tenantId = default;

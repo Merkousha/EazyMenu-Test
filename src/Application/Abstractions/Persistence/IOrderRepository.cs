@@ -12,6 +12,8 @@ public interface IOrderRepository
 
     Task<IReadOnlyCollection<Order>> GetRecentAsync(TenantId tenantId, int take, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyCollection<Order>> GetRecentOrdersAsync(TenantId tenantId, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
+
     Task AddAsync(Order order, CancellationToken cancellationToken = default);
 
     Task UpdateAsync(Order order, CancellationToken cancellationToken = default);

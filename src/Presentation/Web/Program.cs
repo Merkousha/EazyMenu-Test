@@ -5,6 +5,7 @@ using EazyMenu.Infrastructure.Notifications;
 using EazyMenu.Infrastructure.Persistence;
 using EazyMenu.Infrastructure.Persistence.Seed;
 using EazyMenu.Web.Services;
+using EazyMenu.Web.Services.Orders;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services
 builder.Services.AddSignalR();
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IDashboardTenantProvider, DashboardTenantProvider>();
+builder.Services.AddScoped<DashboardOrderViewModelFactory>();
 
 var app = builder.Build();
 

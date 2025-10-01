@@ -43,6 +43,30 @@ public static class OrderMapper
             order.CustomerPhone.ToString());
     }
 
+    public static OrderDetailsDto ToDetailsDto(Order order)
+    {
+        return new OrderDetailsDto(
+            order.Id.Value,
+            order.TenantId.Value,
+            order.MenuId,
+            order.OrderNumber,
+            order.Status,
+            order.FulfillmentMethod,
+            order.CustomerName,
+            order.CustomerPhone.ToString(),
+            order.CustomerNote,
+            order.SubtotalAmount,
+            order.TaxAmount,
+            order.DeliveryFee,
+            order.TotalAmount,
+            order.CreatedAtUtc,
+            order.ConfirmedAtUtc,
+            order.CompletedAtUtc,
+            order.CancelledAtUtc,
+            order.CancellationReason,
+            order.Items.Select(ToDto).ToList());
+    }
+
     private static OrderItemDto ToDto(OrderItem item)
     {
         return new OrderItemDto(

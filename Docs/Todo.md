@@ -8,13 +8,17 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - When closing an item here, log the details in `Docs/ProgressLog.md` for long-term history.
 
 ## In Progress
-- [ ] تکمیل جریان‌های سفارش مشتری و کانال‌های آنلاین پس از آماده‌سازی UI مدیریت منو و اتصال آن به داده واقعی.
+- [ ] ساخت جریان checkout مشتری برای ثبت سفارش از سایت عمومی.
 
 ## Up Next
+- [ ] پیاده‌سازی SignalR برای اعلان بلادرنگ سفارش‌های جدید به داشبورد مدیریتی.
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] ساخت کامل UI داشبورد مدیریت سفارش‌ها (OrdersController، Views با فیلتر و pagination، ثبت ViewModelFactory در DI).
+- [x] پیاده‌سازی کامل Commands و Queries لایه Application برای سفارش‌گیری به همراه OrderNumberGenerator و DTOها.
+- [x] ایجاد Order Persistence layer با EF Core configurations، Repository و Migration AddOrders.
 - [x] افزودن جستجوی منوی عمومی با فیلتر سمت سرور، فرم جستجوی Razor و تست‌های پوششی برای کنترلر/کارخانه ViewModel.
 - [x] آماده‌سازی کامل منوی دیجیتال شامل ذخیره‌سازی نسخه‌های منتشرشده، کنترلر/ویوی عمومی با SignalR و تست‌های پوششی برای انتشار منو.
 - [x] طراحی و پیاده‌سازی مسیر Quick Update قیمت/موجودی و به‌روزرسانی سریع Dashboard (فرمان تجمیعی، اکشن AJAX، View `QuickUpdate` و اسکریپت `menu-quick-update.js`).
