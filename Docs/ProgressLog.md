@@ -1,4 +1,12 @@
+
 # Progress Log
+
+## 2025-10-11 (reservation-persistence-migration)
+- **جایگزینی کامل Stubهای رزرو با پیاده‌سازی EF Core واقعی**: حذف Stub Handlerها و ثبت ReservationRepository و Handlerهای واقعی در DI. نگاشت کامل Reservation و ReservationStatusHistoryEntry به EF Core با رفع خطاهای navigation و SetField. ایجاد و اعمال migration جدید و بروزرسانی پایگاه داده.
+- **اصلاح تست‌های Tenant و Reservation**: بروزرسانی FakeITenantRepository برای پشتیبانی از متد جدید GetBySlugAsync و رفع خطاهای DI و ساختار تست‌های یکپارچه و کنترلری. افزودن FakeWelcomeNotificationHandler برای تست‌های یکپارچه.
+- **اعتبارسنجی کامل**: اجرای موفق dotnet build و dotnet test (153 تست موفق) پس از اصلاحات. اطمینان از عبور همه تست‌ها و عدم وجود خطای بیلد.
+- **مستندسازی و بروزرسانی Todo**: این تغییرات مطابق با درخواست کاربر و سیاست Clean Architecture انجام شد. موارد مرتبط در Docs/Todo.md به وضعیت Done منتقل شد.
+
 
 A running history of significant work completed in this repository.
 

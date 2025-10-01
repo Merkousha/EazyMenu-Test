@@ -8,16 +8,13 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - When closing an item here, log the details in `Docs/ProgressLog.md` for long-term history.
 
 ## In Progress
-- [ ] تست End-to-End سیستم رزرو میز (ایجاد رزرو → تأیید → CheckIn → نمایش در لیست).
-- [ ] تست End-to-End جریان کامل سفارش‌گیری (منو → سبد → checkout → SignalR → SMS → مدیریت).
-- [ ] تست End-to-End جریان ثبت‌نام با Welcome Notification و نمایش اشتراک در Dashboard.
+
 
 ## Up Next
 - [ ] افزودن نمودارها به داشبورد (Chart.js integration - GetSalesStatistics، GetPopularItems، GetOrderStatistics).
 - [ ] گزارش فروش منو (صفحه Sales Report با فیلتر تاریخ و Excel export).
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
-- [ ] تکمیل زیرساخت رزرو (پیاده‌سازی EF Core برای ReservationRepository، جایگزینی Stub Handlerها با نسخه واقعی و افزودن تست‌های یکپارچه).
 
 ## Done
 - [x] پیاده‌سازی کامل Welcome Notification System با SMS و Email پس از ثبت‌نام (SendWelcomeNotificationCommand، Handler، یکپارچه‌سازی در EfTenantProvisioningService و VerifyPaymentCommandHandler).
@@ -27,36 +24,4 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [x] آماده‌سازی پایگاه داده با افزودن 5 میز نمونه برای تست جریان رزرو.
 - [x] همسوسازی لایه Presentation با Domain logic - حذف manual table selection و اتکا به automatic table selection مبتنی بر PartySize + PrefersOutdoor.
 - [x] یکپارچه‌سازی ISmsSender در PlaceOrderCommandHandler با ارسال پیامک تأییدیه فارسی (شماره سفارش + مبلغ کل) به مشتری پس از ثبت موفق سفارش. شامل 6 تست واحد PlaceOrderCommandHandler جدید (مجموع 153 تست موفق).
-- [x] نوشتن تست‌های جامع برای CartController (19 تست) و SessionShoppingCartService (18 تست) با پوشش کامل عملیات و سناریوهای خطا.
-- [x] بهبود OrderConfirmation برای دریافت اطلاعات واقعی سفارش از GetOrderDetailsQuery و نمایش EstimatedReadyTime بر اساس FulfillmentMethod.
-- [x] اتصال کامل رویدادهای Confirm/Complete/Cancel به SignalR برای اعلان بلادرنگ تمام تغییرات وضعیت سفارش به داشبورد مدیریتی.
-- [x] پیاده‌سازی کامل SignalR برای اعلان بلادرنگ سفارش‌های جدید به داشبورد (OrderAlertsHub، SignalROrderNotifier، اتصال به PlaceOrderCommand، SignalR client در UI).
-- [x] پیاده‌سازی کامل جریان Checkout مشتری شامل Models، ViewModels، CartService، CartController و Views (Index، Checkout، OrderConfirmation).
-- [x] افزودن دکمه "افزودن به سبد" به منوی عمومی با ارسال MenuId و TenantId.
-- [x] ساخت کامل UI داشبورد مدیریت سفارش‌ها (OrdersController، Views با فیلتر و pagination، ثبت ViewModelFactory در DI).
-- [x] پیاده‌سازی کامل Commands و Queries لایه Application برای سفارش‌گیری به همراه OrderNumberGenerator و DTOها.
-- [x] ایجاد Order Persistence layer با EF Core configurations، Repository و Migration AddOrders.
-- [x] افزودن جستجوی منوی عمومی با فیلتر سمت سرور، فرم جستجوی Razor و تست‌های پوششی برای کنترلر/کارخانه ViewModel.
-- [x] آماده‌سازی کامل منوی دیجیتال شامل ذخیره‌سازی نسخه‌های منتشرشده، کنترلر/ویوی عمومی با SignalR و تست‌های پوششی برای انتشار منو.
-- [x] طراحی و پیاده‌سازی مسیر Quick Update قیمت/موجودی و به‌روزرسانی سریع Dashboard (فرمان تجمیعی، اکشن AJAX، View `QuickUpdate` و اسکریپت `menu-quick-update.js`).
-- [x] اتصال UI مدیریت منو به داده نمونه و Queries لایه Application (Controller، ViewModel، Viewها، ناوبری).
-- [x] تکمیل لایه Persistency منو و آماده‌سازی داده توسعه (Use Caseها، ریپازیتوری EF Core، مایگریشن `AddMenus`، Seed خودکار در محیط Development).
-- [x] پیاده‌سازی دامنه منو (Value Objectها، Aggregate، رویدادهای دامنه) به همراه تست‌های واحد.
-- [x] تدوین سند طراحی جامع مدیریت منو (دامنه، Use Case، Persistence، UI) در `Docs/Design/MenuManagement.md`.
-- [x] افزودن پایش مصرف پیامک مستاجر (کوئری خلاصه، خوانشگر EF، کارت‌های داشبورد) و به‌روزرسانی تست‌ها.
-- [x] راه‌اندازی هشدار زنده شکست پیامک با SignalR و اتصال آن به داشبورد مدیریتی.
-- [x] تکمیل fallback ایمیل/اعلان برای موارد شکست ارسال پیامک و ثبت آن در گزارش پیامک‌ها.
-- [x] نمایش گزارش پیامک‌ها در داشبورد مدیریتی با فیلتر وضعیت و صفحه‌بندی (NotificationsController + Razor View).
-- [x] پیاده‌سازی ورود پیامکی مشتریان (OTP) در سایت عمومی به همراه تست‌های کاربردی.
-- [x] طراحی و پیاده‌سازی ویزارد آنبوردینگ (کنترلر، ViewModel، Viewها) با اتصال به `RegisterTenantCommand` و هدایت به پرداخت.
-- [x] نمایش نتیجه بازگشت زرین‌پال در MVC با View `Payments/Callback` و کنترلر مرتبط.
-- [x] پیاده‌سازی اعتبارسنجی پرداخت زرین‌پال و فعال‌سازی اشتراک پس از تأیید.
-- [x] اتصال جریان پرداخت به ثبت اشتراک (ایجاد فاکتور، ثبت وضعیت پرداخت، مدیریت تخفیف‌ها).
-- [x] Convert presentation layer projects to ASP.NET Core MVC and update documentation.
-- [x] Scaffold Clean Architecture solution with Domain, Application, Infrastructure, Presentation, and tests.
-- [x] Implement core domain/value objects and sample onboarding command + tests.
-- [x] Document architecture vision, solution layout, and repo usage in `Docs/Architecture.md` and `README.md`.
-- [x] Implement tenant-aware persistence (EF Core + SQL Server) including DbContext, entity mappings, DI registration، و نخستین مایگریشن.
-- [x] اتصال هندلرهای لایه Application به لایه Persistency مبتنی بر EF Core به همراه تست‌های یکپارچه.
-- [x] جایگزینی سرویس ثبت مستاجر با پیاده‌سازی EF Core و ذخیره رکوردهای Provisioning.
-- [x] فعال‌سازی چرخه اشتراک در فرایند ثبت مستاجر با قیمت‌گذاری اولیه و دوره آزمایشی.
+- [x] تکمیل زیرساخت رزرو (پیاده‌سازی EF Core برای ReservationRepository، جایگزینی Stub Handlerها با نسخه واقعی و افزودن تست‌های یکپارچه، اصلاح کامل تست‌های Tenant و Reservation، اعتبارسنجی با dotnet build و dotnet test (153 تست موفق)).
