@@ -2,17 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using EazyMenu.Application.Abstractions.Messaging;
 using EazyMenu.Application.Common.Interfaces;
 using EazyMenu.Application.Common.Interfaces.Payments;
 using EazyMenu.Application.Common.Interfaces.Pricing;
 using EazyMenu.Application.Common.Interfaces.Provisioning;
 using EazyMenu.Application.Common.Time;
+using EazyMenu.Application.Features.Notifications.SendWelcomeNotification;
 using EazyMenu.Domain.Aggregates.Payments;
 using EazyMenu.Domain.Aggregates.Tenants;
 using EazyMenu.Domain.ValueObjects;
 using EazyMenu.Infrastructure.Payments;
 using EazyMenu.Infrastructure.Persistence;
 using EazyMenu.Infrastructure.Persistence.Models;
+using Microsoft.Extensions.Logging;
 
 namespace EazyMenu.Infrastructure.Provisioning;
 
@@ -22,6 +25,8 @@ internal sealed class EfTenantProvisioningService : ITenantProvisioningService
     private readonly IDateTimeProvider _dateTimeProvider;
     private readonly ISubscriptionPricingService _pricingService;
     private readonly IPaymentGatewayClient _paymentGatewayClient;
+    private readonly ICommandHandler<SendWelcomeNotificationCommand> _welcomeNotificationHandler;
+    private readonly ILogger<EfTenantProvisioningService> _logger;
     private readonly Uri _callbackUri;
 
     public EfTenantProvisioningService(
@@ -29,12 +34,16 @@ internal sealed class EfTenantProvisioningService : ITenantProvisioningService
         IDateTimeProvider dateTimeProvider,
         ISubscriptionPricingService pricingService,
         IPaymentGatewayClient paymentGatewayClient,
-        PaymentGatewayOptions paymentGatewayOptions)
+        PaymentGatewayOptions paymentGatewayOptions,
+        ICommandHandler<SendWelcomeNotificationCommand> welcomeNotificationHandler,
+        ILogger<EfTenantProvisioningService> logger)
     {
         _dbContext = dbContext;
         _dateTimeProvider = dateTimeProvider;
         _pricingService = pricingService;
         _paymentGatewayClient = paymentGatewayClient;
+        _welcomeNotificationHandler = welcomeNotificationHandler;
+        _logger = logger;
         _callbackUri = paymentGatewayOptions.GetCallbackUri();
     }
 
@@ -133,7 +142,53 @@ internal sealed class EfTenantProvisioningService : ITenantProvisioningService
         await _dbContext.TenantProvisionings.AddAsync(record, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
+        // Send welcome notification for trial or free subscriptions (payment subscriptions will be sent after payment verification)
+        if (priceQuote.IsTrial || priceQuote.NetPrice.IsZero())
+        {
+            await SendWelcomeNotificationAsync(
+                tenant.Id.Value,
+                request.RestaurantName,
+                request.ManagerEmail,
+                request.ManagerPhone,
+                plan.ToString(),
+                endUtc ?? startUtc.AddMonths(1),
+                priceQuote.IsTrial,
+                cancellationToken);
+        }
+
         return new TenantProvisioningResult(tenant.Id, subscription.Id, paymentResult);
+    }
+
+    private async Task SendWelcomeNotificationAsync(
+        Guid tenantId,
+        string restaurantName,
+        string managerEmail,
+        string managerPhone,
+        string planName,
+        DateTime subscriptionEndDate,
+        bool isTrial,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var command = new SendWelcomeNotificationCommand(
+                tenantId,
+                restaurantName,
+                managerEmail,
+                managerPhone,
+                planName,
+                subscriptionEndDate,
+                isTrial);
+
+            await _welcomeNotificationHandler.HandleAsync(command, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Failed to send welcome notification for tenant {TenantId}. This does not affect provisioning.",
+                tenantId);
+            // Don't throw - notification failure should not prevent provisioning
+        }
     }
 
     private static SubscriptionPlan ResolvePlan(string planCode)

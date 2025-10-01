@@ -10,7 +10,9 @@ using EazyMenu.Application.Features.Identity.ChangePassword;
 using EazyMenu.Application.Features.Identity.Login;
 using EazyMenu.Application.Features.Identity.RegisterUser;
 using EazyMenu.Application.Features.Tenants.Commands.UpdateBranding;
+using EazyMenu.Application.Features.Tenants.Common;
 using EazyMenu.Application.Features.Tenants.Queries.GetTenantBranding;
+using EazyMenu.Application.Features.Tenants.Subscriptions.GetActiveSubscription;
 using EazyMenu.Application.Features.QrCodes.Commands.GenerateTenantQrCode;
 using EazyMenu.Application.Features.Menus.Common;
 using EazyMenu.Application.Features.Menus.Commands.AddMenuCategory;
@@ -35,6 +37,7 @@ using EazyMenu.Application.Features.Menus.Queries.GetPublishedMenu;
 using EazyMenu.Application.Features.Menus.Queries.GetMenus;
 using EazyMenu.Application.Features.Notifications.GetSmsDeliveryLogs;
 using EazyMenu.Application.Features.Notifications.GetSmsUsageSummary;
+using EazyMenu.Application.Features.Notifications.SendWelcomeNotification;
 using EazyMenu.Application.Features.Onboarding.RegisterTenant;
 using EazyMenu.Application.Features.Orders.CancelOrder;
 using EazyMenu.Application.Features.Orders.Common;
@@ -81,6 +84,7 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<GetPublishedMenuQuery, PublishedMenuDto?>, GetPublishedMenuQueryHandler>();
         services.AddScoped<IQueryHandler<GetSmsDeliveryLogsQuery, SmsDeliveryLogPage>, GetSmsDeliveryLogsQueryHandler>();
         services.AddScoped<IQueryHandler<GetSmsUsageSummaryQuery, SmsUsageSummary>, GetSmsUsageSummaryQueryHandler>();
+        services.AddScoped<ICommandHandler<SendWelcomeNotificationCommand>, SendWelcomeNotificationCommandHandler>();
         
         // Order commands and queries
         services.AddScoped<ICommandHandler<PlaceOrderCommand, OrderId>, PlaceOrderCommandHandler>();
@@ -95,9 +99,10 @@ public static class DependencyInjection
         services.AddScoped<LoginCommandHandler>();
         services.AddScoped<ChangePasswordCommandHandler>();
         
-        // Tenant branding
+        // Tenant queries and commands
         services.AddScoped<UpdateBrandingHandler>();
         services.AddScoped<GetTenantBrandingHandler>();
+        services.AddScoped<IQueryHandler<GetActiveSubscriptionQuery, SubscriptionDetailsDto?>, GetActiveSubscriptionQueryHandler>();
         
         // QR Code generation
         services.AddScoped<GenerateTenantQrCodeHandler>();

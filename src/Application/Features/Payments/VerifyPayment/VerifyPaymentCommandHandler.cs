@@ -7,9 +7,11 @@ using EazyMenu.Application.Abstractions.Persistence;
 using EazyMenu.Application.Common.Exceptions;
 using EazyMenu.Application.Common.Interfaces;
 using EazyMenu.Application.Common.Interfaces.Payments;
+using EazyMenu.Application.Features.Notifications.SendWelcomeNotification;
 using EazyMenu.Domain.Aggregates.Payments;
 using EazyMenu.Domain.Aggregates.Tenants;
 using EazyMenu.Domain.ValueObjects;
+using Microsoft.Extensions.Logging;
 
 namespace EazyMenu.Application.Features.Payments.VerifyPayment;
 
@@ -20,19 +22,25 @@ public sealed class VerifyPaymentCommandHandler : ICommandHandler<VerifyPaymentC
     private readonly IPaymentGatewayClient _paymentGatewayClient;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly ICommandHandler<SendWelcomeNotificationCommand> _welcomeNotificationHandler;
+    private readonly ILogger<VerifyPaymentCommandHandler> _logger;
 
     public VerifyPaymentCommandHandler(
         IPaymentTransactionRepository paymentTransactionRepository,
         ITenantRepository tenantRepository,
         IPaymentGatewayClient paymentGatewayClient,
         IUnitOfWork unitOfWork,
-        IDateTimeProvider dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        ICommandHandler<SendWelcomeNotificationCommand> welcomeNotificationHandler,
+        ILogger<VerifyPaymentCommandHandler> logger)
     {
         _paymentTransactionRepository = paymentTransactionRepository;
         _tenantRepository = tenantRepository;
         _paymentGatewayClient = paymentGatewayClient;
         _unitOfWork = unitOfWork;
         _dateTimeProvider = dateTimeProvider;
+        _welcomeNotificationHandler = welcomeNotificationHandler;
+        _logger = logger;
     }
 
     public async Task<VerifyPaymentResult> HandleAsync(VerifyPaymentCommand command, CancellationToken cancellationToken = default)
@@ -98,13 +106,22 @@ public sealed class VerifyPaymentCommandHandler : ICommandHandler<VerifyPaymentC
 
             paymentTransaction.MarkSucceeded(referenceCode, _dateTimeProvider.UtcNow);
 
+            Tenant? activatedTenant = null;
+            Subscription? activatedSubscription = null;
+
             if (paymentTransaction.SubscriptionId is Guid subscriptionId)
             {
-                await ActivateSubscriptionAsync(paymentTransaction.TenantId, subscriptionId, cancellationToken);
+                (activatedTenant, activatedSubscription) = await ActivateSubscriptionAsync(paymentTransaction.TenantId, subscriptionId, cancellationToken);
             }
 
             await _paymentTransactionRepository.UpdateAsync(paymentTransaction, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            // Send welcome notification after successful payment and activation
+            if (activatedTenant is not null && activatedSubscription is not null)
+            {
+                await SendWelcomeNotificationAsync(activatedTenant, activatedSubscription, cancellationToken);
+            }
 
             return new VerifyPaymentResult(true, paymentTransaction.Status, paymentTransaction.ExternalReference, null);
         }
@@ -121,7 +138,7 @@ public sealed class VerifyPaymentCommandHandler : ICommandHandler<VerifyPaymentC
         return new VerifyPaymentResult(false, paymentTransaction.Status, null, failureReason);
     }
 
-    private async Task ActivateSubscriptionAsync(TenantId tenantId, Guid subscriptionId, CancellationToken cancellationToken)
+    private async Task<(Tenant, Subscription)> ActivateSubscriptionAsync(TenantId tenantId, Guid subscriptionId, CancellationToken cancellationToken)
     {
         var tenant = await _tenantRepository.GetByIdAsync(tenantId, cancellationToken);
         if (tenant is null)
@@ -137,6 +154,32 @@ public sealed class VerifyPaymentCommandHandler : ICommandHandler<VerifyPaymentC
 
         tenant.ActivateSubscription(subscription);
         await _tenantRepository.UpdateAsync(tenant, cancellationToken);
+
+        return (tenant, subscription);
+    }
+
+    private async Task SendWelcomeNotificationAsync(Tenant tenant, Subscription subscription, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var command = new SendWelcomeNotificationCommand(
+                tenant.Id.Value,
+                tenant.BusinessName,
+                tenant.ContactEmail.Value,
+                tenant.ContactPhone.Value,
+                subscription.Plan.ToString(),
+                subscription.EndDateUtc ?? _dateTimeProvider.UtcNow.AddMonths(1),
+                subscription.IsTrial);
+
+            await _welcomeNotificationHandler.HandleAsync(command, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex,
+                "Failed to send welcome notification for tenant {TenantId} after payment verification. This does not affect payment processing.",
+                tenant.Id.Value);
+            // Don't throw - notification failure should not prevent payment verification
+        }
     }
 
     private static string ResolveFailureReason(string status)
