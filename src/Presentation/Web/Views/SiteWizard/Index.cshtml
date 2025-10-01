@@ -1,0 +1,294 @@
+@model EazyMenu.Web.Models.SiteWizard.SiteWizardViewModel
+@{
+    ViewData["Title"] = "ویزارد سایت‌ساز";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-paint-bucket"></i>
+                        تنظیمات ظاهری سایت
+                    </h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill"></i>
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="UpdateBranding" method="post" id="wizardForm">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <!-- Step 1: قالب و رنگ‌ها -->
+                        <div class="wizard-step" data-step="1">
+                            <h4 class="mb-4">مرحله ۱: انتخاب قالب و رنگ‌ها</h4>
+
+                            <div class="mb-3">
+                                <label asp-for="TemplateName" class="form-label">قالب سایت</label>
+                                <select asp-for="TemplateName" class="form-select">
+                                    <option value="classic">کلاسیک</option>
+                                    <option value="modern">مدرن</option>
+                                    <option value="elegant">اِلِگانت</option>
+                                    <option value="minimal">مینیمال</option>
+                                </select>
+                                <span asp-validation-for="TemplateName" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="PrimaryColor" class="form-label">رنگ اصلی</label>
+                                    <input asp-for="PrimaryColor" type="color" class="form-control form-control-color" />
+                                    <small class="form-text text-muted">رنگ اصلی برند شما</small>
+                                    <span asp-validation-for="PrimaryColor" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="SecondaryColor" class="form-label">رنگ ثانویه</label>
+                                    <input asp-for="SecondaryColor" type="color" class="form-control form-control-color" />
+                                    <small class="form-text text-muted">رنگ مکمل</small>
+                                    <span asp-validation-for="SecondaryColor" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: تصاویر -->
+                        <div class="wizard-step d-none" data-step="2">
+                            <h4 class="mb-4">مرحله ۲: تصاویر</h4>
+
+                            <div class="mb-3">
+                                <label asp-for="DisplayName" class="form-label">نام نمایشی رستوران</label>
+                                <input asp-for="DisplayName" class="form-control" placeholder="نام رستوران خود را وارد کنید" />
+                                <span asp-validation-for="DisplayName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="LogoUrl" class="form-label">آدرس لوگو</label>
+                                <input asp-for="LogoUrl" class="form-control" placeholder="https://example.com/logo.png" />
+                                <small class="form-text text-muted">لینک لوگوی رستوران (برای آپلود فایل، از سرویس‌های آپلود استفاده کنید)</small>
+                                <span asp-validation-for="LogoUrl" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="BannerImageUrl" class="form-label">آدرس بنر</label>
+                                <input asp-for="BannerImageUrl" class="form-control" placeholder="https://example.com/banner.jpg" />
+                                <small class="form-text text-muted">تصویر پس‌زمینه صفحه اصلی</small>
+                                <span asp-validation-for="BannerImageUrl" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: محتوا -->
+                        <div class="wizard-step d-none" data-step="3">
+                            <h4 class="mb-4">مرحله ۳: محتوای سایت</h4>
+
+                            <div class="mb-3">
+                                <label asp-for="AboutText" class="form-label">درباره رستوران</label>
+                                <textarea asp-for="AboutText" class="form-control" rows="4" placeholder="متنی درباره رستوران، تاریخچه، ویژگی‌ها و..."></textarea>
+                                <small class="form-text text-muted">حداکثر 2000 کاراکتر</small>
+                                <span asp-validation-for="AboutText" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="OpeningHours" class="form-label">ساعات کاری</label>
+                                <textarea asp-for="OpeningHours" class="form-control" rows="3" placeholder="مثال: شنبه تا چهارشنبه: 12:00 - 23:00&#10;پنج‌شنبه و جمعه: 11:00 - 00:00"></textarea>
+                                <small class="form-text text-muted">ساعات کاری رستوران</small>
+                                <span asp-validation-for="OpeningHours" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Navigation buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-secondary" id="prevBtn" disabled>
+                                <i class="bi bi-arrow-right"></i>
+                                قبلی
+                            </button>
+                            <button type="button" class="btn btn-primary" id="nextBtn">
+                                بعدی
+                                <i class="bi bi-arrow-left"></i>
+                            </button>
+                            <button type="submit" class="btn btn-success d-none" id="submitBtn">
+                                <i class="bi bi-check-lg"></i>
+                                ذخیره تنظیمات
+                            </button>
+                        </div>
+
+                        <input type="hidden" asp-for="IsPublished" />
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-eye"></i>
+                        پیش‌نمایش
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="previewContainer" class="border rounded p-3" style="min-height: 400px;">
+                        <div id="previewContent">
+                            <div class="text-center mb-3">
+                                <img id="previewLogo" src="https://via.placeholder.com/150x50?text=Logo" alt="Logo" class="img-fluid mb-2" style="max-height: 50px;">
+                                <h4 id="previewDisplayName">@Model.DisplayName</h4>
+                            </div>
+                            <div id="previewBanner" class="mb-3" style="height: 150px; background-size: cover; background-position: center; background-image: url('https://via.placeholder.com/600x200');">
+                            </div>
+                            <div class="mb-2">
+                                <strong>درباره:</strong>
+                                <p id="previewAbout" class="text-muted small">@Model.AboutText</p>
+                            </div>
+                            <div>
+                                <strong>ساعات کاری:</strong>
+                                <p id="previewHours" class="text-muted small" style="white-space: pre-line;">@Model.OpeningHours</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.IsPublished)
+                    {
+                        <div class="alert alert-success mt-3">
+                            <i class="bi bi-check-circle"></i>
+                            سایت منتشر شده است
+                        </div>
+                        <button type="button" class="btn btn-warning w-100" id="unpublishBtn">
+                            <i class="bi bi-x-circle"></i>
+                            مخفی کردن سایت
+                        </button>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning mt-3">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            سایت هنوز منتشر نشده
+                        </div>
+                        <button type="button" class="btn btn-success w-100" id="publishBtn">
+                            <i class="bi bi-globe"></i>
+                            انتشار سایت
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        function showStep(step) {
+            $('.wizard-step').addClass('d-none');
+            $(`.wizard-step[data-step="${step}"]`).removeClass('d-none');
+
+            $('#prevBtn').prop('disabled', step === 1);
+            
+            if (step === totalSteps) {
+                $('#nextBtn').addClass('d-none');
+                $('#submitBtn').removeClass('d-none');
+            } else {
+                $('#nextBtn').removeClass('d-none');
+                $('#submitBtn').addClass('d-none');
+            }
+
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const primaryColor = $('#PrimaryColor').val();
+            const secondaryColor = $('#SecondaryColor').val();
+            const displayName = $('#DisplayName').val() || 'نام رستوران';
+            const logoUrl = $('#LogoUrl').val();
+            const bannerUrl = $('#BannerImageUrl').val();
+            const aboutText = $('#AboutText').val() || 'متن درباره رستوران';
+            const hours = $('#OpeningHours').val() || 'ساعات کاری';
+
+            $('#previewContent').css('color', primaryColor);
+            $('#previewDisplayName').text(displayName).css('color', primaryColor);
+            $('#previewAbout').text(aboutText);
+            $('#previewHours').text(hours);
+
+            if (logoUrl) {
+                $('#previewLogo').attr('src', logoUrl);
+            }
+
+            if (bannerUrl) {
+                $('#previewBanner').css('background-image', `url('${bannerUrl}')`);
+            }
+        }
+
+        $('#nextBtn').click(function() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        });
+
+        $('#prevBtn').click(function() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        });
+
+        // Live preview updates
+        $('#DisplayName, #LogoUrl, #BannerImageUrl, #AboutText, #OpeningHours, #PrimaryColor, #SecondaryColor, #TemplateName').on('input change', updatePreview);
+
+        $('#publishBtn').click(function() {
+            if (confirm('آیا از انتشار سایت اطمینان دارید؟')) {
+                $.ajax({
+                    url: '@Url.Action("Publish", "SiteWizard")',
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(result) {
+                        if (result.success) {
+                            location.reload();
+                        } else {
+                            alert('خطا: ' + result.error);
+                        }
+                    },
+                    error: function() {
+                        alert('خطا در انتشار سایت');
+                    }
+                });
+            }
+        });
+
+        $('#unpublishBtn').click(function() {
+            if (confirm('آیا از مخفی کردن سایت اطمینان دارید؟')) {
+                $.ajax({
+                    url: '@Url.Action("Unpublish", "SiteWizard")',
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(result) {
+                        if (result.success) {
+                            location.reload();
+                        } else {
+                            alert('خطا: ' + result.error);
+                        }
+                    },
+                    error: function() {
+                        alert('خطا در مخفی‌سازی سایت');
+                    }
+                });
+            }
+        });
+
+        // Initialize
+        showStep(currentStep);
+    </script>
+}

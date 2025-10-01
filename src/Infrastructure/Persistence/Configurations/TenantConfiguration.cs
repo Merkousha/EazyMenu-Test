@@ -52,6 +52,31 @@ internal sealed class TenantConfiguration : IEntityTypeConfiguration<Tenant>
             brand.Property(b => b.PrimaryColor)
                 .HasColumnName("BrandPrimaryColor")
                 .HasMaxLength(32);
+
+            brand.Property(b => b.SecondaryColor)
+                .HasColumnName("BrandSecondaryColor")
+                .HasMaxLength(32);
+
+            brand.Property(b => b.BannerImageUrl)
+                .HasColumnName("BrandBannerImageUrl")
+                .HasMaxLength(512);
+
+            brand.Property(b => b.AboutText)
+                .HasColumnName("BrandAboutText")
+                .HasMaxLength(2000);
+
+            brand.Property(b => b.OpeningHours)
+                .HasColumnName("BrandOpeningHours")
+                .HasMaxLength(500);
+
+            brand.Property(b => b.TemplateName)
+                .HasColumnName("BrandTemplateName")
+                .HasMaxLength(100)
+                .IsRequired();
+
+            brand.Property(b => b.IsPublished)
+                .HasColumnName("BrandIsPublished")
+                .IsRequired();
         });
 
         builder.OwnsOne(t => t.HeadquartersAddress, address =>
