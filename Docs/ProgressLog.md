@@ -7,6 +7,16 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-01 (cart-testing-complete)
+- **نوشتن تست‌های جامع برای CartController و SessionShoppingCartService**: ایجاد 37 تست واحد جدید برای پوشش کامل جریان سبد خرید و checkout.
+- **تست‌های CartControllerTests** (19 تست): پوشش تمام اکشن‌ها شامل Index، AddToCart، RemoveFromCart، UpdateQuantity، ClearCart، Checkout (GET/POST)، OrderConfirmation با mock dependencies و سناریوهای خطا.
+- **تست‌های SessionShoppingCartServiceTests** (18 تست): تست عملیات GetCart، AddItem، RemoveItem، UpdateQuantity، ClearCart، SetMenuContext با mock ISession و سناریوهای edge case (empty cart، invalid JSON، null session).
+- **بهبود صفحه OrderConfirmation**: اتصال به GetOrderDetailsQuery برای نمایش اطلاعات واقعی سفارش شامل OrderNumber، اطلاعات مشتری، FulfillmentMethod، TotalAmount و EstimatedReadyTime بر اساس نوع تحویل (15-20 دقیقه Pickup، 30-45 دقیقه Delivery، 20-30 دقیقه DineIn).
+- **رفع باگ در CartController**: تصحیح redirect در OrderConfirmation برای ارسال orderId.Value به جای OrderId object.
+- تست‌های اضافی برای OrderConfirmation شامل: دریافت اطلاعات واقعی، محاسبه زمان آماده‌سازی، مدیریت خطا (تنانت نامعتبر، سفارش یافت نشده، خطای database).
+- اجرای `dotnet test` (موفق، 147 تست شامل 37 تست جدید، مدت 5.1 ثانیه).
+- **نتیجه**: سیستم سبد خرید و checkout اکنون با پوشش تست کامل و صفحه تأیید واقعی آماده استفاده در محیط Production است.
+
 ## 2025-10-10 (signalr-complete)
 - **اتمام کامل یکپارچه‌سازی SignalR برای تمام رویدادهای چرخه حیات سفارش**: اتصال سه Command Handler باقی‌مانده (ConfirmOrder، CompleteOrder، CancelOrder) به سیستم اعلان بلادرنگ.
 - **به‌روزرسانی ConfirmOrderCommandHandler**: تزریق IOrderRealtimeNotifier و انتشار رویداد "order-confirmed" پس از تأیید موفق سفارش با تمام اطلاعات (TenantId، OrderId، OrderNumber، Status، TotalAmount).

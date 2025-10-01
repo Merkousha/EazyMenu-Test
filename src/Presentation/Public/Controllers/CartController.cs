@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using EazyMenu.Application.Abstractions.Messaging;
+using EazyMenu.Application.Features.Orders.Common;
+using EazyMenu.Application.Features.Orders.GetOrderDetails;
 using EazyMenu.Application.Features.Orders.PlaceOrder;
 using EazyMenu.Domain.ValueObjects;
 using EazyMenu.Public.Services;
@@ -15,15 +17,18 @@ public sealed class CartController : Controller
 {
     private readonly IShoppingCartService _cartService;
     private readonly ICommandHandler<PlaceOrderCommand, OrderId> _placeOrderHandler;
+    private readonly IQueryHandler<GetOrderDetailsQuery, OrderDetailsDto> _getOrderDetailsHandler;
     private readonly ILogger<CartController> _logger;
 
     public CartController(
         IShoppingCartService cartService,
         ICommandHandler<PlaceOrderCommand, OrderId> placeOrderHandler,
+        IQueryHandler<GetOrderDetailsQuery, OrderDetailsDto> getOrderDetailsHandler,
         ILogger<CartController> logger)
     {
         _cartService = cartService;
         _placeOrderHandler = placeOrderHandler;
+        _getOrderDetailsHandler = getOrderDetailsHandler;
         _logger = logger;
     }
 
@@ -191,7 +196,7 @@ public sealed class CartController : Controller
             _cartService.ClearCart();
             
             TempData["Success"] = "سفارش شما با موفقیت ثبت شد!";
-            return RedirectToAction("OrderConfirmation", new { orderId });
+            return RedirectToAction("OrderConfirmation", new { orderId = orderId.Value });
         }
         catch (Exception ex)
         {
@@ -206,22 +211,70 @@ public sealed class CartController : Controller
     }
 
     [HttpGet]
-    public IActionResult OrderConfirmation(Guid orderId)
+    public async Task<IActionResult> OrderConfirmation(Guid orderId)
     {
-        // TODO: Fetch order details from GetOrderDetailsQuery
-        // For now, show a simple confirmation message
-        
-        var viewModel = new OrderConfirmationViewModel
+        try
         {
-            OrderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-XXXX",
-            CustomerName = "مشتری",
-            CustomerPhone = "09XX-XXX-XXXX",
-            FulfillmentMethod = "حضوری",
-            TotalAmount = 0,
-            CreatedAt = DateTime.UtcNow,
-            EstimatedReadyTime = "15-20 دقیقه"
-        };
+            // Get cart to retrieve tenant context
+            var cart = _cartService.GetCart();
+            if (cart.TenantId == Guid.Empty)
+            {
+                _logger.LogWarning("No tenant context found for order confirmation");
+                return RedirectToAction("Index", "Home");
+            }
 
-        return View(viewModel);
+            // Fetch order details
+            var query = new GetOrderDetailsQuery(cart.TenantId, orderId);
+            var orderDetails = await _getOrderDetailsHandler.HandleAsync(query);
+
+            if (orderDetails == null)
+            {
+                _logger.LogWarning("Order {OrderId} not found", orderId);
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Map to view model
+            var viewModel = new OrderConfirmationViewModel
+            {
+                OrderNumber = orderDetails.OrderNumber,
+                CustomerName = orderDetails.CustomerName,
+                CustomerPhone = orderDetails.CustomerPhone,
+                FulfillmentMethod = orderDetails.FulfillmentMethod.ToString(),
+                TotalAmount = orderDetails.TotalAmount,
+                CreatedAt = orderDetails.CreatedAtUtc,
+                EstimatedReadyTime = CalculateEstimatedReadyTime(orderDetails.FulfillmentMethod)
+            };
+
+            return View(viewModel);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching order confirmation details for order {OrderId}", orderId);
+            
+            // Fallback to simple confirmation
+            var viewModel = new OrderConfirmationViewModel
+            {
+                OrderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-XXXX",
+                CustomerName = "مشتری",
+                CustomerPhone = "09XX-XXX-XXXX",
+                FulfillmentMethod = "حضوری",
+                TotalAmount = 0,
+                CreatedAt = DateTime.UtcNow,
+                EstimatedReadyTime = "15-20 دقیقه"
+            };
+
+            return View(viewModel);
+        }
+    }
+
+    private static string CalculateEstimatedReadyTime(FulfillmentMethod method)
+    {
+        return method switch
+        {
+            FulfillmentMethod.Delivery => "30-45 دقیقه",
+            FulfillmentMethod.Pickup => "15-20 دقیقه",
+            FulfillmentMethod.DineIn => "20-30 دقیقه",
+            _ => "15-20 دقیقه"
+        };
     }
 }
