@@ -33,6 +33,23 @@ internal sealed class TenantRepository : ITenantRepository
         return tenant;
     }
 
+    public async Task<Tenant?> GetBySlugAsync(TenantSlug slug, CancellationToken cancellationToken = default)
+    {
+        var tenant = await _dbContext.Tenants
+            .AsSplitQuery()
+            .Include(t => t.Branches)
+                .ThenInclude(b => b.Tables)
+            .Include(t => t.Branches)
+                .ThenInclude(b => b.WorkingHours)
+            .Include(t => t.Branches)
+                .ThenInclude(b => b.QrCodes)
+            .Include(t => t.Subscriptions)
+            .Include(t => t.ActiveSubscription)
+            .FirstOrDefaultAsync(t => t.Slug == slug, cancellationToken);
+
+        return tenant;
+    }
+
     public async Task AddAsync(Tenant tenant, CancellationToken cancellationToken = default)
     {
         await _dbContext.Tenants.AddAsync(tenant, cancellationToken);
