@@ -8,14 +8,14 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - When closing an item here, log the details in `Docs/ProgressLog.md` for long-term history.
 
 ## In Progress
-- [ ] افزودن اعلان پیامکی به مشتری پس از ثبت سفارش.
+- [ ] تست End-to-End جریان کامل سفارش‌گیری (منو → سبد → checkout → SignalR → SMS → مدیریت).
 
 ## Up Next
-- [ ] افزودن اعلان پیامکی به مشتری پس از ثبت سفارش با OrderNumber و لینک پیگیری.
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] یکپارچه‌سازی ISmsSender در PlaceOrderCommandHandler با ارسال پیامک تأییدیه فارسی (شماره سفارش + مبلغ کل) به مشتری پس از ثبت موفق سفارش. شامل 6 تست واحد PlaceOrderCommandHandler جدید (مجموع 153 تست موفق).
 - [x] نوشتن تست‌های جامع برای CartController (19 تست) و SessionShoppingCartService (18 تست) با پوشش کامل عملیات و سناریوهای خطا.
 - [x] بهبود OrderConfirmation برای دریافت اطلاعات واقعی سفارش از GetOrderDetailsQuery و نمایش EstimatedReadyTime بر اساس FulfillmentMethod.
 - [x] اتصال کامل رویدادهای Confirm/Complete/Cancel به SignalR برای اعلان بلادرنگ تمام تغییرات وضعیت سفارش به داشبورد مدیریتی.

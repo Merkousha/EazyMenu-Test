@@ -7,6 +7,22 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-01 (sms-notification-complete)
+- **افزودن اعلان پیامکی پس از ثبت سفارش**: یکپارچه‌سازی ISmsSender در PlaceOrderCommandHandler برای ارسال پیامک تأییدیه به مشتری پس از ثبت موفق سفارش.
+- **پیام SMS فارسی با فرمت‌بندی کامل**: ارسال پیامک شامل شماره سفارش (OrderNumber)، مبلغ کل با فرمت فارسی (fa-IR culture) و پیام تشکر.
+- **مدیریت خطا**: پیاده‌سازی try-catch wrapper برای SendOrderConfirmationSmsAsync تا خطای SMS مانع از ثبت سفارش نشود. سفارش همچنان با موفقیت ثبت می‌شود حتی در صورت عدم دسترسی به سرویس SMS.
+- **SmsSendContext**: استفاده از SubscriptionPlan.Starter به عنوان مقدار پیش‌فرض (TODO: بازیابی SubscriptionPlan واقعی از Tenant context در آینده).
+- **تست‌های کامل PlaceOrderCommandHandler** (6 تست جدید):
+  - HandleAsync_ValidCommand_CreatesOrderAndSendsSms: تست جریان موفق با ارسال SMS
+  - HandleAsync_SmsFailure_DoesNotPreventOrderCreation: تست مقاومت در برابر خطای SMS
+  - HandleAsync_InvalidTenantId_ThrowsBusinessRuleViolation: تست اعتبارسنجی TenantId
+  - HandleAsync_EmptyItems_ThrowsBusinessRuleViolation: تست اعتبارسنجی لیست آیتم‌ها
+  - HandleAsync_InvalidPhoneNumber_ThrowsBusinessRuleViolation: تست اعتبارسنجی شماره تلفن
+  - HandleAsync_MultipleItems_CreatesOrderWithAllItems: تست سفارش با چندین آیتم
+- Mock کامل ISmsSender، IOrderRealtimeNotifier، IOrderRepository، IOrderNumberGenerator و IUnitOfWork در تست‌ها.
+- اجرای `dotnet build` (موفق) و `dotnet test` (موفق، 153 تست شامل 6 تست جدید، مدت 2.5 ثانیه).
+- **نتیجه**: سیستم سفارش‌گیری اکنون با قابلیت اعلان بلادرنگ (SignalR) و پیامک تأییدیه (SMS) کامل است. تنها مرحله باقی‌مانده: تست End-to-End.
+
 ## 2025-10-01 (cart-testing-complete)
 - **نوشتن تست‌های جامع برای CartController و SessionShoppingCartService**: ایجاد 37 تست واحد جدید برای پوشش کامل جریان سبد خرید و checkout.
 - **تست‌های CartControllerTests** (19 تست): پوشش تمام اکشن‌ها شامل Index، AddToCart، RemoveFromCart، UpdateQuantity، ClearCart، Checkout (GET/POST)، OrderConfirmation با mock dependencies و سناریوهای خطا.
