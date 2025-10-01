@@ -11,6 +11,7 @@ public sealed class DashboardTenantProvider : IDashboardTenantProvider
 {
     private readonly EazyMenuDbContext _dbContext;
     private Guid? _cachedTenantId;
+    private Guid? _cachedBranchId;
 
     public DashboardTenantProvider(EazyMenuDbContext dbContext)
     {
@@ -47,5 +48,30 @@ public sealed class DashboardTenantProvider : IDashboardTenantProvider
 
         _cachedTenantId = tenantId;
         return tenantId;
+    }
+
+    public async Task<Guid?> GetDefaultBranchIdAsync(Guid tenantId, CancellationToken cancellationToken = default)
+    {
+        if (_cachedBranchId.HasValue)
+        {
+            return _cachedBranchId.Value;
+        }
+
+        // Branch is an owned entity, so we need to query through Tenant
+        var branchId = await _dbContext.Tenants
+            .AsNoTracking()
+            .Where(t => t.Id.Value == tenantId)
+            .SelectMany(t => t.Branches)
+            .OrderBy(b => b.Name)
+            .Select(b => b.Id.Value)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (branchId == Guid.Empty)
+        {
+            return null;
+        }
+
+        _cachedBranchId = branchId;
+        return branchId;
     }
 }

@@ -58,29 +58,46 @@ public sealed class ReservationsController : Controller
         _markNoShowHandler = markNoShowHandler;
     }
 
+    /// <summary>
+    /// Helper method to get current tenant and its default branch
+    /// </summary>
+    private async Task<(Guid? tenantId, Guid? branchId)> GetTenantAndBranchAsync(CancellationToken cancellationToken)
+    {
+        var tenantId = await _tenantProvider.GetActiveTenantIdAsync(cancellationToken);
+        if (!tenantId.HasValue)
+        {
+            return (null, null);
+        }
+
+        var branchId = await _tenantProvider.GetDefaultBranchIdAsync(tenantId.Value, cancellationToken);
+        return (tenantId, branchId);
+    }
+
     [HttpGet]
     public async Task<IActionResult> Index(DayOfWeek? dayOfWeek, CancellationToken cancellationToken)
     {
-        var tenantId = await _tenantProvider.GetActiveTenantIdAsync(cancellationToken);
+        var (tenantId, branchId) = await GetTenantAndBranchAsync(cancellationToken);
         if (!tenantId.HasValue)
         {
             TempData["ReservationError"] = "برای مشاهده رزروها ابتدا باید رستوران فعال انتخاب شود.";
             return RedirectToAction("Index", "Dashboard");
         }
 
-        // TODO: باید BranchId را از کاربر یا تنظیمات بگیریم
-        // فعلاً از اولین Branch استفاده می‌کنیم
-        var branchId = Guid.NewGuid(); // باید از دیتابیس بگیریم
+        if (!branchId.HasValue)
+        {
+            TempData["ReservationError"] = "هیچ شعبه‌ای برای این رستوران تعریف نشده است. لطفاً ابتدا یک شعبه ایجاد کنید.";
+            return RedirectToAction("Index", "Dashboard");
+        }
 
         var selectedDay = dayOfWeek ?? DateTime.Today.DayOfWeek;
-        var query = new GetReservationsForDayQuery(tenantId.Value, branchId, selectedDay);
+        var query = new GetReservationsForDayQuery(tenantId.Value, branchId.Value, selectedDay);
 
         try
         {
             var reservations = await _getReservationsHandler.HandleAsync(query, cancellationToken);
             var model = new ReservationListViewModel(
                 tenantId.Value,
-                branchId,
+                branchId.Value,
                 selectedDay,
                 reservations.Select(r => new ReservationSummaryViewModel(
                     r.ReservationId,
@@ -107,25 +124,28 @@ public sealed class ReservationsController : Controller
     [HttpGet]
     public async Task<IActionResult> Create(CancellationToken cancellationToken)
     {
-        var tenantId = await _tenantProvider.GetActiveTenantIdAsync(cancellationToken);
+        var (tenantId, branchId) = await GetTenantAndBranchAsync(cancellationToken);
         if (!tenantId.HasValue)
         {
-            TempData["ReservationError"] = "برای ایجاد رزرو ابتدا باید رستوران فعال انتخاب شود.";
-            return RedirectToAction("Index");
+            TempData["ErrorMessage"] = "برای ثبت رزرو ابتدا باید رستوران فعال انتخاب شود.";
+            return RedirectToAction("Index", "Dashboard");
         }
 
-        // TODO: باید BranchId را از کاربر بگیریم
-        var branchId = Guid.NewGuid();
+        if (!branchId.HasValue)
+        {
+            TempData["ErrorMessage"] = "هیچ شعبه‌ای برای این رستوران تعریف نشده است.";
+            return RedirectToAction("Index", "Dashboard");
+        }
 
         try
         {
-            var tablesQuery = new GetBranchTablesQuery(tenantId.Value, branchId);
+            var tablesQuery = new GetBranchTablesQuery(tenantId.Value, branchId.Value);
             var tables = await _getBranchTablesHandler.HandleAsync(tablesQuery, cancellationToken);
 
             var model = new CreateReservationViewModel
             {
                 TenantId = tenantId.Value,
-                BranchId = branchId,
+                BranchId = branchId.Value,
                 AvailableTables = tables.Select(t => new TableOptionViewModel(
                     t.TableId,
                     t.Label,
@@ -249,21 +269,18 @@ public sealed class ReservationsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Confirm(Guid reservationId, string? note, CancellationToken cancellationToken)
     {
-        var tenantId = await _tenantProvider.GetActiveTenantIdAsync(cancellationToken);
-        if (!tenantId.HasValue)
+        var (tenantId, branchId) = await GetTenantAndBranchAsync(cancellationToken);
+        if (!tenantId.HasValue || !branchId.HasValue)
         {
-            return BadRequest(new { message = "رستوران فعال مشخص نشده است." });
+            return BadRequest(new { success = false, message = "رستوران یا شعبه فعال یافت نشد." });
         }
-
-        // TODO: باید BranchId را از کاربر بگیریم
-        var branchId = Guid.NewGuid();
 
         try
         {
-            var command = new ConfirmReservationCommand(reservationId, tenantId.Value, branchId, note);
+            var command = new ConfirmReservationCommand(reservationId, tenantId.Value, branchId.Value, note);
             await _confirmReservationHandler.HandleAsync(command, cancellationToken);
 
-            return Ok(new { message = "رزرو با موفقیت تایید شد." });
+            return Ok(new { success = true, message = "رزرو با موفقیت تایید شد." });
         }
         catch (NotFoundException)
         {
@@ -284,20 +301,18 @@ public sealed class ReservationsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Cancel(Guid reservationId, string reason, CancellationToken cancellationToken)
     {
-        var tenantId = await _tenantProvider.GetActiveTenantIdAsync(cancellationToken);
-        if (!tenantId.HasValue)
+        var (tenantId, branchId) = await GetTenantAndBranchAsync(cancellationToken);
+        if (!tenantId.HasValue || !branchId.HasValue)
         {
-            return BadRequest(new { message = "رستوران فعال مشخص نشده است." });
+            return BadRequest(new { success = false, message = "رستوران یا شعبه فعال یافت نشد." });
         }
-
-        var branchId = Guid.NewGuid(); // TODO: از کاربر بگیریم
 
         try
         {
-            var command = new CancelReservationCommand(reservationId, tenantId.Value, branchId, reason);
+            var command = new CancelReservationCommand(reservationId, tenantId.Value, branchId.Value, reason);
             await _cancelReservationHandler.HandleAsync(command, cancellationToken);
 
-            return Ok(new { message = "رزرو با موفقیت لغو شد." });
+            return Ok(new { success = true, message = "رزرو با موفقیت لغو شد." });
         }
         catch (NotFoundException)
         {
@@ -318,20 +333,18 @@ public sealed class ReservationsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CheckIn(Guid reservationId, string? note, CancellationToken cancellationToken)
     {
-        var tenantId = await _tenantProvider.GetActiveTenantIdAsync(cancellationToken);
-        if (!tenantId.HasValue)
+        var (tenantId, branchId) = await GetTenantAndBranchAsync(cancellationToken);
+        if (!tenantId.HasValue || !branchId.HasValue)
         {
-            return BadRequest(new { message = "رستوران فعال مشخص نشده است." });
+            return BadRequest(new { success = false, message = "رستوران یا شعبه فعال یافت نشد." });
         }
-
-        var branchId = Guid.NewGuid(); // TODO
 
         try
         {
-            var command = new CheckInReservationCommand(reservationId, tenantId.Value, branchId, note);
+            var command = new CheckInReservationCommand(reservationId, tenantId.Value, branchId.Value, note);
             await _checkInReservationHandler.HandleAsync(command, cancellationToken);
 
-            return Ok(new { message = "مشتری با موفقیت چک‌این شد." });
+            return Ok(new { success = true, message = "مشتری با موفقیت چک‌این شد." });
         }
         catch (NotFoundException)
         {
@@ -352,20 +365,18 @@ public sealed class ReservationsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MarkNoShow(Guid reservationId, string? note, CancellationToken cancellationToken)
     {
-        var tenantId = await _tenantProvider.GetActiveTenantIdAsync(cancellationToken);
-        if (!tenantId.HasValue)
+        var (tenantId, branchId) = await GetTenantAndBranchAsync(cancellationToken);
+        if (!tenantId.HasValue || !branchId.HasValue)
         {
-            return BadRequest(new { message = "رستوران فعال مشخص نشده است." });
+            return BadRequest(new { success = false, message = "رستوران یا شعبه فعال یافت نشد." });
         }
-
-        var branchId = Guid.NewGuid(); // TODO
 
         try
         {
-            var command = new MarkReservationNoShowCommand(reservationId, tenantId.Value, branchId, note);
+            var command = new MarkReservationNoShowCommand(reservationId, tenantId.Value, branchId.Value, note);
             await _markNoShowHandler.HandleAsync(command, cancellationToken);
 
-            return Ok(new { message = "رزرو به عنوان عدم‌حضور ثبت شد." });
+            return Ok(new { success = true, message = "رزرو به عنوان عدم‌حضور ثبت شد." });
         }
         catch (NotFoundException)
         {

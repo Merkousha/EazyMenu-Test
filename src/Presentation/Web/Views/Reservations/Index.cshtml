@@ -1,0 +1,293 @@
+@model EazyMenu.Web.Models.Reservations.ReservationListViewModel
+
+@{
+    ViewData["Title"] = "رزروهای میز";
+    var daysOfWeek = new Dictionary<DayOfWeek, string>
+    {
+        { DayOfWeek.Saturday, "شنبه" },
+        { DayOfWeek.Sunday, "یکشنبه" },
+        { DayOfWeek.Monday, "دوشنبه" },
+        { DayOfWeek.Tuesday, "سه‌شنبه" },
+        { DayOfWeek.Wednesday, "چهارشنبه" },
+        { DayOfWeek.Thursday, "پنج‌شنبه" },
+        { DayOfWeek.Friday, "جمعه" }
+    };
+}
+
+<div class="container" dir="rtl">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h1 class="h3 mb-1"><i class="bi bi-calendar-check"></i> رزروهای میز</h1>
+            <p class="text-muted mb-0 small">مدیریت رزروهای روزانه رستوران</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-primary" asp-action="Create">
+                <i class="bi bi-plus-circle"></i> رزرو جدید
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="bi bi-funnel"></i> فیلتر بر اساس روز</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">انتخاب روز هفته</label>
+                    <select name="selectedDay" class="form-select" onchange="this.form.submit()">
+                        <option value="">همه روزها</option>
+                        @foreach (var day in daysOfWeek)
+                        {
+                            <option value="@((int)day.Key)" selected="@(Model.SelectedDay == day.Key ? "selected" : null)">
+                                @day.Value
+                            </option>
+                        }
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.Reservations.Any())
+    {
+        <div class="row">
+            @foreach (var reservation in Model.Reservations.OrderBy(r => r.TimeSlot))
+            {
+                var statusBadge = reservation.Status switch
+                {
+                    "Pending" => "badge bg-warning text-dark",
+                    "Confirmed" => "badge bg-success",
+                    "Cancelled" => "badge bg-danger",
+                    "CheckedIn" => "badge bg-info",
+                    "Completed" => "badge bg-secondary",
+                    "NoShow" => "badge bg-dark",
+                    _ => "badge bg-secondary"
+                };
+
+                var statusText = reservation.Status switch
+                {
+                    "Pending" => "در انتظار تایید",
+                    "Confirmed" => "تایید شده",
+                    "Cancelled" => "لغو شده",
+                    "CheckedIn" => "حضور داده شده",
+                    "Completed" => "تکمیل شده",
+                    "NoShow" => "عدم حضور",
+                    _ => reservation.Status
+                };
+
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card h-100 shadow-sm" data-reservation-id="@reservation.ReservationId">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title mb-0">
+                                    <i class="bi bi-person-fill"></i> @reservation.CustomerName
+                                </h5>
+                                <span class="@statusBadge">@statusText</span>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-clock"></i> زمان:
+                                </small>
+                                <strong>@reservation.TimeSlot</strong>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-table"></i> میز:
+                                </small>
+                                <strong>شماره @reservation.TableId</strong>
+                            </div>
+
+                            <div class="mb-2">
+                                <small class="text-muted">
+                                    <i class="bi bi-people-fill"></i> تعداد نفرات:
+                                </small>
+                                <strong>@reservation.PartySize نفر</strong>
+                            </div>
+
+                            @if (!string.IsNullOrWhiteSpace(reservation.SpecialRequest))
+                            {
+                                <div class="mb-2">
+                                    <small class="text-muted">
+                                        <i class="bi bi-chat-left-dots"></i> درخواست ویژه:
+                                    </small>
+                                    <p class="mb-0 small">@reservation.SpecialRequest</p>
+                                </div>
+                            }
+
+                            @if (reservation.Status == "Pending")
+                            {
+                                <div class="d-flex gap-2 mt-3">
+                                    <button type="button" class="btn btn-sm btn-success flex-fill" 
+                                            onclick="confirmReservation('@reservation.ReservationId')">
+                                        <i class="bi bi-check-circle"></i> تایید
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger flex-fill" 
+                                            onclick="cancelReservation('@reservation.ReservationId')">
+                                        <i class="bi bi-x-circle"></i> لغو
+                                    </button>
+                                </div>
+                            }
+                            else if (reservation.Status == "Confirmed")
+                            {
+                                <div class="d-flex gap-2 mt-3">
+                                    <button type="button" class="btn btn-sm btn-info flex-fill" 
+                                            onclick="checkInReservation('@reservation.ReservationId')">
+                                        <i class="bi bi-box-arrow-in-right"></i> حضور
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-dark flex-fill" 
+                                            onclick="markNoShow('@reservation.ReservationId')">
+                                        <i class="bi bi-person-x"></i> عدم حضور
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            <i class="bi bi-info-circle"></i> 
+            @if (Model.SelectedDay.HasValue)
+            {
+                <text>هیچ رزرویی برای روز @daysOfWeek[Model.SelectedDay.Value] یافت نشد.</text>
+            }
+            else
+            {
+                <text>هنوز هیچ رزرویی ثبت نشده است.</text>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function confirmReservation(reservationId) {
+            if (!confirm('آیا از تایید این رزرو اطمینان دارید؟')) return;
+
+            fetch('@Url.Action("Confirm")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify({ reservationId: reservationId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('خطا: ' + (data.message || 'عملیات با خطا مواجه شد'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('خطا در ارتباط با سرور');
+            });
+        }
+
+        function cancelReservation(reservationId) {
+            const reason = prompt('لطفاً دلیل لغو را وارد کنید:');
+            if (!reason) return;
+
+            fetch('@Url.Action("Cancel")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify({ 
+                    reservationId: reservationId,
+                    cancellationReason: reason
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('خطا: ' + (data.message || 'عملیات با خطا مواجه شد'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('خطا در ارتباط با سرور');
+            });
+        }
+
+        function checkInReservation(reservationId) {
+            if (!confirm('آیا مشتری حضور داشته است؟')) return;
+
+            fetch('@Url.Action("CheckIn")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify({ reservationId: reservationId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('خطا: ' + (data.message || 'عملیات با خطا مواجه شد'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('خطا در ارتباط با سرور');
+            });
+        }
+
+        function markNoShow(reservationId) {
+            if (!confirm('آیا مشتری حضور نداشته است؟')) return;
+
+            fetch('@Url.Action("MarkNoShow")', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify({ reservationId: reservationId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('خطا: ' + (data.message || 'عملیات با خطا مواجه شد'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('خطا در ارتباط با سرور');
+            });
+        }
+    </script>
+    <form method="post">
+        @Html.AntiForgeryToken()
+    </form>
+}
