@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EazyMenu.Domain.ValueObjects;
 using EazyMenu.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,10 +58,11 @@ public sealed class DashboardTenantProvider : IDashboardTenantProvider
             return _cachedBranchId.Value;
         }
 
-        // Branch is an owned entity, so we need to query through Tenant
+    var tenantKey = TenantId.FromGuid(tenantId);
+
         var branchId = await _dbContext.Tenants
             .AsNoTracking()
-            .Where(t => t.Id.Value == tenantId)
+            .Where(t => t.Id == tenantKey)
             .SelectMany(t => t.Branches)
             .OrderBy(b => b.Name)
             .Select(b => b.Id.Value)

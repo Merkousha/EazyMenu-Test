@@ -238,5 +238,10 @@ public sealed class CustomerSmsLoginTests
         {
             throw new NotImplementedException();
         }
+
+        public Task<Tenant?> GetBySlugAsync(TenantSlug slug, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(Tenant.Slug == slug ? Tenant : null);
+        }
     }
 }

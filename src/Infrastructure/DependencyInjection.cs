@@ -77,8 +77,8 @@ public static class DependencyInjection
         services.AddScoped<IMenuRealtimeNotifier, SignalRMenuRealtimeNotifier>();
         services.AddScoped<IOrderRealtimeNotifier, SignalROrderNotifier>();
         services.AddScoped<EfMenuPublicationStore>();
-    services.AddScoped<IMenuPublicationWriter>(sp => sp.GetRequiredService<EfMenuPublicationStore>());
-    services.AddScoped<IMenuPublicationReader>(sp => sp.GetRequiredService<EfMenuPublicationStore>());
+        services.AddScoped<IMenuPublicationWriter>(sp => sp.GetRequiredService<EfMenuPublicationStore>());
+        services.AddScoped<IMenuPublicationReader>(sp => sp.GetRequiredService<EfMenuPublicationStore>());
         services.AddScoped<ISmsFailureAlertService, SmsFailureAlertService>();
         services.AddScoped<ISmsSender>(provider =>
         {
@@ -125,10 +125,11 @@ public static class DependencyInjection
             });
         }
 
-    services.AddScoped<IMenuRepository, MenuRepository>();
-    services.AddScoped<ITenantRepository, TenantRepository>();
+        services.AddScoped<IMenuRepository, MenuRepository>();
+        services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IReservationRepository, ReservationRepository>();
         services.AddScoped<IOrderNumberGenerator, SequentialOrderNumberGenerator>();
         
         // Identity services

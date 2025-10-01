@@ -47,6 +47,14 @@ using EazyMenu.Application.Features.Orders.GetOrderDetails;
 using EazyMenu.Application.Features.Orders.GetOrders;
 using EazyMenu.Application.Features.Orders.PlaceOrder;
 using EazyMenu.Application.Features.Payments.VerifyPayment;
+using EazyMenu.Application.Features.Reservations.Common;
+using EazyMenu.Application.Features.Reservations.CancelReservation;
+using EazyMenu.Application.Features.Reservations.CheckInReservation;
+using EazyMenu.Application.Features.Reservations.ConfirmReservation;
+using EazyMenu.Application.Features.Reservations.GetBranchTables;
+using EazyMenu.Application.Features.Reservations.GetReservationsForDay;
+using EazyMenu.Application.Features.Reservations.MarkReservationNoShow;
+using EazyMenu.Application.Features.Reservations.ScheduleReservation;
 using EazyMenu.Domain.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -93,6 +101,15 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CancelOrderCommand, bool>, CancelOrderCommandHandler>();
         services.AddScoped<IQueryHandler<GetOrdersQuery, IReadOnlyCollection<OrderSummaryDto>>, GetOrdersQueryHandler>();
         services.AddScoped<IQueryHandler<GetOrderDetailsQuery, OrderDetailsDto>, GetOrderDetailsQueryHandler>();
+        
+        // Reservation handlers
+        services.AddScoped<IQueryHandler<GetReservationsForDayQuery, IReadOnlyCollection<ReservationSummaryDto>>, GetReservationsForDayQueryHandler>();
+        services.AddScoped<IQueryHandler<GetBranchTablesQuery, IReadOnlyCollection<TableDto>>, GetBranchTablesQueryHandler>();
+        services.AddScoped<ICommandHandler<ScheduleReservationCommand, ReservationId>, ScheduleReservationCommandHandler>();
+        services.AddScoped<ICommandHandler<ConfirmReservationCommand, bool>, ConfirmReservationCommandHandler>();
+        services.AddScoped<ICommandHandler<CancelReservationCommand, bool>, CancelReservationCommandHandler>();
+        services.AddScoped<ICommandHandler<CheckInReservationCommand, bool>, CheckInReservationCommandHandler>();
+        services.AddScoped<ICommandHandler<MarkReservationNoShowCommand, bool>, MarkReservationNoShowCommandHandler>();
         
         // Identity commands
         services.AddScoped<RegisterUserCommandHandler>();

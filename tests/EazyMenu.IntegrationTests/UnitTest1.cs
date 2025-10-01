@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using EazyMenu.IntegrationTests;
+
+using System;
 using System.Threading.Tasks;
 using EazyMenu.Application;
 using EazyMenu.Application.Abstractions.Persistence;
@@ -150,7 +153,9 @@ public class RegisterTenantFlowTests
             scope.ServiceProvider.GetRequiredService<ITenantRepository>(),
             scope.ServiceProvider.GetRequiredService<IPaymentGatewayClient>(),
             scope.ServiceProvider.GetRequiredService<IUnitOfWork>(),
-            scope.ServiceProvider.GetRequiredService<IDateTimeProvider>());
+            scope.ServiceProvider.GetRequiredService<IDateTimeProvider>(),
+            new FakeWelcomeNotificationHandler(),
+            NullLogger<VerifyPaymentCommandHandler>.Instance);
 
         var verifyResult = await verifyHandler.HandleAsync(new VerifyPaymentCommand(
             registerResult.Payment!.PaymentId.Value,
@@ -212,12 +217,15 @@ public class RegisterTenantFlowTests
         await paymentRepository.UpdateAsync(paymentTransaction, default);
         await unitOfWork.SaveChangesAsync();
 
+
         var verifyHandler = new VerifyPaymentCommandHandler(
             paymentRepository,
             scope.ServiceProvider.GetRequiredService<ITenantRepository>(),
             scope.ServiceProvider.GetRequiredService<IPaymentGatewayClient>(),
             unitOfWork,
-            scope.ServiceProvider.GetRequiredService<IDateTimeProvider>());
+            scope.ServiceProvider.GetRequiredService<IDateTimeProvider>(),
+            new FakeWelcomeNotificationHandler(),
+            NullLogger<VerifyPaymentCommandHandler>.Instance);
 
         var verifyResult = await verifyHandler.HandleAsync(new VerifyPaymentCommand(
             registerResult.Payment.PaymentId.Value,

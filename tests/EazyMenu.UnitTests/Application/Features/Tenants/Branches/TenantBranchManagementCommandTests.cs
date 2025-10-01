@@ -153,6 +153,11 @@ public class TenantBranchManagementCommandTests
             WasUpdated = true;
             return Task.CompletedTask;
         }
+
+        public Task<Tenant?> GetBySlugAsync(TenantSlug slug, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(Tenant.Slug == slug ? Tenant : null);
+        }
     }
 
     private sealed class FakeUnitOfWork : IUnitOfWork

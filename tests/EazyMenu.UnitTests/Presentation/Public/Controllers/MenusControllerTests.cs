@@ -1,3 +1,4 @@
+using EazyMenu.Application.Abstractions.Persistence;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -162,9 +163,11 @@ public sealed class MenusControllerTests
 
     private MenusController CreateController()
     {
+        var tenantRepo = new Mock<ITenantRepository>().Object;
         return new MenusController(
             NullLogger<MenusController>.Instance,
             _queryHandler.Object,
+            tenantRepo,
             Options.Create(_tenantOptions));
     }
 }

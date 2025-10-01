@@ -87,6 +87,11 @@ public class TenantBranchQueryHandlerTests
         {
             return Task.CompletedTask;
         }
+
+        public Task<Tenant?> GetBySlugAsync(TenantSlug slug, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(_tenant.Slug == slug ? _tenant : null);
+        }
     }
 
     private sealed class InMemoryBranchRepository : IBranchRepository

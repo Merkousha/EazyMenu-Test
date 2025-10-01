@@ -4,16 +4,19 @@ using EazyMenu.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace EazyMenu.Infrastructure.Migrations
+namespace EazyMenu.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(EazyMenuDbContext))]
-    partial class EazyMenuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251001162834_AddReservations")]
+    partial class AddReservations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

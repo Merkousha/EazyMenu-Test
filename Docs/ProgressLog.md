@@ -7,6 +7,13 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-01 (reservation-stubs-di-hotfix)
+- **پشتیبانی موقت DI برای رزروها**: افزودن مجموعه‌ای از Stub Handlerها (`StubGetBranchTablesQueryHandler`, `StubScheduleReservationCommandHandler`, `StubConfirm/Cancel/CheckIn/MarkNoShowReservationCommandHandler`) برای جلوگیری از خطای `InvalidOperationException` هنگام ساخت `ReservationsController`.
+- **ثبت وابستگی‌ها در لایه Application**: به‌روزرسانی `DependencyInjection.cs` با ثبت تمام Stub Handlerهای رزرو و نگهداری ساختار Clean Architecture بدون افزودن پیاده‌سازی‌های پایدار پیش از آماده‌شدن لایه Infrastructure.
+- **Build موفق پس از آزادسازی قفل فایل**: اجرای `dotnet build src\Presentation\Web\EazyMenu.Web.csproj` (موفق) پس از پایان دادن به پردازش قبلی `EazyMenu.Web` که فایل‌های خروجی را قفل کرده بود (`taskkill /PID 82892 /F`).
+- **وضعیت تست‌ها**: اجرای `dotnet test tests\EazyMenu.UnitTests\EazyMenu.UnitTests.csproj` به‌دلیل نبود متد `GetBySlugAsync` در Mockهای داخلی `ITenantRepository` شکست؛ این خطا پیش از تغییرات فعلی وجود داشت و نیازمند به‌روزرسانی تست‌های Tenant است.
+- **گام بعدی پیشنهادی**: پیاده‌سازی Repository واقعی رزرو و جایگزینی Stubها، سپس بازبینی تست‌های Tenant برای افزودن متد جدید.
+
 ## 2025-10-01 (us1-complete)
 - **تکمیل 100% User Story 1: ثبت‌نام و مدیریت اشتراک**: پیاده‌سازی دو ویژگی آخر - Welcome Notification و نمایش اشتراک در Dashboard.
 - **سیستم Welcome Notification**: ایجاد `SendWelcomeNotificationCommand` و `SendWelcomeNotificationCommandHandler` (~155 خط) با قابلیت ارسال SMS و Email خوش‌آمدگویی به مشتریان جدید.

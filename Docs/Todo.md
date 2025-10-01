@@ -17,6 +17,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [ ] گزارش فروش منو (صفحه Sales Report با فیلتر تاریخ و Excel export).
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
+- [ ] تکمیل زیرساخت رزرو (پیاده‌سازی EF Core برای ReservationRepository، جایگزینی Stub Handlerها با نسخه واقعی و افزودن تست‌های یکپارچه).
 
 ## Done
 - [x] پیاده‌سازی کامل Welcome Notification System با SMS و Email پس از ثبت‌نام (SendWelcomeNotificationCommand، Handler، یکپارچه‌سازی در EfTenantProvisioningService و VerifyPaymentCommandHandler).

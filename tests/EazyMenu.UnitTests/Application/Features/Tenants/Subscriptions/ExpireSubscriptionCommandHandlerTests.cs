@@ -119,6 +119,13 @@ public sealed class ExpireSubscriptionCommandHandlerTests
             WasUpdated = true;
             return Task.CompletedTask;
         }
+
+        public Task<Tenant?> GetBySlugAsync(TenantSlug slug, CancellationToken cancellationToken = default)
+        {
+            if (_tenant is null)
+                return Task.FromResult<Tenant?>(null);
+            return Task.FromResult(_tenant.Slug == slug ? _tenant : null);
+        }
     }
 
     private sealed class FakeUnitOfWork : IUnitOfWork
