@@ -7,42 +7,55 @@
     var persianCulture = new CultureInfo("fa-IR");
 }
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 <div class="row">
-    <div class="col-md-8">
-        <div class="alert alert-success" role="alert">
-            <h4 class="alert-heading">خوش آمدید، @ViewBag.UserName!</h4>
-            <p>شما با موفقیت وارد سیستم شدید.</p>
-            <hr>
-            <p class="mb-0">
-                <strong>نقش:</strong> @ViewBag.UserRole
-            </p>
+    <div class="col-lg-8 col-md-7">
+        <!--begin::Welcome Card-->
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="bi bi-emoji-smile"></i> خوش آمدید
+                </h3>
+            </div>
+            <div class="card-body">
+                <h5>سلام، @ViewBag.UserName!</h5>
+                <p>شما با موفقیت وارد سیستم مدیریت EazyMenu شدید.</p>
+                <hr>
+                <p class="mb-0">
+                    <strong><i class="bi bi-shield-check"></i> نقش:</strong> 
+                    <span class="badge bg-info">@ViewBag.UserRole</span>
+                </p>
+            </div>
         </div>
+        <!--end::Welcome Card-->
     </div>
 
     @if (subscription is not null)
     {
-        <div class="col-md-4">
-            <div class="card @(subscription.Status == SubscriptionStatus.Active ? "border-success" : "border-warning")">
-                <div class="card-header @(subscription.Status == SubscriptionStatus.Active ? "bg-success text-white" : "bg-warning")">
-                    <h5 class="card-title mb-0">
-                        <i class="bi bi-award"></i> اطلاعات اشتراک
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p class="card-text">
-                        <strong>پلن:</strong> 
+        <div class="col-lg-4 col-md-5">
+            <!--begin::Subscription Info Box-->
+            <div class="info-box @(subscription.Status == SubscriptionStatus.Active ? "bg-success" : "bg-warning")">
+                <span class="info-box-icon"><i class="bi bi-award"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">
                         @if (subscription.IsTrial)
                         {
-                            <span class="badge bg-info">آزمایشی</span>
+                            <span class="badge bg-light">آزمایشی</span>
                         }
                         @subscription.Plan.ToString()
-                        <br/>
-                        
-                        <strong>وضعیت:</strong>
+                    </span>
+                    <span class="info-box-number">
                         @switch (subscription.Status)
                         {
                             case SubscriptionStatus.Active:
-                                <span class="badge bg-success">فعال</span>
+                                <span class="badge bg-light">فعال</span>
                                 break;
                             case SubscriptionStatus.Expired:
                                 <span class="badge bg-danger">منقضی شده</span>
@@ -57,112 +70,134 @@
                                 <span class="badge bg-secondary">@subscription.Status.ToString()</span>
                                 break;
                         }
-                        <br/>
-                        
-                        @if (subscription.EndDateUtc.HasValue)
-                        {
-                            var endDate = subscription.EndDateUtc.Value.ToString("yyyy/MM/dd", persianCulture);
-                            var daysRemaining = (subscription.EndDateUtc.Value - DateTime.UtcNow).Days;
-                            
-                            <strong>اعتبار تا:</strong> @endDate
-                            <br/>
-                            
-                            @if (daysRemaining > 0 && daysRemaining <= 7)
-                            {
-                                <div class="alert alert-warning mt-2 mb-0 py-1 px-2 small">
-                                    <i class="bi bi-exclamation-triangle"></i> 
-                                    @daysRemaining روز تا پایان اشتراک باقی مانده است
-                                </div>
-                            }
-                            else if (daysRemaining > 7)
-                            {
-                                <small class="text-muted">@daysRemaining روز باقی مانده</small>
-                            }
-                        }
-                        else
-                        {
-                            <small class="text-muted">اشتراک نامحدود</small>
-                        }
-                    </p>
+                    </span>
                     
-                    @if (subscription.DiscountPercentage.HasValue && !string.IsNullOrEmpty(subscription.DiscountCode))
+                    @if (subscription.EndDateUtc.HasValue)
                     {
-                        <div class="alert alert-info mt-2 mb-0 py-1 px-2 small">
-                            <i class="bi bi-tag"></i> 
-                            @subscription.DiscountPercentage.Value.ToString("P0") تخفیف با کد @subscription.DiscountCode
+                        var endDate = subscription.EndDateUtc.Value.ToString("yyyy/MM/dd", persianCulture);
+                        var daysRemaining = (subscription.EndDateUtc.Value - DateTime.UtcNow).Days;
+                        
+                        <div class="progress mt-2">
+                            <div class="progress-bar" role="progressbar" style="width: @((daysRemaining > 0 ? daysRemaining : 0) * 3)%" 
+                                 aria-valuenow="@daysRemaining" aria-valuemin="0" aria-valuemax="30">
+                            </div>
                         </div>
+                        <span class="progress-description">
+                            @if (daysRemaining > 0)
+                            {
+                                <text>@daysRemaining روز باقی مانده - اعتبار تا @endDate</text>
+                            }
+                            else
+                            {
+                                <text>منقضی شده</text>
+                            }
+                        </span>
                     }
                 </div>
             </div>
+            <!--end::Subscription Info Box-->
+            
+            @if (subscription.DiscountPercentage.HasValue && !string.IsNullOrEmpty(subscription.DiscountCode))
+            {
+                <div class="callout callout-info">
+                    <h5><i class="bi bi-tag"></i> کد تخفیف فعال</h5>
+                    <p>@subscription.DiscountPercentage.Value.ToString("P0") تخفیف با کد <strong>@subscription.DiscountCode</strong></p>
+                </div>
+            }
+            
+            @if (subscription.EndDateUtc.HasValue)
+            {
+                var daysRemaining = (subscription.EndDateUtc.Value - DateTime.UtcNow).Days;
+                @if (daysRemaining > 0 && daysRemaining <= 7)
+                {
+                    <div class="callout callout-warning">
+                        <h5><i class="bi bi-exclamation-triangle"></i> هشدار</h5>
+                        <p>تنها @daysRemaining روز تا پایان اشتراک باقی مانده است!</p>
+                    </div>
+                }
+            }
         </div>
     }
     else
     {
-        <div class="col-md-4">
-            <div class="card border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="bi bi-exclamation-triangle"></i> اطلاعات اشتراک
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p class="card-text text-danger">
-                        اطلاعات اشتراک در دسترس نیست. لطفاً با پشتیبانی تماس بگیرید.
-                    </p>
-                </div>
+        <div class="col-lg-4 col-md-5">
+            <div class="callout callout-danger">
+                <h5><i class="bi bi-exclamation-triangle"></i> اطلاعات اشتراک</h5>
+                <p>اطلاعات اشتراک در دسترس نیست. لطفاً با پشتیبانی تماس بگیرید.</p>
             </div>
         </div>
     }
 </div>
 
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card text-white bg-primary">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-menu-button-wide"></i> مدیریت منو</h5>
-                <p class="card-text">ایجاد و ویرایش منوی رستوران</p>
-                <a asp-controller="Menus" asp-action="Index" class="btn btn-light">مشاهده منوها</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4 mb-4">
-        <div class="card text-white bg-success">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-receipt"></i> سفارش‌ها</h5>
-                <p class="card-text">مدیریت و پیگیری سفارشات</p>
-                <a asp-controller="Orders" asp-action="Index" class="btn btn-light">مشاهده سفارش‌ها</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4 mb-4">
-        <div class="card text-white bg-warning">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-calendar-check"></i> رزرو میز</h5>
-                <p class="card-text">مدیریت رزرو میزهای رستوران</p>
-                <a asp-controller="Reservations" asp-action="Index" class="btn btn-light">مشاهده رزروها</a>
-            </div>
-        </div>
+<!--begin::Quick Actions-->
+<div class="row mt-4">
+    <div class="col-12">
+        <h5 class="mb-3">دسترسی سریع</h5>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card text-white bg-info">
-            <div class="card-body">
-                <h5 class="card-title"><i class="bi bi-chat-dots"></i> گزارش پیامک‌ها</h5>
-                <p class="card-text">مشاهده لاگ‌های ارسال پیامک</p>
-                <a asp-controller="Notifications" asp-action="SmsLogs" class="btn btn-light">مشاهده گزارش‌ها</a>
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+        <!--begin::Small Box Widget-->
+        <div class="small-box text-bg-primary">
+            <div class="inner">
+                <h3>منو</h3>
+                <p>مدیریت منوی دیجیتال</p>
             </div>
+            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M11.25 4.533A9.707 9.707 0 006 3a9.735 9.735 0 00-3.25.555.75.75 0 00-.5.707v14.25a.75.75 0 001 .707A8.237 8.237 0 016 18.75c1.995 0 3.823.707 5.25 1.886V4.533zM12.75 20.636A8.214 8.214 0 0118 18.75c.966 0 1.89.166 2.75.47a.75.75 0 001-.708V4.262a.75.75 0 00-.5-.707A9.735 9.735 0 0018 3a9.707 9.707 0 00-5.25 1.533v16.103z"></path>
+            </svg>
+            <a asp-controller="Menus" asp-action="Index" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                اطلاعات بیشتر <i class="bi bi-arrow-left-circle-fill"></i>
+            </a>
+        </div>
+        <!--end::Small Box Widget-->
+    </div>
+
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+        <div class="small-box text-bg-success">
+            <div class="inner">
+                <h3>سفارش</h3>
+                <p>مدیریت سفارشات</p>
+            </div>
+            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M2.25 2.25a.75.75 0 000 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 00-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 000-1.5H5.378A2.25 2.25 0 017.5 15h11.218a.75.75 0 00.674-.421 60.358 60.358 0 002.96-7.228.75.75 0 00-.525-.965A60.864 60.864 0 005.68 4.509l-.232-.867A1.875 1.875 0 003.636 2.25H2.25zM3.75 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM16.5 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"></path>
+            </svg>
+            <a asp-controller="Orders" asp-action="Index" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                اطلاعات بیشتر <i class="bi bi-arrow-left-circle-fill"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+        <div class="small-box text-bg-warning">
+            <div class="inner">
+                <h3>رزرو</h3>
+                <p>مدیریت رزرو میز</p>
+            </div>
+            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M12.75 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM7.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM8.25 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM9.75 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM10.5 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12.75 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14.25 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 13.5a.75.75 0 100-1.5.75.75 0 000 1.5z"></path>
+                <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clip-rule="evenodd"></path>
+            </svg>
+            <a asp-controller="Reservations" asp-action="Index" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover">
+                اطلاعات بیشتر <i class="bi bi-arrow-left-circle-fill"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 col-sm-6 col-12">
+        <div class="small-box text-bg-info">
+            <div class="inner">
+                <h3>پیامک</h3>
+                <p>گزارش ارسال پیامک‌ها</p>
+            </div>
+            <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path clip-rule="evenodd" fill-rule="evenodd" d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-3.476.383.39.39 0 00-.297.17l-2.755 4.133a.75.75 0 01-1.248 0l-2.755-4.133a.39.39 0 00-.297-.17 48.9 48.9 0 01-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97zM6.75 8.25a.75.75 0 01.75-.75h9a.75.75 0 010 1.5h-9a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H7.5z"></path>
+            </svg>
+            <a asp-controller="Notifications" asp-action="SmsLogs" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover">
+                اطلاعات بیشتر <i class="bi bi-arrow-left-circle-fill"></i>
+            </a>
         </div>
     </div>
 </div>
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
+<!--end::Quick Actions-->

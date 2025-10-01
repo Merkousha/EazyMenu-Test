@@ -10,6 +10,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 ## In Progress
 - [ ] تست End-to-End سیستم رزرو میز (ایجاد رزرو → تأیید → CheckIn → نمایش در لیست).
 - [ ] تست End-to-End جریان کامل سفارش‌گیری (منو → سبد → checkout → SignalR → SMS → مدیریت).
+- [ ] تست End-to-End جریان ثبت‌نام با Welcome Notification و نمایش اشتراک در Dashboard.
 
 ## Up Next
 - [ ] افزودن نمودارها به داشبورد (Chart.js integration - GetSalesStatistics، GetPopularItems، GetOrderStatistics).
@@ -18,6 +19,8 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] پیاده‌سازی کامل Welcome Notification System با SMS و Email پس از ثبت‌نام (SendWelcomeNotificationCommand، Handler، یکپارچه‌سازی در EfTenantProvisioningService و VerifyPaymentCommandHandler).
+- [x] افزودن نمایش اطلاعات اشتراک به Dashboard (اتصال GetActiveSubscriptionQuery به DashboardController، کارت اشتراک در Index.cshtml با status badges، تاریخ انقضا فارسی، هشدار اشتراک‌های نزدیک به پایان).
 - [x] پیاده‌سازی کامل UI سیستم رزرو میز (ReservationsController، ViewModels، Views با AJAX، BranchId Provider، Automatic Table Selection، Navigation Integration).
 - [x] رفع خطاهای compile مربوط به DayOfWeek nullable و TableId missing در Views.
 - [x] آماده‌سازی پایگاه داده با افزودن 5 میز نمونه برای تست جریان رزرو.

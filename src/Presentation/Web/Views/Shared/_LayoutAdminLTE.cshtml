@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<!--begin::Head-->
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - EazyMenu</title>
+    
+    <!--begin::Fonts-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazirmatn@33.0.3/Vazirmatn-font-face.css" />
+    <!--end::Fonts-->
+    
+    <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" crossorigin="anonymous" />
+    <!--end::Third Party Plugin(OverlayScrollbars)-->
+    
+    <!--begin::Third Party Plugin(Bootstrap Icons)-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" crossorigin="anonymous" />
+    <!--end::Third Party Plugin(Bootstrap Icons)-->
+    
+    <!--begin::Required Plugin(AdminLTE RTL)-->
+    <link rel="stylesheet" href="~/lib/adminlte/css/adminlte.rtl.min.css" />
+    <!--end::Required Plugin(AdminLTE RTL)-->
+    
+    <!--begin::Custom RTL Enhancements-->
+    <link rel="stylesheet" href="~/css/adminlte-rtl-custom.css" />
+    <!--end::Custom RTL Enhancements-->
+    
+    <!--begin::Custom CSS-->
+    <style>
+        body {
+            font-family: Vazirmatn, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        
+        .brand-link {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .brand-text {
+            font-weight: 600;
+        }
+        
+        /* تنظیمات RTL بهتر */
+        .main-sidebar {
+            right: 0 !important;
+            left: auto !important;
+        }
+        
+        .content-wrapper {
+            margin-right: 250px !important;
+            margin-left: 0 !important;
+        }
+        
+        /* وقتی Sidebar باز است */
+        body:not(.sidebar-collapse) .content-wrapper {
+            margin-right: 250px !important;
+        }
+        
+        /* وقتی Sidebar بسته است */
+        body.sidebar-collapse .content-wrapper {
+            margin-right: 0 !important;
+        }
+        
+        /* Menu Icons RTL */
+        .nav-sidebar .nav-link p {
+            margin-right: 0.5rem;
+        }
+        
+        /* User Panel RTL */
+        .user-panel .image {
+            padding-right: 0;
+            padding-left: 10px;
+        }
+        
+        /* Navbar RTL */
+        .navbar-nav {
+            flex-direction: row;
+        }
+        
+        .navbar-nav.ms-auto {
+            margin-right: auto !important;
+            margin-left: 0 !important;
+        }
+        
+        /* Dropdown RTL */
+        .dropdown-menu {
+            right: 0;
+            left: auto;
+        }
+        
+        /* Badge RTL */
+        .badge {
+            margin-right: 5px;
+        }
+        
+        /* Custom colors for EazyMenu */
+        .main-header .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .main-header .navbar .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+        
+        .main-header .navbar .nav-link:hover {
+            color: #fff !important;
+        }
+        
+        .brand-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .sidebar-dark-primary {
+            background-color: #1a1d2e;
+        }
+        
+        /* Active menu item */
+        .nav-sidebar .nav-item.menu-open > .nav-link,
+        .nav-sidebar .nav-link.active {
+            background-color: rgba(102, 126, 234, 0.15);
+            color: #667eea;
+        }
+    </style>
+    <!--end::Custom CSS-->
+    
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<!--end::Head-->
+
+<!--begin::Body-->
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+        
+        <!--begin::Header-->
+        <nav class="app-header navbar navbar-expand bg-body">
+            <!--begin::Container-->
+            <div class="container-fluid">
+                <!--begin::Start Navbar Links-->
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
+                            <i class="bi bi-list"></i>
+                        </a>
+                    </li>
+                </ul>
+                <!--end::Start Navbar Links-->
+                
+                <!--begin::End Navbar Links-->
+                <ul class="navbar-nav ms-auto">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <!--begin::User Menu Dropdown-->
+                        <li class="nav-item dropdown user-menu">
+                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="~/lib/adminlte/assets/img/avatar.png" class="user-image rounded-circle shadow" alt="User Image" style="width: 25px; height: 25px;">
+                                <span class="d-none d-md-inline">@User.Identity.Name</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
+                                <!--begin::User Image-->
+                                <li class="user-header text-bg-primary">
+                                    <img src="~/lib/adminlte/assets/img/avatar.png" class="rounded-circle shadow" alt="User Image">
+                                    <p>
+                                        @User.Identity.Name
+                                        <small>@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</small>
+                                        <small>@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value</small>
+                                    </p>
+                                </li>
+                                <!--end::User Image-->
+                                
+                                <!--begin::Menu Footer-->
+                                <li class="user-footer">
+                                    <a asp-controller="Account" asp-action="ChangePassword" class="btn btn-default btn-flat">
+                                        <i class="bi bi-key"></i> تغییر رمز عبور
+                                    </a>
+                                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline float-end">
+                                        <button type="submit" class="btn btn-default btn-flat">
+                                            <i class="bi bi-box-arrow-left"></i> خروج
+                                        </button>
+                                    </form>
+                                </li>
+                                <!--end::Menu Footer-->
+                            </ul>
+                        </li>
+                        <!--end::User Menu Dropdown-->
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Login">
+                                <i class="bi bi-box-arrow-in-left"></i> ورود
+                            </a>
+                        </li>
+                    }
+                </ul>
+                <!--end::End Navbar Links-->
+            </div>
+            <!--end::Container-->
+        </nav>
+        <!--end::Header-->
+        
+        <!--begin::Sidebar-->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!--begin::Brand Link-->
+            <a href="/" class="brand-link">
+                <img src="~/lib/adminlte/assets/img/AdminLTELogo.png" alt="EazyMenu Logo" class="brand-image opacity-75 shadow">
+                <span class="brand-text fw-light">EazyMenu</span>
+            </a>
+            <!--end::Brand Link-->
+            
+            <!--begin::Sidebar-->
+            <div class="sidebar">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <!--begin::User Panel-->
+                    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                        <div class="image">
+                            <img src="~/lib/adminlte/assets/img/avatar.png" class="img-circle elevation-2" alt="User Image">
+                        </div>
+                        <div class="info">
+                            <a href="#" class="d-block">@User.Identity.Name</a>
+                        </div>
+                    </div>
+                    <!--end::User Panel-->
+                }
+                
+                <!--begin::Sidebar Menu-->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
+                        
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <!--begin::Dashboard-->
+                            <li class="nav-item">
+                                <a asp-controller="Dashboard" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
+                                    <i class="nav-icon bi bi-speedometer2"></i>
+                                    <p>داشبورد</p>
+                                </a>
+                            </li>
+                            <!--end::Dashboard-->
+                            
+                            <!--begin::Menu Management-->
+                            <li class="nav-item">
+                                <a asp-controller="Menus" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Menus" ? "active" : "")">
+                                    <i class="nav-icon bi bi-book"></i>
+                                    <p>مدیریت منو</p>
+                                </a>
+                            </li>
+                            <!--end::Menu Management-->
+                            
+                            <!--begin::Orders-->
+                            <li class="nav-item">
+                                <a asp-controller="Orders" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" ? "active" : "")">
+                                    <i class="nav-icon bi bi-basket"></i>
+                                    <p>سفارش‌ها</p>
+                                </a>
+                            </li>
+                            <!--end::Orders-->
+                            
+                            <!--begin::Reservations-->
+                            <li class="nav-item">
+                                <a asp-controller="Reservations" asp-action="Index" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reservations" ? "active" : "")">
+                                    <i class="nav-icon bi bi-calendar-check"></i>
+                                    <p>رزرو میز</p>
+                                </a>
+                            </li>
+                            <!--end::Reservations-->
+                            
+                            <!--begin::Notifications-->
+                            <li class="nav-header">اعلان‌ها و گزارشات</li>
+                            <li class="nav-item">
+                                <a asp-controller="Notifications" asp-action="SmsLogs" class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Notifications" ? "active" : "")">
+                                    <i class="nav-icon bi bi-chat-dots"></i>
+                                    <p>گزارش پیامک‌ها</p>
+                                </a>
+                            </li>
+                            <!--end::Notifications-->
+                            
+                            <!--begin::Settings-->
+                            <li class="nav-header">تنظیمات</li>
+                            <li class="nav-item">
+                                <a asp-controller="Account" asp-action="ChangePassword" class="nav-link">
+                                    <i class="nav-icon bi bi-key"></i>
+                                    <p>تغییر رمز عبور</p>
+                                </a>
+                            </li>
+                            <!--end::Settings-->
+                        }
+                        else
+                        {
+                            <!--begin::Home-->
+                            <li class="nav-item">
+                                <a asp-controller="Home" asp-action="Index" class="nav-link">
+                                    <i class="nav-icon bi bi-house"></i>
+                                    <p>خانه</p>
+                                </a>
+                            </li>
+                            <!--end::Home-->
+                            
+                            <!--begin::Login-->
+                            <li class="nav-item">
+                                <a asp-controller="Account" asp-action="Login" class="nav-link">
+                                    <i class="nav-icon bi bi-box-arrow-in-left"></i>
+                                    <p>ورود</p>
+                                </a>
+                            </li>
+                            <!--end::Login-->
+                            
+                            <!--begin::Register-->
+                            <li class="nav-item">
+                                <a asp-controller="Account" asp-action="Register" class="nav-link">
+                                    <i class="nav-icon bi bi-person-plus"></i>
+                                    <p>ثبت نام</p>
+                                </a>
+                            </li>
+                            <!--end::Register-->
+                        }
+                        
+                    </ul>
+                </nav>
+                <!--end::Sidebar Menu-->
+            </div>
+            <!--end::Sidebar-->
+        </aside>
+        <!--end::Sidebar-->
+        
+        <!--begin::Content Wrapper-->
+        <div class="content-wrapper">
+            <!--begin::Content Header-->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">@ViewData["Title"]</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-end">
+                                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">خانه</a></li>
+                                @if (ViewContext.RouteData.Values["controller"] != null)
+                                {
+                                    <li class="breadcrumb-item active">@ViewContext.RouteData.Values["controller"]</li>
+                                }
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Content Header-->
+            
+            <!--begin::Main content-->
+            <div class="content">
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </div>
+            <!--end::Main content-->
+        </div>
+        <!--end::Content Wrapper-->
+        
+        <!--begin::Footer-->
+        <footer class="main-footer">
+            <div class="float-end d-none d-sm-inline">
+                نسخه 4.0.0
+            </div>
+            <strong>&copy; @DateTime.UtcNow.Year <a href="/">EazyMenu</a>.</strong>
+            تمامی حقوق محفوظ است.
+        </footer>
+        <!--end::Footer-->
+    </div>
+    <!--end::App Wrapper-->
+    
+    <!--begin::Required Scripts-->
+    <!--begin::Third Party Plugin(OverlayScrollbars)-->
+    <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js" crossorigin="anonymous"></script>
+    <!--end::Third Party Plugin(OverlayScrollbars)-->
+    
+    <!--begin::Required Plugin(Bootstrap)-->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!--end::Required Plugin(Bootstrap)-->
+    
+    <!--begin::Required Plugin(AdminLTE)-->
+    <script src="~/lib/adminlte/js/adminlte.min.js"></script>
+    <!--end::Required Plugin(AdminLTE)-->
+    
+    <!--begin::OverlayScrollbars Configure-->
+    <script>
+        const SELECTOR_SIDEBAR_WRAPPER = ".sidebar-wrapper";
+        const Default = {
+            scrollbarTheme: "os-theme-light",
+            scrollbarAutoHide: "leave",
+            scrollbarClickScroll: true,
+        };
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebarWrapper = document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
+            if (
+                sidebarWrapper &&
+                typeof OverlayScrollbarsGlobal?.OverlayScrollbars !== "undefined"
+            ) {
+                OverlayScrollbarsGlobal.OverlayScrollbars(sidebarWrapper, {
+                    scrollbars: {
+                        theme: Default.scrollbarTheme,
+                        autoHide: Default.scrollbarAutoHide,
+                        clickScroll: Default.scrollbarClickScroll,
+                    },
+                });
+            }
+        });
+    </script>
+    <!--end::OverlayScrollbars Configure-->
+    
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+<!--end::Body-->
+</html>

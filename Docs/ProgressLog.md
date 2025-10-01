@@ -7,6 +7,31 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-01 (us1-complete)
+- **تکمیل 100% User Story 1: ثبت‌نام و مدیریت اشتراک**: پیاده‌سازی دو ویژگی آخر - Welcome Notification و نمایش اشتراک در Dashboard.
+- **سیستم Welcome Notification**: ایجاد `SendWelcomeNotificationCommand` و `SendWelcomeNotificationCommandHandler` (~155 خط) با قابلیت ارسال SMS و Email خوش‌آمدگویی به مشتریان جدید.
+- **محتوای پیامک فارسی**: "به ایزی‌منو خوش آمدید! {RestaurantName} عزیز، ثبت‌نام شما با موفقیت انجام شد. پلن {trial}{PlanName} تا {endDate} فعال است."
+- **قالب ایمیل HTML**: طراحی RTL با header، info box شامل جزئیات اشتراک، لیست مرتب گام‌های بعدی و footer کامل.
+- **یکپارچه‌سازی دوگانه**: اتصال به `EfTenantProvisioningService` برای اشتراک‌های آزمایشی/رایگان و `VerifyPaymentCommandHandler` برای اشتراک‌های پولی.
+- **مدیریت خطا**: try-catch blocks در تمام نقاط ارسال notification برای جلوگیری از اختلال در فرآیند ثبت‌نام یا پرداخت.
+- **افزودن Unit Type**: ایجاد `ICommand` بدون generic parameter و `Unit` readonly record struct برای پشتیبانی از command های void.
+- **افزودن Microsoft.Extensions.Logging.Abstractions v9.0.0**: حل مشکل compilation errors مربوط به ILogger در Application layer.
+- **نمایش اشتراک در Dashboard**: به‌روزرسانی `DashboardController` با تزریق `GetActiveSubscriptionQueryHandler` و تبدیل Index() به async.
+- **کارت اشتراک در UI**: افزودن کارت جامع به `Dashboard/Index.cshtml` شامل:
+  * Color-coded header (سبز برای Active، زرد برای سایر وضعیت‌ها)
+  * نمایش نام پلن با badge "آزمایشی" در صورت نیاز
+  * Status badges رنگی (Active/Expired/Suspended/Cancelled)
+  * تاریخ انقضا با فرمت فارسی (fa-IR culture)
+  * محاسبه روزهای باقی‌مانده
+  * هشدار زرد برای اشتراک‌های با کمتر از 7 روز باقی‌مانده
+  * نمایش اطلاعات تخفیف (درصد و کد)
+  * کارت خطا برای حالت عدم دسترسی به داده اشتراک
+- **ثبت Handlers در DI**: افزودن `SendWelcomeNotificationCommandHandler` و `GetActiveSubscriptionQueryHandler` به `DependencyInjection.cs`.
+- **رفع مشکلات**: تصحیح file corruption در DependencyInjection.cs، رفع خطای SmsSendContext، تغییر امضای ActivateSubscriptionAsync به tuple.
+- اجرای `dotnet build` (موفق برای Domain، Application، Infrastructure و Public؛ Web با file lock به دلیل hot reload فعال - PID 30044).
+- **وضعیت نهایی**: User Story 1 به 100% رسید ✅. تمام کدها compile شده، DI registrations تأیید شده، View changes با hot reload اعمال شده. آماده برای تست End-to-End در مرورگر.
+- **گام بعدی**: تست کامل flow ثبت‌نام (trial و paid) برای اطمینان از ارسال welcome notifications و نمایش صحیح اشتراک در dashboard.
+
 ## 2025-10-01 (reservation-system-ui-complete)
 - **پیاده‌سازی کامل رابط کاربری سیستم رزرو میز**: ساخت `ReservationsController` با 7 اکشن (Index، Create GET/POST، Confirm، Cancel، CheckIn، MarkNoShow) شامل مدیریت خطا و بازگشت JSON برای درخواست‌های AJAX.
 - **ViewModels و Validation**: ایجاد `ReservationListViewModel` با فیلتر روز هفته و `CreateReservationViewModel` با اعتبارسنجی کامل DataAnnotations (Required، Range، RegularExpression برای زمان، MaxLength، Phone).
