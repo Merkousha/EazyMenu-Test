@@ -28,75 +28,107 @@
             </div>
         </header>
 
-        <section class="menu-categories">
-            @foreach (var category in menu.Categories)
+        <section class="menu-search mb-4">
+            <form method="get" asp-action="IndexByTenant" asp-controller="Menus" asp-route-tenantId="@menu!.TenantId">
+                <div class="input-group">
+                    <input
+                        type="search"
+                        class="form-control"
+                        name="q"
+                        value="@Model.SearchTerm"
+                        placeholder="جستجو در آیتم‌های منو..."
+                        aria-label="جستجو" />
+                    <button class="btn btn-primary" type="submit">جستجو</button>
+                    @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                    {
+                        <a class="btn btn-outline-secondary" asp-action="IndexByTenant" asp-controller="Menus" asp-route-tenantId="@menu!.TenantId">حذف فیلتر</a>
+                    }
+                </div>
+            </form>
+            @if (!string.IsNullOrEmpty(Model.SearchTerm))
             {
-                <article class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                        <div>
-                            <h2 class="h5 mb-0">@category.DisplayName</h2>
-                            @if (!string.IsNullOrWhiteSpace(category.IconUrl))
-                            {
-                                <a class="small" href="@category.IconUrl" target="_blank" rel="noopener">آیکون دسته</a>
-                            }
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        @if (!category.Items.Any())
-                        {
-                            <p class="text-muted mb-0">آیتمی برای نمایش وجود ندارد.</p>
-                        }
-                        else
-                        {
-                            <div class="row g-4">
-                                @foreach (var item in category.Items)
+                <p class="small text-muted mt-2 mb-0">نتایج برای «@Model.SearchTerm»</p>
+            }
+        </section>
+
+        @if (!Model.HasResults)
+        {
+            <div class="alert alert-info text-center" role="status">
+                هیچ آیتمی با عبارت وارد شده پیدا نشد. لطفاً عبارت دیگری را امتحان کنید.
+            </div>
+        }
+        else
+        {
+            <section class="menu-categories">
+                @foreach (var category in menu.Categories)
+                {
+                    <article class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h2 class="h5 mb-0">@category.DisplayName</h2>
+                                @if (!string.IsNullOrWhiteSpace(category.IconUrl))
                                 {
-                                    <div class="col-12 col-md-6">
-                                        <div class="menu-item h-100 border rounded-3 p-3">
-                                            <div class="d-flex gap-3">
-                                                @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
-                                                {
-                                                    <img src="@item.ImageUrl" alt="@item.DisplayName" class="rounded" style="width:96px;height:96px;object-fit:cover;" />
-                                                }
-                                                <div class="flex-grow-1">
-                                                    <div class="d-flex justify-content-between align-items-start">
-                                                        <h3 class="h6 mb-1">@item.DisplayName</h3>
-                                                        <span class="badge @(item.IsAvailable ? "bg-success" : "bg-secondary")">@item.AvailabilityLabel</span>
-                                                    </div>
-                                                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                                    <a class="small" href="@category.IconUrl" target="_blank" rel="noopener">آیکون دسته</a>
+                                }
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            @if (!category.Items.Any())
+                            {
+                                <p class="text-muted mb-0">آیتمی برای نمایش وجود ندارد.</p>
+                            }
+                            else
+                            {
+                                <div class="row g-4">
+                                    @foreach (var item in category.Items)
+                                    {
+                                        <div class="col-12 col-md-6">
+                                            <div class="menu-item h-100 border rounded-3 p-3">
+                                                <div class="d-flex gap-3">
+                                                    @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
                                                     {
-                                                        <p class="text-muted small mb-2">@item.Description</p>
+                                                        <img src="@item.ImageUrl" alt="@item.DisplayName" class="rounded" style="width:96px;height:96px;object-fit:cover;" />
                                                     }
-                                                    <div class="fw-bold">@item.BasePrice.FormatPrice() تومان</div>
-                                                    @if (item.ChannelPrices.Count > 0)
-                                                    {
-                                                        <ul class="list-unstyled small text-muted mb-0 mt-2">
-                                                            @foreach (var channel in item.ChannelPrices.OrderedChannels())
-                                                            {
-                                                                <li>@channel.Key: @channel.Value.FormatPrice() تومان</li>
-                                                            }
-                                                        </ul>
-                                                    }
-                                                    @if (item.Tags.Count > 0)
-                                                    {
-                                                        <div class="mt-2">
-                                                            @foreach (var tag in item.Tags)
-                                                            {
-                                                                <span class="badge bg-light text-dark me-1">@tag</span>
-                                                            }
+                                                    <div class="flex-grow-1">
+                                                        <div class="d-flex justify-content-between align-items-start">
+                                                            <h3 class="h6 mb-1">@item.DisplayName</h3>
+                                                            <span class="badge @(item.IsAvailable ? "bg-success" : "bg-secondary")">@item.AvailabilityLabel</span>
                                                         </div>
-                                                    }
+                                                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                                                        {
+                                                            <p class="text-muted small mb-2">@item.Description</p>
+                                                        }
+                                                        <div class="fw-bold">@item.BasePrice.FormatPrice() تومان</div>
+                                                        @if (item.ChannelPrices.Count > 0)
+                                                        {
+                                                            <ul class="list-unstyled small text-muted mb-0 mt-2">
+                                                                @foreach (var channel in item.ChannelPrices.OrderedChannels())
+                                                                {
+                                                                    <li>@channel.Key: @channel.Value.FormatPrice() تومان</li>
+                                                                }
+                                                            </ul>
+                                                        }
+                                                        @if (item.Tags.Count > 0)
+                                                        {
+                                                            <div class="mt-2">
+                                                                @foreach (var tag in item.Tags)
+                                                                {
+                                                                    <span class="badge bg-light text-dark me-1">@tag</span>
+                                                                }
+                                                            </div>
+                                                        }
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                }
-                            </div>
-                        }
-                    </div>
-                </article>
-            }
-        </section>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </article>
+                }
+            </section>
+        }
     }
 </div>
 

@@ -30,18 +30,22 @@ public sealed class MenusController : Controller
     }
 
     [HttpGet("menus")]
-    public IActionResult Index()
+    public IActionResult Index([FromQuery(Name = "q")] string? query)
     {
         if (_tenantSiteOptions.DefaultTenantId == Guid.Empty)
         {
-            return View("Index", new PublicMenuPageViewModel(Guid.Empty, false, null));
+            return View("Index", new PublicMenuPageViewModel(Guid.Empty, false, null, NormalizeQuery(query), false));
         }
 
-        return RedirectToAction(nameof(IndexByTenant), new { tenantId = _tenantSiteOptions.DefaultTenantId });
+        return RedirectToAction(nameof(IndexByTenant), new { tenantId = _tenantSiteOptions.DefaultTenantId, q = NormalizeQuery(query) });
     }
 
     [HttpGet("menus/{tenantId:guid}")]
-    public async Task<IActionResult> IndexByTenant(Guid tenantId, Guid? menuId, CancellationToken cancellationToken)
+    public async Task<IActionResult> IndexByTenant(
+        Guid tenantId,
+        Guid? menuId,
+        [FromQuery(Name = "q")] string? query,
+        CancellationToken cancellationToken)
     {
         PublishedMenuDto? snapshot;
         try
@@ -61,11 +65,22 @@ public sealed class MenusController : Controller
             return StatusCode(500, new { message = "در بازیابی منو خطایی رخ داد." });
         }
 
-        var model = PublicMenuViewModelFactory.CreatePageModel(snapshot, tenantId);
+        var normalizedQuery = NormalizeQuery(query);
+        var model = PublicMenuViewModelFactory.CreatePageModel(snapshot, tenantId, searchTerm: normalizedQuery);
         ViewData["Title"] = model.HasMenu && model.Menu is not null
             ? model.Menu.DisplayName
             : "منوی دیجیتال";
 
         return View("Index", model);
+    }
+
+    private static string? NormalizeQuery(string? query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return null;
+        }
+
+        return query.Trim();
     }
 }

@@ -8,14 +8,14 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - When closing an item here, log the details in `Docs/ProgressLog.md` for long-term history.
 
 ## In Progress
-_در حال حاضر آیتم فعالی ثبت نشده است._
+- [ ] تکمیل جریان‌های سفارش مشتری و کانال‌های آنلاین پس از آماده‌سازی UI مدیریت منو و اتصال آن به داده واقعی.
 
 ## Up Next
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
-- [ ] تکمیل جریان‌های سفارش مشتری و کانال‌های آنلاین پس از آماده‌سازی UI مدیریت منو و اتصال آن به داده واقعی.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] افزودن جستجوی منوی عمومی با فیلتر سمت سرور، فرم جستجوی Razor و تست‌های پوششی برای کنترلر/کارخانه ViewModel.
 - [x] آماده‌سازی کامل منوی دیجیتال شامل ذخیره‌سازی نسخه‌های منتشرشده، کنترلر/ویوی عمومی با SignalR و تست‌های پوششی برای انتشار منو.
 - [x] طراحی و پیاده‌سازی مسیر Quick Update قیمت/موجودی و به‌روزرسانی سریع Dashboard (فرمان تجمیعی، اکشن AJAX، View `QuickUpdate` و اسکریپت `menu-quick-update.js`).
 - [x] اتصال UI مدیریت منو به داده نمونه و Queries لایه Application (Controller، ViewModel، Viewها، ناوبری).

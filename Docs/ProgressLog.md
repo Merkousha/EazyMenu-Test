@@ -7,6 +7,19 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-10
+- رفع نگاشت `OrderMapper` برای تبدیل شناسه مستاجر به Guid هنگام تولید `OrderSummaryDto` و جلوگیری از بروز استثناهای زمان اجرا در صفحه داشبورد سفارش‌ها.
+- به‌روزرسانی رویداد دامنه `OrderCreatedDomainEvent` به رکورد برای هماهنگی با کلاس پایه `DomainEventBase` و ساده‌سازی مقداردهی.
+- اجرای `dotnet build` (موفق، مدت 12.1 ثانیه) و `dotnet test` (موفق، 110 تست، مدت 4.9 ثانیه) جهت اطمینان از سلامت تغییرات.
+- گام بعدی: ادامه پیاده‌سازی جریان‌های سفارش شامل هندلرهای Application و لایه Persistency.
+
+## 2025-10-09 (later)
+- اجرای گام اول بهبود تجربه منوی عمومی با افزودن جستجوی متنی سمت سرور و فیلتر نتایج در ViewModel (`PublicMenuViewModelFactory`) همراه با نگاشت وضعیت جستجو (`SearchTerm`, `HasResults`).
+- توسعه کنترلر/ویوی عمومی برای پذیرش پارامتر `q`، حذف فاصله‌های اضافی و نمایش فرم جستجو، حالت بدون نتیجه و لینک پاک‌سازی در `Views/Menus/Index.cshtml`.
+- نگارش تست‌های واحد جدید برای کنترلر (`MenusControllerTests`) و کارخانه ViewModel جهت پوشش سناریوهای جستجوی موفق/ناموفق و تضمین پالایش دسته‌ها.
+- اجرای `dotnet build` (موفق، مدت 15.9 ثانیه) و `dotnet test` (موفق، 110 تست، مدت 2.4 ثانیه) پس از اعمال تغییرات جهت اطمینان از سلامت کد.
+- گام بعدی: بررسی افزودن فیلترهای تکمیلی (بر اساس برچسب/قیمت) و پشتیبانی از انتخاب زبان دوم پس از ارزیابی بازخورد کاربران.
+
 ## 2025-10-09
 - تکمیل جریان انتشار منو با افزودن DTOهای انتشار (`MenuPublicationDto`)، کارخانه ساخت اسنپ‌شات و قراردادهای `IMenuPublicationWriter/Reader` برای ذخیره نسخه‌های منتشرشده.
 - پیاده‌سازی مدل و پیکربندی EF Core (`MenuPublication`)، ریپازیتوری `EfMenuPublicationStore` و مایگریشن `AddMenuPublications` به‌همراه ثبت وابستگی‌ها و Seed اولیه.

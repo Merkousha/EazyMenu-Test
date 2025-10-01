@@ -23,15 +23,93 @@ public static class PublicMenuViewModelFactory
             categories.Any(category => category.HasVisibleItems));
     }
 
-    public static PublicMenuPageViewModel CreatePageModel(PublishedMenuDto? snapshot, Guid tenantId, string preferredCulture = "fa-IR")
+    public static PublicMenuPageViewModel CreatePageModel(
+        PublishedMenuDto? snapshot,
+        Guid tenantId,
+        string preferredCulture = "fa-IR",
+        string? searchTerm = null)
     {
+        var normalizedSearchTerm = NormalizeSearchTerm(searchTerm);
+
         if (snapshot is null)
         {
-            return new PublicMenuPageViewModel(tenantId, false, null);
+            return new PublicMenuPageViewModel(tenantId, false, null, normalizedSearchTerm, false);
         }
 
         var menu = Create(snapshot, preferredCulture);
-        return new PublicMenuPageViewModel(tenantId, true, menu);
+
+        if (!string.IsNullOrEmpty(normalizedSearchTerm))
+        {
+            menu = ApplySearch(menu, normalizedSearchTerm);
+        }
+
+        var hasResults = menu.Categories.Any(category => category.Items.Any());
+
+        return new PublicMenuPageViewModel(tenantId, true, menu, normalizedSearchTerm, hasResults);
+    }
+
+    private static PublicMenuViewModel ApplySearch(PublicMenuViewModel menu, string searchTerm)
+    {
+        var comparison = StringComparison.CurrentCultureIgnoreCase;
+
+        var filteredCategories = menu.Categories
+            .Select(category => FilterCategory(category, searchTerm, comparison))
+            .Where(category => category.Items.Any())
+            .ToList();
+
+        var hasVisibleItems = filteredCategories.Any(category => category.HasVisibleItems);
+
+        return menu with
+        {
+            Categories = filteredCategories,
+            HasContent = hasVisibleItems
+        };
+    }
+
+    private static PublicMenuCategoryViewModel FilterCategory(
+        PublicMenuCategoryViewModel category,
+        string searchTerm,
+        StringComparison comparison)
+    {
+        var filteredItems = category.Items
+            .Where(item => MatchesQuery(item, searchTerm, comparison))
+            .ToList();
+
+        return category with
+        {
+            Items = filteredItems,
+            HasVisibleItems = filteredItems.Any(item => item.IsAvailable)
+        };
+    }
+
+    private static bool MatchesQuery(PublicMenuItemViewModel item, string searchTerm, StringComparison comparison)
+    {
+        if (!string.IsNullOrWhiteSpace(item.DisplayName) && item.DisplayName.Contains(searchTerm, comparison))
+        {
+            return true;
+        }
+
+        if (!string.IsNullOrWhiteSpace(item.Description) && item.Description.Contains(searchTerm, comparison))
+        {
+            return true;
+        }
+
+        if (item.Tags.Any(tag => tag.Contains(searchTerm, comparison)))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static string? NormalizeSearchTerm(string? searchTerm)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            return null;
+        }
+
+        return searchTerm.Trim();
     }
 
     private static PublicMenuCategoryViewModel MapCategory(PublishedMenuCategoryDto category, string preferredCulture)

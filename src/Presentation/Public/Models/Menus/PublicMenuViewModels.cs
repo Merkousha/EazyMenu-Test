@@ -7,7 +7,9 @@ namespace EazyMenu.Public.Models.Menus;
 public sealed record PublicMenuPageViewModel(
     Guid TenantId,
     bool HasMenu,
-    PublicMenuViewModel? Menu);
+    PublicMenuViewModel? Menu,
+    string? SearchTerm,
+    bool HasResults);
 
 public sealed record PublicMenuViewModel(
     Guid TenantId,
