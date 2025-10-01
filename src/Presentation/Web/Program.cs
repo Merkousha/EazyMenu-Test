@@ -1,5 +1,6 @@
 using EazyMenu.Application;
 using EazyMenu.Infrastructure;
+using EazyMenu.Infrastructure.Extensions;
 using EazyMenu.Infrastructure.Menus;
 using EazyMenu.Infrastructure.Notifications;
 using EazyMenu.Infrastructure.Persistence;
@@ -52,12 +53,11 @@ builder.Services.AddScoped<DashboardOrderViewModelFactory>();
 
 var app = builder.Build();
 
+// Initialize Database و Seed Data در محیط Development
 if (app.Environment.IsDevelopment())
 {
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<EazyMenuDbContext>();
-    await dbContext.Database.MigrateAsync();
-    await EazyMenuDbContextSeeder.SeedAsync(dbContext);
+    var seedData = builder.Configuration.GetValue<bool>("SeedData", true);
+    await app.InitializeDatabaseAsync(seedData);
 }
 
 // Configure the HTTP request pipeline.
