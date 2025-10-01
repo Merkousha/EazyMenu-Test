@@ -8,13 +8,20 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - When closing an item here, log the details in `Docs/ProgressLog.md` for long-term history.
 
 ## In Progress
+- [ ] تست End-to-End سیستم رزرو میز (ایجاد رزرو → تأیید → CheckIn → نمایش در لیست).
 - [ ] تست End-to-End جریان کامل سفارش‌گیری (منو → سبد → checkout → SignalR → SMS → مدیریت).
 
 ## Up Next
+- [ ] افزودن نمودارها به داشبورد (Chart.js integration - GetSalesStatistics، GetPopularItems، GetOrderStatistics).
+- [ ] گزارش فروش منو (صفحه Sales Report با فیلتر تاریخ و Excel export).
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] پیاده‌سازی کامل UI سیستم رزرو میز (ReservationsController، ViewModels، Views با AJAX، BranchId Provider، Automatic Table Selection، Navigation Integration).
+- [x] رفع خطاهای compile مربوط به DayOfWeek nullable و TableId missing در Views.
+- [x] آماده‌سازی پایگاه داده با افزودن 5 میز نمونه برای تست جریان رزرو.
+- [x] همسوسازی لایه Presentation با Domain logic - حذف manual table selection و اتکا به automatic table selection مبتنی بر PartySize + PrefersOutdoor.
 - [x] یکپارچه‌سازی ISmsSender در PlaceOrderCommandHandler با ارسال پیامک تأییدیه فارسی (شماره سفارش + مبلغ کل) به مشتری پس از ثبت موفق سفارش. شامل 6 تست واحد PlaceOrderCommandHandler جدید (مجموع 153 تست موفق).
 - [x] نوشتن تست‌های جامع برای CartController (19 تست) و SessionShoppingCartService (18 تست) با پوشش کامل عملیات و سناریوهای خطا.
 - [x] بهبود OrderConfirmation برای دریافت اطلاعات واقعی سفارش از GetOrderDetailsQuery و نمایش EstimatedReadyTime بر اساس FulfillmentMethod.

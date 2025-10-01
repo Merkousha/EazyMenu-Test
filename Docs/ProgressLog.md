@@ -7,6 +7,21 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-01 (reservation-system-ui-complete)
+- **پیاده‌سازی کامل رابط کاربری سیستم رزرو میز**: ساخت `ReservationsController` با 7 اکشن (Index، Create GET/POST، Confirm، Cancel، CheckIn، MarkNoShow) شامل مدیریت خطا و بازگشت JSON برای درخواست‌های AJAX.
+- **ViewModels و Validation**: ایجاد `ReservationListViewModel` با فیلتر روز هفته و `CreateReservationViewModel` با اعتبارسنجی کامل DataAnnotations (Required، Range، RegularExpression برای زمان، MaxLength، Phone).
+- **Views راست‌به‌چپ فارسی**: پیاده‌سازی `Index.cshtml` با کارت‌های رزرو، فیلتر dropdown روز هفته، دکمه‌های AJAX برای تغییر وضعیت و نمایش badge رنگی برای هر وضعیت. ساخت `Create.cshtml` با فرم کامل شامل انتخاب روز، بازه زمانی (time input)، تعداد نفرات (1-50)، ترجیح فضای باز (checkbox)، درخواست ویژه (textarea) و اطلاعات مشتری.
+- **اسکریپت AJAX**: پیاده‌سازی 4 تابع JavaScript در Index.cshtml برای Confirm، Cancel، CheckIn و MarkNoShow با مدیریت AntiForgeryToken، نمایش پیام‌های success/error و بارگذاری مجدد صفحه.
+- **BranchId Provider Enhancement**: توسعه `IDashboardTenantProvider` با متد `GetDefaultBranchIdAsync()` برای بازگشت اولین شعبه بر اساس نام (OrderBy) با caching در `_cachedBranchId`. پیاده‌سازی helper method `GetTenantAndBranchAsync()` در کنترلر برای ساده‌سازی دریافت هر دو شناسه.
+- **معماری Automatic Table Selection**: همسوسازی لایه Presentation با منطق Domain - حذف کامل انتخاب دستی میز از UI. Domain layer به صورت خودکار میز مناسب را بر اساس `PartySize` و `PrefersOutdoor` انتخاب می‌کند. حذف `TableId` از `CreateReservationViewModel` و افزودن پیام اطلاع‌رسانی "میز مناسب به صورت خودکار انتخاب می‌شود" در فرم.
+- **Controller Simplification**: حذف ~40 خط کد مربوط به فراخوانی `GetBranchTablesQuery` و نگاشت table lists از اکشن‌های Create GET و POST. ساده‌سازی error handlers و حذف reloading لیست میزها.
+- **رفع خطاهای Compile**: تصحیح `Index.cshtml` با حذف `.HasValue/.Value` برای `DayOfWeek` (struct غیر nullable). رفع خطای `Create.cshtml` با حذف کامل table dropdown section (lines 104-122) و ارجاعات به `TableId`.
+- **آماده‌سازی پایگاه داده**: افزودن 5 میز نمونه به جدول `BranchTables` برای شعبه مرکزی رستوران گیلان (BranchId: 32E13EA8-549C-47BC-8A1A-45BB2EF48A39) شامل میز 1-4 (داخل سالن، ظرفیت 2-6 نفر) و میز 5 (فضای باز، ظرفیت 4 نفر).
+- **یکپارچه‌سازی Navigation**: افزودن لینک "رزرو میز" به منوی اصلی داشبورد و کارت دسترسی سریع در صفحه خانه Dashboard.
+- اجرای `dotnet build` (موفق با hot reload فعال) و تصحیح خطاهای View در مرحله اول اجرا. Hot reload به‌روزرسانی Views را بدون نیاز به restart برنامه اعمال کرد.
+- **وضعیت آماده تست**: برنامه Web در حال اجرا (PID 30044)، hot reload فعال برای تغییرات View، پایگاه داده با 5 میز آماده، تمام endpoints رزرو قابل دسترس. آماده برای تست مرورگری end-to-end جریان رزرو میز.
+- **نتیجه**: سیستم رزرو میز کامل با Controller 7-action، ViewModels با validation، Views فارسی راست‌به‌چپ، AJAX endpoints و automatic table selection مبتنی بر Domain logic. تمام کدها compile شده، داده‌های تست آماده و برنامه در حال اجرا. گام بعدی: تست کاربر نهایی در مرورگر و سپس شروع پیاده‌سازی Dashboard Charts.
+
 ## 2025-10-01 (authentication-complete)
 - **پیاده‌سازی کامل سیستم احراز هویت و مجوزدهی برای مدیران رستوران**: یکپارچه‌سازی Cookie-Based Authentication با Authorization Policies مبتنی بر نقش (Owner، Manager، Staff).
 - **لایه Domain**: ایجاد User aggregate با نقش‌ها (UserRole enum)، وضعیت‌ها (UserStatus enum)، PasswordHash value object و متدهای کامل (Create، ChangeRole، ChangePassword، UpdateProfile، RecordLogin، Activate/Deactivate/Block، CanLogin). تعریف ۳ رویداد دامنه (UserCreated، UserRoleChanged، UserPasswordChanged).
