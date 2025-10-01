@@ -7,6 +7,21 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-10 (signalr)
+- پیاده‌سازی کامل SignalR برای اعلان بلادرنگ سفارش‌های جدید به داشبورد مدیریتی شامل OrderAlertsHub و SignalROrderNotifier.
+- ایجاد infrastructure لازم با استفاده از IOrderRealtimeNotifier موجود و OrderRealtimeNotification record برای انتشار رویدادهای سفارش.
+- اتصال PlaceOrderCommandHandler به SignalR برای ارسال اعلان "order-created" پس از ثبت موفق سفارش با TenantId، OrderId، OrderNumber و TotalAmount.
+- افزودن OrderAlertsHub به Web/Program.cs در endpoint "/hubs/order-alerts" و پیکربندی tenant-based groups.
+- پیاده‌سازی SignalR client در Orders/Index.cshtml با قابلیت‌های:
+  - اتصال خودکار و عضویت در کانال تنانت
+  - دریافت رویدادهای orderCreated، orderConfirmed، orderCompleted، orderCancelled
+  - نمایش browser notification (با درخواست permission)
+  - پخش صدای اعلان (beep sound)
+  - بارگذاری مجدد خودکار صفحه پس از 2 ثانیه
+  - fallback alert برای مرورگرهای بدون پشتیبانی Notification API
+- اجرای `dotnet build` (موفق، مدت 13.9 ثانیه) و `dotnet test` (موفق، 110 تست، مدت 3.0 ثانیه) جهت اطمینان از سلامت تغییرات.
+- گام بعدی: تست کامل جریان (ثبت سفارش از سایت عمومی → دریافت اعلان در داشبورد) و اتصال رویدادهای Confirm/Complete/Cancel به SignalR.
+
 ## 2025-10-10 (checkout-flow)
 - پیاده‌سازی کامل جریان سبد خرید و checkout برای مشتریان شامل Models (CartItemModel, ShoppingCartModel)، ViewModels (CartViewModel, CheckoutViewModel, OrderConfirmationViewModel).
 - ایجاد سرویس سبد خرید مبتنی بر Session (`SessionShoppingCartService`) با قابلیت Add/Remove/Update/Clear items و ذخیره‌سازی MenuContext.

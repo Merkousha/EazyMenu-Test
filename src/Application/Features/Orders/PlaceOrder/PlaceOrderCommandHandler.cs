@@ -15,15 +15,18 @@ public sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderCommand
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderNumberGenerator _orderNumberGenerator;
+    private readonly IOrderRealtimeNotifier _realtimeNotifier;
     private readonly IUnitOfWork _unitOfWork;
 
     public PlaceOrderCommandHandler(
         IOrderRepository orderRepository,
         IOrderNumberGenerator orderNumberGenerator,
+        IOrderRealtimeNotifier realtimeNotifier,
         IUnitOfWork unitOfWork)
     {
         _orderRepository = orderRepository;
         _orderNumberGenerator = orderNumberGenerator;
+        _realtimeNotifier = realtimeNotifier;
         _unitOfWork = unitOfWork;
     }
 
@@ -78,6 +81,18 @@ public sealed class PlaceOrderCommandHandler : ICommandHandler<PlaceOrderCommand
 
         await _orderRepository.AddAsync(order, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Broadcast new order notification
+        await _realtimeNotifier.PublishOrderChangedAsync(
+            new OrderRealtimeNotification(
+                TenantId: command.TenantId,
+                OrderId: order.Id.Value,
+                OrderNumber: orderNumber,
+                ChangeType: "order-created",
+                Status: "Pending",
+                TotalAmount: order.TotalAmount,
+                OccurredAtUtc: DateTime.UtcNow),
+            cancellationToken);
 
         return order.Id;
     }

@@ -49,5 +49,6 @@ app.MapControllerRoute(
 
 app.MapHub<SmsAlertsHub>("/hubs/sms-alerts");
 app.MapHub<MenuUpdatesHub>("/hubs/menu-updates");
+app.MapHub<OrderAlertsHub>("/hubs/order-alerts");
 
 app.Run();

@@ -191,15 +191,118 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
-        // Auto-refresh every 30 seconds for pending orders
-        @if (Model.StatusFilter == "Pending" || string.IsNullOrEmpty(Model.StatusFilter))
-        {
-            <text>
-            setTimeout(function() {
-                location.reload();
-            }, 30000);
-            </text>
-        }
+        (function () {
+            // Demo tenant ID - TODO: Replace with actual tenant from auth/session
+            const demoTenantId = "00000000-0000-0000-0000-000000000001";
+            
+            // Setup SignalR connection
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/hubs/order-alerts")
+                .withAutomaticReconnect()
+                .build();
+
+            // Subscribe to order events
+            connection.on("orderCreated", function (payload) {
+                console.log("سفارش جدید:", payload);
+                
+                // Show notification
+                showNotification("سفارش جدید!", `سفارش ${payload.orderNumber} ثبت شد. مبلغ: ${payload.totalAmount.toLocaleString('fa-IR')} تومان`);
+                
+                // Play notification sound
+                playNotificationSound();
+                
+                // Reload page after 2 seconds
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+            });
+
+            connection.on("orderConfirmed", function (payload) {
+                console.log("سفارش تأیید شد:", payload);
+                showNotification("سفارش تأیید شد", `سفارش ${payload.orderNumber} تأیید شد.`);
+            });
+
+            connection.on("orderCompleted", function (payload) {
+                console.log("سفارش تکمیل شد:", payload);
+                showNotification("سفارش تکمیل شد", `سفارش ${payload.orderNumber} تکمیل شد.`);
+            });
+
+            connection.on("orderCancelled", function (payload) {
+                console.log("سفارش لغو شد:", payload);
+                showNotification("سفارش لغو شد", `سفارش ${payload.orderNumber} لغو شد.`);
+            });
+
+            // Start connection and subscribe to tenant
+            connection.start()
+                .then(function () {
+                    console.log("SignalR متصل شد");
+                    return connection.invoke("SubscribeToTenant", demoTenantId);
+                })
+                .then(function () {
+                    console.log("عضویت در کانال اعلان‌های تنانت فعال شد");
+                })
+                .catch(function (err) {
+                    console.error("خطا در اتصال SignalR:", err);
+                });
+
+            // Show browser notification
+            function showNotification(title, body) {
+                if ("Notification" in window && Notification.permission === "granted") {
+                    new Notification(title, {
+                        body: body,
+                        icon: "/favicon.ico",
+                        tag: "order-notification"
+                    });
+                } else if ("Notification" in window && Notification.permission !== "denied") {
+                    Notification.requestPermission().then(function (permission) {
+                        if (permission === "granted") {
+                            new Notification(title, {
+                                body: body,
+                                icon: "/favicon.ico",
+                                tag: "order-notification"
+                            });
+                        }
+                    });
+                }
+                
+                // Fallback: Show alert box
+                if (!("Notification" in window) || Notification.permission === "denied") {
+                    const alertDiv = document.createElement("div");
+                    alertDiv.className = "alert alert-info alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3";
+                    alertDiv.style.zIndex = "9999";
+                    alertDiv.innerHTML = `
+                        <strong>${title}</strong><br>${body}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    document.body.appendChild(alertDiv);
+                    
+                    setTimeout(function() {
+                        alertDiv.remove();
+                    }, 5000);
+                }
+            }
+
+            // Play notification sound
+            function playNotificationSound() {
+                const audio = new Audio("data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZSA0PVa/n7aVaFgxMouD1wmwiCDCA0fPTgjIHHmvA7+OYSAwOVrDo8KBaFQxMouD4v2whCDCB0fPSgTIHHmvA7+OZSA4NVrHo76BaFQ1MouD4v2wiBTCA0fPQgTIIHmvA7+OYSg4NVrHo76BaFgxMouD4v2whBTCA0fPQgTIIHmzB7+OYSg4NV7Do7qBaFQxNoeDyv20iBTCA0fPQgTIIHmzB7+OZSg4NV7Hp7qBaFg1Noub0wG4jBjGB0fPPgDEHHWvA7+OZSw8NWLLq76FbFw5OpOX0wG0hBi+A0PPPfy8GGmq/7eOYSQ4MWLPq7qFdGQ9PpeX0wG8jCDGC0vPQgzQKH2y/7uSaSQ8PWbXt76FbFg5Ope"; // Simplified beep sound
+                audio.play().catch(function(err) {
+                    console.log("خطا در پخش صدای اعلان:", err);
+                });
+            }
+
+            // Auto-refresh fallback for older browsers
+            @if (Model.StatusFilter == "Pending" || string.IsNullOrEmpty(Model.StatusFilter))
+            {
+                <text>
+                setTimeout(function() {
+                    if (connection.state !== signalR.HubConnectionState.Connected) {
+                        location.reload();
+                    }
+                }, 60000); // 60 seconds fallback
+                </text>
+            }
+        })();
     </script>
 }

@@ -8,7 +8,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - When closing an item here, log the details in `Docs/ProgressLog.md` for long-term history.
 
 ## In Progress
-- [ ] پیاده‌سازی SignalR برای اعلان بلادرنگ سفارش‌های جدید به داشبورد مدیریتی.
+- [ ] اتصال رویدادهای Confirm/Complete/Cancel به SignalR برای اعلان به داشبورد.
 
 ## Up Next
 - [ ] نوشتن تست‌های واحد برای CartController و SessionShoppingCartService.
@@ -17,6 +17,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] پیاده‌سازی کامل SignalR برای اعلان بلادرنگ سفارش‌های جدید به داشبورد (OrderAlertsHub، SignalROrderNotifier، اتصال به PlaceOrderCommand، SignalR client در UI).
 - [x] پیاده‌سازی کامل جریان Checkout مشتری شامل Models، ViewModels، CartService، CartController و Views (Index، Checkout، OrderConfirmation).
 - [x] افزودن دکمه "افزودن به سبد" به منوی عمومی با ارسال MenuId و TenantId.
 - [x] ساخت کامل UI داشبورد مدیریت سفارش‌ها (OrdersController، Views با فیلتر و pagination، ثبت ViewModelFactory در DI).
