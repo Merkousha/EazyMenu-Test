@@ -9,43 +9,46 @@ body, .card, .btn, .nav-link, .breadcrumb, .form-control, .form-select {
 }
 
 /* ====== تنظیمات Sidebar برای RTL ====== */
-.main-sidebar {
+.app-sidebar {
     right: 0 !important;
     left: auto !important;
-    border-right: none !important;
-    border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Content Wrapper Margins */
-.content-wrapper {
-    margin-right: 250px !important;
-    margin-left: 0 !important;
-    transition: margin-right 0.3s ease-in-out;
-}
-
-body.sidebar-collapse .content-wrapper {
-    margin-right: 0 !important;
-}
-
-/* Sidebar Toggle Button */
-.nav-link[data-lte-toggle="sidebar"] {
-    transform: scaleX(-1);
-}
-
-/* ====== Menu Items RTL ====== */
-.nav-sidebar .nav-link {
+/* Sidebar Brand RTL */
+.sidebar-brand .brand-link {
+    text-align: right;
     padding-right: 1rem;
     padding-left: 0.5rem;
 }
 
-.nav-sidebar .nav-icon {
-    margin-left: 0.5rem;
-    margin-right: 0;
+.sidebar-brand .brand-image {
+    float: right !important;
+    margin-left: 0.5rem !important;
+    margin-right: 0 !important;
 }
 
-.nav-sidebar .nav-link p {
-    margin-right: 0;
-    margin-left: auto;
+/* ====== Menu Items RTL ====== */
+.sidebar-menu .nav-link {
+    text-align: right;
+}
+
+.sidebar-menu .nav-icon {
+    margin-left: 0.5rem !important;
+    margin-right: 0 !important;
+}
+
+.sidebar-menu .nav-arrow {
+    float: left !important;
+}
+
+/* ====== App Main Content RTL ====== */
+.app-main {
+    margin-right: 250px !important;
+    margin-left: 0 !important;
+}
+
+body.sidebar-collapse .app-main {
+    margin-right: 0 !important;
 }
 
 /* Nav Treeview */
