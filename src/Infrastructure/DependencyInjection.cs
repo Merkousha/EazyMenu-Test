@@ -70,6 +70,9 @@ public static class DependencyInjection
         services.AddScoped<IEmailSender, LoggingEmailSender>();
         services.AddScoped<ISmsFailureAlertNotifier, SignalRSmsFailureAlertNotifier>();
         services.AddScoped<IMenuRealtimeNotifier, SignalRMenuRealtimeNotifier>();
+    services.AddScoped<EfMenuPublicationStore>();
+    services.AddScoped<IMenuPublicationWriter>(sp => sp.GetRequiredService<EfMenuPublicationStore>());
+    services.AddScoped<IMenuPublicationReader>(sp => sp.GetRequiredService<EfMenuPublicationStore>());
         services.AddScoped<ISmsFailureAlertService, SmsFailureAlertService>();
         services.AddScoped<ISmsSender>(provider =>
         {

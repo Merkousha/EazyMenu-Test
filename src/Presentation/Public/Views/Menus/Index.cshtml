@@ -1,0 +1,138 @@
+@model EazyMenu.Public.Models.Menus.PublicMenuPageViewModel
+@{
+    ViewData["Title"] ??= Model.HasMenu && Model.Menu is not null
+        ? $"منوی دیجیتال - {Model.Menu.DisplayName}"
+        : "منوی دیجیتال";
+}
+
+<div class="menu-page" dir="rtl">
+    @if (!Model.HasMenu || Model.Menu is null)
+    {
+        <section class="py-5 text-center">
+            <div class="card shadow-sm mx-auto" style="max-width: 32rem;">
+                <div class="card-body">
+                    <h1 class="h4 mb-3">منوی در دسترس نیست</h1>
+                    <p class="text-muted mb-0">هنوز منوی این رستوران منتشر نشده است. لطفاً بعداً دوباره سر بزنید.</p>
+                </div>
+            </div>
+        </section>
+    }
+    else
+    {
+        var menu = Model.Menu;
+        <header class="mb-4 text-center">
+            <h1 class="h3 mb-2">@menu!.DisplayName</h1>
+            <div class="small text-muted">
+                <span class="badge bg-light text-dark">نسخه منتشرشده: v@menu.Version</span>
+                <span class="ms-2">آخرین بروزرسانی: @menu.PublishedAtUtc.ToLocalTime().ToString("yyyy/MM/dd HH:mm")</span>
+            </div>
+        </header>
+
+        <section class="menu-categories">
+            @foreach (var category in menu.Categories)
+            {
+                <article class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="h5 mb-0">@category.DisplayName</h2>
+                            @if (!string.IsNullOrWhiteSpace(category.IconUrl))
+                            {
+                                <a class="small" href="@category.IconUrl" target="_blank" rel="noopener">آیکون دسته</a>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (!category.Items.Any())
+                        {
+                            <p class="text-muted mb-0">آیتمی برای نمایش وجود ندارد.</p>
+                        }
+                        else
+                        {
+                            <div class="row g-4">
+                                @foreach (var item in category.Items)
+                                {
+                                    <div class="col-12 col-md-6">
+                                        <div class="menu-item h-100 border rounded-3 p-3">
+                                            <div class="d-flex gap-3">
+                                                @if (!string.IsNullOrWhiteSpace(item.ImageUrl))
+                                                {
+                                                    <img src="@item.ImageUrl" alt="@item.DisplayName" class="rounded" style="width:96px;height:96px;object-fit:cover;" />
+                                                }
+                                                <div class="flex-grow-1">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <h3 class="h6 mb-1">@item.DisplayName</h3>
+                                                        <span class="badge @(item.IsAvailable ? "bg-success" : "bg-secondary")">@item.AvailabilityLabel</span>
+                                                    </div>
+                                                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                                                    {
+                                                        <p class="text-muted small mb-2">@item.Description</p>
+                                                    }
+                                                    <div class="fw-bold">@item.BasePrice.FormatPrice() تومان</div>
+                                                    @if (item.ChannelPrices.Count > 0)
+                                                    {
+                                                        <ul class="list-unstyled small text-muted mb-0 mt-2">
+                                                            @foreach (var channel in item.ChannelPrices.OrderedChannels())
+                                                            {
+                                                                <li>@channel.Key: @channel.Value.FormatPrice() تومان</li>
+                                                            }
+                                                        </ul>
+                                                    }
+                                                    @if (item.Tags.Count > 0)
+                                                    {
+                                                        <div class="mt-2">
+                                                            @foreach (var tag in item.Tags)
+                                                            {
+                                                                <span class="badge bg-light text-dark me-1">@tag</span>
+                                                            }
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </article>
+            }
+        </section>
+    }
+</div>
+
+@section Scripts {
+    @if (Model.HasMenu && Model.Menu is not null)
+    {
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script>
+            (function () {
+                if (!window.signalR) {
+                    return;
+                }
+
+                const tenantId = "@Model.Menu!.TenantId".toLowerCase();
+                const menuId = "@Model.Menu.MenuId".toLowerCase();
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/hubs/menu-updates")
+                    .withAutomaticReconnect()
+                    .build();
+
+                connection.on("menuChanged", payload => {
+                    if (!payload || typeof payload.tenantId !== "string" || payload.tenantId.toLowerCase() !== tenantId) {
+                        return;
+                    }
+
+                    const payloadMenuId = typeof payload.menuId === "string" ? payload.menuId.toLowerCase() : menuId;
+
+                    if (payload.changeType === "menu-published" && payloadMenuId === menuId) {
+                        window.location.reload();
+                    }
+                });
+
+                connection.start()
+                    .then(() => connection.invoke("JoinTenant", "@Model.Menu!.TenantId"))
+                    .catch(err => console.error("خطا در اتصال به SignalR:", err));
+            })();
+        </script>
+    }
+}

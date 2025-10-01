@@ -7,6 +7,14 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-09
+- تکمیل جریان انتشار منو با افزودن DTOهای انتشار (`MenuPublicationDto`)، کارخانه ساخت اسنپ‌شات و قراردادهای `IMenuPublicationWriter/Reader` برای ذخیره نسخه‌های منتشرشده.
+- پیاده‌سازی مدل و پیکربندی EF Core (`MenuPublication`)، ریپازیتوری `EfMenuPublicationStore` و مایگریشن `AddMenuPublications` به‌همراه ثبت وابستگی‌ها و Seed اولیه.
+- ساخت کنترلر و View عمومی `Menus/Index` با ViewModelهای جدید، نمایش فارسی راست‌به‌چپ و اسکریپت SignalR برای تازه‌سازی فوری پس از انتشار.
+- گسترش اعلام رویدادهای بلادرنگ در داشبورد (به‌روزرسانی `PublishMenuCommandHandler` و `MenuCategoriesController`) و افزودن تست‌های واحد برای پوشش سناریوهای اسنپ‌شات و UI عمومی.
+- اجرای `dotnet build` (موفق، مدت 5.4 ثانیه) و `dotnet test` (موفق، 108 تست، مدت 3.5 ثانیه) جهت تضمین سلامت تغییرات.
+- گام بعدی: بررسی بهبود تجربه کاربری منوی عمومی (جستجو، فیلتر و زبان دوم) پس از جمع‌آوری بازخورد.
+
 ## 2025-10-08
 - اتصال SignalR به جریان آیتم‌های منو با تزریق `IMenuRealtimeNotifier` در `MenuItemsController` و انتشار رویدادهای `item-created`, `item-updated`, `item-availability`, `item-quick-update`, `item-removed`, `items-reordered` پس از هر فرمان موفق.
 - به‌روزرسانی تست واحد `MenuItemsControllerTests` با موک نوتیفایر جدید و اصلاح عدم تطابق امضا پس از افزودن وابستگی.

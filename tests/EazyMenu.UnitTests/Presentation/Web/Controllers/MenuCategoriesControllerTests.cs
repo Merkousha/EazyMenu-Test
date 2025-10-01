@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using EazyMenu.Application.Abstractions.Messaging;
+using EazyMenu.Application.Common.Interfaces.Menus;
 using EazyMenu.Application.Common.Exceptions;
 using EazyMenu.Application.Features.Menus.Commands.AddMenuCategory;
 using EazyMenu.Application.Features.Menus.Commands.ArchiveMenuCategory;
@@ -30,6 +31,7 @@ public sealed class MenuCategoriesControllerTests
     private readonly Mock<ICommandHandler<ArchiveMenuCategoryCommand, bool>> _archiveHandler = new();
     private readonly Mock<ICommandHandler<RestoreMenuCategoryCommand, bool>> _restoreHandler = new();
     private readonly Mock<ICommandHandler<ReorderMenuCategoriesCommand, bool>> _reorderHandler = new();
+    private readonly Mock<IMenuRealtimeNotifier> _menuRealtimeNotifier = new();
 
     private readonly MenuDetailsDto _sampleDetails;
 
@@ -42,6 +44,9 @@ public sealed class MenuCategoriesControllerTests
         _detailsHandler
             .Setup(handler => handler.HandleAsync(It.IsAny<GetMenuDetailsQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(_sampleDetails);
+        _menuRealtimeNotifier
+            .Setup(notifier => notifier.PublishMenuChangedAsync(It.IsAny<MenuRealtimeNotification>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
     }
 
     [Fact]
@@ -85,8 +90,8 @@ public sealed class MenuCategoriesControllerTests
 
         var result = await controller.Update(Guid.NewGuid(), Guid.NewGuid(), new UpdateMenuCategoryInput { Name = new MenuLocalizedTextInput { Fa = "دسته" } }, CancellationToken.None);
 
-    var errorResult = Assert.IsType<UnprocessableEntityObjectResult>(result);
-    Assert.Equal(422, errorResult.StatusCode);
+        var errorResult = Assert.IsType<UnprocessableEntityObjectResult>(result);
+        Assert.Equal(422, errorResult.StatusCode);
     }
 
     [Fact]
@@ -94,11 +99,11 @@ public sealed class MenuCategoriesControllerTests
     {
         var controller = CreateController();
 
-    var result = await controller.Reorder(Guid.NewGuid(), new ReorderCategoriesInput(), CancellationToken.None);
+        var result = await controller.Reorder(Guid.NewGuid(), new ReorderCategoriesInput(), CancellationToken.None);
 
-    var validation = Assert.IsType<ObjectResult>(result);
-    var details = Assert.IsType<ValidationProblemDetails>(validation.Value);
-    Assert.Contains(nameof(ReorderCategoriesInput.CategoryIds), details.Errors.Keys);
+        var validation = Assert.IsType<ObjectResult>(result);
+        var details = Assert.IsType<ValidationProblemDetails>(validation.Value);
+        Assert.Contains(nameof(ReorderCategoriesInput.CategoryIds), details.Errors.Keys);
     }
 
     private MenuCategoriesController CreateController()
@@ -111,7 +116,8 @@ public sealed class MenuCategoriesControllerTests
             _updateHandler.Object,
             _archiveHandler.Object,
             _restoreHandler.Object,
-            _reorderHandler.Object);
+            _reorderHandler.Object,
+            _menuRealtimeNotifier.Object);
     }
 
     private static class MenuDetailsDtoFactory

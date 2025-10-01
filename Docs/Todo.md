@@ -8,7 +8,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - When closing an item here, log the details in `Docs/ProgressLog.md` for long-term history.
 
 ## In Progress
-- [ ] توسعه قابلیت‌های تعاملی مدیریت منو (CRUD کامل، مرتب‌سازی، انتشار) با تکیه بر فرمان‌های Application و Endpointهای AJAX (SignalR برای آیتم‌ها فعال شد؛ گام بعد: اعلان دسته‌ها و انتشار برای همگام‌سازی سایت عمومی).
+_در حال حاضر آیتم فعالی ثبت نشده است._
 
 ## Up Next
 - [ ] Integrate external providers: wire Zarinpal production callbacks, secure Kavenegar API secrets with resiliency/fallback flows, and extend email/notification channels.
@@ -16,6 +16,7 @@ Quick snapshot of what we're working on, what's queued next, and what has been d
 - [ ] Harden security (OAuth/OIDC, MFA) and add observability (logging, metrics, tracing).
 
 ## Done
+- [x] آماده‌سازی کامل منوی دیجیتال شامل ذخیره‌سازی نسخه‌های منتشرشده، کنترلر/ویوی عمومی با SignalR و تست‌های پوششی برای انتشار منو.
 - [x] طراحی و پیاده‌سازی مسیر Quick Update قیمت/موجودی و به‌روزرسانی سریع Dashboard (فرمان تجمیعی، اکشن AJAX، View `QuickUpdate` و اسکریپت `menu-quick-update.js`).
 - [x] اتصال UI مدیریت منو به داده نمونه و Queries لایه Application (Controller، ViewModel، Viewها، ناوبری).
 - [x] تکمیل لایه Persistency منو و آماده‌سازی داده توسعه (Use Caseها، ریپازیتوری EF Core، مایگریشن `AddMenus`، Seed خودکار در محیط Development).

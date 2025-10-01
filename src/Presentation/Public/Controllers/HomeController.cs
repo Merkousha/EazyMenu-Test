@@ -20,7 +20,7 @@ public sealed class HomeController : Controller
 
     public IActionResult Menu()
     {
-        return View();
+        return RedirectToAction("Index", "Menus");
     }
 
     public IActionResult Reserve()

@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using EazyMenu.Application.Features.Menus.Common;
 using EazyMenu.Domain.Aggregates.Menus;
 using EazyMenu.Domain.Aggregates.Tenants;
 using EazyMenu.Domain.ValueObjects;
+using EazyMenu.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EazyMenu.Infrastructure.Persistence.Seed;
@@ -149,8 +152,24 @@ public static class EazyMenuDbContextSeeder
 
         menu.PublishNextVersion();
 
+        var snapshot = MenuPublicationFactory.CreateSnapshot(menu, DateTime.UtcNow);
+        var publication = new MenuPublication
+        {
+            Id = Guid.NewGuid(),
+            TenantId = snapshot.TenantId,
+            MenuId = snapshot.MenuId,
+            Version = snapshot.Version,
+            PublishedAtUtc = snapshot.PublishedAtUtc,
+            SnapshotJson = JsonSerializer.Serialize(snapshot, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                WriteIndented = false
+            })
+        };
+
         context.Tenants.Add(tenant);
         context.Menus.Add(menu);
+        context.MenuPublications.Add(publication);
 
         await context.SaveChangesAsync(cancellationToken);
     }

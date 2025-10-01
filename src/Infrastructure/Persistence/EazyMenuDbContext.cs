@@ -26,6 +26,8 @@ public sealed class EazyMenuDbContext : DbContext, IUnitOfWork
 
     public DbSet<SmsDeliveryLog> SmsDeliveryLogs => Set<SmsDeliveryLog>();
 
+    public DbSet<MenuPublication> MenuPublications => Set<MenuPublication>();
+
     public new Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         return base.SaveChangesAsync(cancellationToken);

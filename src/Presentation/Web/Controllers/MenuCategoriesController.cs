@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using EazyMenu.Application.Abstractions.Messaging;
+using EazyMenu.Application.Common.Interfaces.Menus;
 using EazyMenu.Application.Features.Menus.Commands.AddMenuCategory;
 using EazyMenu.Application.Features.Menus.Commands.ArchiveMenuCategory;
 using EazyMenu.Application.Features.Menus.Commands.ReorderMenuCategories;
@@ -23,6 +24,7 @@ public sealed class MenuCategoriesController : MenuDashboardControllerBase<MenuC
     private readonly ICommandHandler<ArchiveMenuCategoryCommand, bool> _archiveMenuCategoryCommandHandler;
     private readonly ICommandHandler<RestoreMenuCategoryCommand, bool> _restoreMenuCategoryCommandHandler;
     private readonly ICommandHandler<ReorderMenuCategoriesCommand, bool> _reorderMenuCategoriesCommandHandler;
+    private readonly IMenuRealtimeNotifier _menuRealtimeNotifier;
 
     public MenuCategoriesController(
         ILogger<MenuCategoriesController> logger,
@@ -32,7 +34,8 @@ public sealed class MenuCategoriesController : MenuDashboardControllerBase<MenuC
         ICommandHandler<UpdateMenuCategoryCommand, bool> updateMenuCategoryCommandHandler,
         ICommandHandler<ArchiveMenuCategoryCommand, bool> archiveMenuCategoryCommandHandler,
         ICommandHandler<RestoreMenuCategoryCommand, bool> restoreMenuCategoryCommandHandler,
-        ICommandHandler<ReorderMenuCategoriesCommand, bool> reorderMenuCategoriesCommandHandler)
+        ICommandHandler<ReorderMenuCategoriesCommand, bool> reorderMenuCategoriesCommandHandler,
+        IMenuRealtimeNotifier menuRealtimeNotifier)
         : base(logger, tenantProvider, getMenuDetailsQueryHandler)
     {
         _addMenuCategoryCommandHandler = addMenuCategoryCommandHandler;
@@ -40,6 +43,7 @@ public sealed class MenuCategoriesController : MenuDashboardControllerBase<MenuC
         _archiveMenuCategoryCommandHandler = archiveMenuCategoryCommandHandler;
         _restoreMenuCategoryCommandHandler = restoreMenuCategoryCommandHandler;
         _reorderMenuCategoriesCommandHandler = reorderMenuCategoriesCommandHandler;
+        _menuRealtimeNotifier = menuRealtimeNotifier;
     }
 
     [HttpPost]
@@ -70,6 +74,9 @@ public sealed class MenuCategoriesController : MenuDashboardControllerBase<MenuC
                 cancellationToken);
 
             var details = await LoadMenuDetailsAsync(tenantId.Value, menuId, cancellationToken);
+            await _menuRealtimeNotifier.PublishMenuChangedAsync(
+                new MenuRealtimeNotification(tenantId.Value, menuId, "category-created"),
+                cancellationToken);
             return CreateCategoryListPartial(details);
         }
         catch (Exception exception)
@@ -106,6 +113,9 @@ public sealed class MenuCategoriesController : MenuDashboardControllerBase<MenuC
                 cancellationToken);
 
             var details = await LoadMenuDetailsAsync(tenantId.Value, menuId, cancellationToken);
+            await _menuRealtimeNotifier.PublishMenuChangedAsync(
+                new MenuRealtimeNotification(tenantId.Value, menuId, "category-updated", categoryId),
+                cancellationToken);
             return CreateCategoryListPartial(details);
         }
         catch (Exception exception)
@@ -131,6 +141,9 @@ public sealed class MenuCategoriesController : MenuDashboardControllerBase<MenuC
                 cancellationToken);
 
             var details = await LoadMenuDetailsAsync(tenantId.Value, menuId, cancellationToken);
+            await _menuRealtimeNotifier.PublishMenuChangedAsync(
+                new MenuRealtimeNotification(tenantId.Value, menuId, "category-archived", categoryId),
+                cancellationToken);
             return CreateCategoryListPartial(details);
         }
         catch (Exception exception)
@@ -156,6 +169,9 @@ public sealed class MenuCategoriesController : MenuDashboardControllerBase<MenuC
                 cancellationToken);
 
             var details = await LoadMenuDetailsAsync(tenantId.Value, menuId, cancellationToken);
+            await _menuRealtimeNotifier.PublishMenuChangedAsync(
+                new MenuRealtimeNotification(tenantId.Value, menuId, "category-restored", categoryId),
+                cancellationToken);
             return CreateCategoryListPartial(details);
         }
         catch (Exception exception)
@@ -197,6 +213,9 @@ public sealed class MenuCategoriesController : MenuDashboardControllerBase<MenuC
                 cancellationToken);
 
             var details = await LoadMenuDetailsAsync(tenantId.Value, menuId, cancellationToken);
+            await _menuRealtimeNotifier.PublishMenuChangedAsync(
+                new MenuRealtimeNotification(tenantId.Value, menuId, "categories-reordered"),
+                cancellationToken);
             return CreateCategoryListPartial(details);
         }
         catch (Exception exception)
