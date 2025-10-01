@@ -5,6 +5,7 @@ using EazyMenu.Domain.Aggregates.Menus;
 using EazyMenu.Domain.Aggregates.Orders;
 using EazyMenu.Domain.Aggregates.Payments;
 using EazyMenu.Domain.Aggregates.Tenants;
+using EazyMenu.Domain.Aggregates.Users;
 using EazyMenu.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +31,8 @@ public sealed class EazyMenuDbContext : DbContext, IUnitOfWork
     public DbSet<SmsDeliveryLog> SmsDeliveryLogs => Set<SmsDeliveryLog>();
 
     public DbSet<MenuPublication> MenuPublications => Set<MenuPublication>();
+
+    public DbSet<User> Users => Set<User>();
 
     public new Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {

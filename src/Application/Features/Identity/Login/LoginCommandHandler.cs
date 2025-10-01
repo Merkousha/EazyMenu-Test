@@ -10,18 +10,15 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, LoginRes
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
-    private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IUnitOfWork _unitOfWork;
 
     public LoginCommandHandler(
         IUserRepository userRepository,
         IPasswordHasher passwordHasher,
-        IJwtTokenGenerator jwtTokenGenerator,
         IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
-        _jwtTokenGenerator = jwtTokenGenerator;
         _unitOfWork = unitOfWork;
     }
 
@@ -34,8 +31,6 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, LoginRes
         {
             return new LoginResult(
                 IsSuccessful: false,
-                AccessToken: null,
-                RefreshToken: null,
                 User: null,
                 ErrorMessage: "ایمیل یا رمز عبور اشتباه است.");
         }
@@ -45,8 +40,6 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, LoginRes
         {
             return new LoginResult(
                 IsSuccessful: false,
-                AccessToken: null,
-                RefreshToken: null,
                 User: null,
                 ErrorMessage: user.Status switch
                 {
@@ -65,8 +58,6 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, LoginRes
         {
             return new LoginResult(
                 IsSuccessful: false,
-                AccessToken: null,
-                RefreshToken: null,
                 User: null,
                 ErrorMessage: "ایمیل یا رمز عبور اشتباه است.");
         }
@@ -75,15 +66,6 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, LoginRes
         user.RecordLogin();
         await _userRepository.UpdateAsync(user, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        // تولید توکن‌ها
-        var accessToken = _jwtTokenGenerator.GenerateAccessToken(
-            user.Id.Value,
-            user.TenantId.Value,
-            user.Email,
-            user.Role);
-
-        var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
 
         // ایجاد DTO کاربر
         var userDto = new UserDto(
@@ -97,8 +79,6 @@ public sealed class LoginCommandHandler : ICommandHandler<LoginCommand, LoginRes
 
         return new LoginResult(
             IsSuccessful: true,
-            AccessToken: accessToken,
-            RefreshToken: refreshToken,
             User: userDto,
             ErrorMessage: null);
     }

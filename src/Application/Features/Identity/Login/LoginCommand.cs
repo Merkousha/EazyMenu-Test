@@ -14,7 +14,5 @@ public sealed record LoginCommand(
 /// </summary>
 public sealed record LoginResult(
     bool IsSuccessful,
-    string? AccessToken,
-    string? RefreshToken,
     UserDto? User,
     string? ErrorMessage);

@@ -1,6 +1,7 @@
 using System;
 using EazyMenu.Application.Abstractions.Persistence;
 using EazyMenu.Application.Common.Interfaces.Menus;
+using EazyMenu.Application.Common.Interfaces.Identity;
 using EazyMenu.Application.Common.Interfaces.Notifications;
 using EazyMenu.Application.Common.Interfaces.Orders;
 using EazyMenu.Application.Common.Interfaces.Payments;
@@ -8,6 +9,7 @@ using EazyMenu.Application.Common.Interfaces.Pricing;
 using EazyMenu.Application.Common.Interfaces.Provisioning;
 using EazyMenu.Application.Common.Interfaces.Security;
 using EazyMenu.Infrastructure.Menus;
+using EazyMenu.Infrastructure.Identity;
 using EazyMenu.Infrastructure.Persistence;
 using EazyMenu.Infrastructure.Persistence.Repositories;
 using EazyMenu.Infrastructure.Payments;
@@ -127,6 +129,11 @@ public static class DependencyInjection
         services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IOrderNumberGenerator, SequentialOrderNumberGenerator>();
+        
+        // Identity services
+        services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<EazyMenuDbContext>());
 
         return services;
