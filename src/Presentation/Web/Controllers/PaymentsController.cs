@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EazyMenu.Application.Abstractions.Messaging;
 using EazyMenu.Application.Abstractions.Persistence;
-using EazyMenu.Application.Common.Exceptions;
+using EazyMenu.Domain.Common.Exceptions;
 using EazyMenu.Application.Features.Payments.VerifyPayment;
 using EazyMenu.Domain.ValueObjects;
 using EazyMenu.Web.Models;

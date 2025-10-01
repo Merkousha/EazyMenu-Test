@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using EazyMenu.Application.Abstractions.Messaging;
-using EazyMenu.Application.Common.Exceptions;
+using EazyMenu.Domain.Common.Exceptions;
 using EazyMenu.Application.Features.Menus.Common;
 using EazyMenu.Application.Features.Menus.Queries.GetPublishedMenu;
 using EazyMenu.Public.Models.Menus;
