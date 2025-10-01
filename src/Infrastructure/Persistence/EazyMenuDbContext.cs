@@ -19,22 +19,16 @@ public sealed class EazyMenuDbContext : DbContext, IUnitOfWork
     {
     }
 
+
     public DbSet<Menu> Menus => Set<Menu>();
-
     public DbSet<Tenant> Tenants => Set<Tenant>();
-
+    public DbSet<Branch> Branches => Set<Branch>();
     public DbSet<Order> Orders => Set<Order>();
-
     public DbSet<Reservation> Reservations => Set<Reservation>();
-
     public DbSet<TenantProvisioningRecord> TenantProvisionings => Set<TenantProvisioningRecord>();
-
     public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>();
-
     public DbSet<SmsDeliveryLog> SmsDeliveryLogs => Set<SmsDeliveryLog>();
-
     public DbSet<MenuPublication> MenuPublications => Set<MenuPublication>();
-
     public DbSet<User> Users => Set<User>();
 
     public new Task SaveChangesAsync(CancellationToken cancellationToken = default)

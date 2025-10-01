@@ -126,11 +126,13 @@ public static class DependencyInjection
         }
 
         services.AddScoped<IMenuRepository, MenuRepository>();
-        services.AddScoped<ITenantRepository, TenantRepository>();
+    services.AddScoped<ITenantRepository, TenantRepository>();
+    services.AddScoped<IBranchRepository, BranchRepository>();
         services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IReservationRepository, ReservationRepository>();
-        services.AddScoped<IOrderNumberGenerator, SequentialOrderNumberGenerator>();
+    services.AddScoped<IOrderNumberGenerator, SequentialOrderNumberGenerator>();
+    services.AddScoped<EazyMenu.Domain.Services.Scheduling.IReservationSchedulingPolicy, EazyMenu.Domain.Services.Scheduling.DefaultReservationSchedulingPolicy>();
         
         // Identity services
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();

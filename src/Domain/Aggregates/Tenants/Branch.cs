@@ -14,6 +14,10 @@ public sealed class Branch : Entity<BranchId>
     private readonly List<ScheduleSlot> _workingHours = new();
     private readonly List<Table> _tables = new();
 
+
+    // EF Core navigation property for multi-tenant support
+    public TenantId TenantId { get; private set; }
+
     private Branch(BranchId id, string name, Address address)
         : base(id)
     {
