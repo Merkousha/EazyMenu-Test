@@ -7,11 +7,13 @@ using EazyMenu.Application.Features.Orders.ConfirmOrder;
 using EazyMenu.Application.Features.Orders.GetOrderDetails;
 using EazyMenu.Application.Features.Orders.GetOrders;
 using EazyMenu.Web.Services.Orders;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace EazyMenu.Web.Controllers;
 
+[Authorize(Policy = "StaffAccess")]
 public sealed class OrdersController : Controller
 {
     private readonly IQueryHandler<GetOrdersQuery, IReadOnlyCollection<Application.Features.Orders.Common.OrderSummaryDto>> _getOrdersHandler;

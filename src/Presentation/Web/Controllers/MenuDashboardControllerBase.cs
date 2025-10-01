@@ -8,11 +8,13 @@ using EazyMenu.Application.Features.Menus.Common;
 using EazyMenu.Application.Features.Menus.Queries.GetMenuDetails;
 using EazyMenu.Web.Models.Menus;
 using EazyMenu.Web.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace EazyMenu.Web.Controllers;
 
+[Authorize(Policy = "StaffAccess")]
 public abstract class MenuDashboardControllerBase<TController> : Controller
 {
     private readonly IDashboardTenantProvider _tenantProvider;

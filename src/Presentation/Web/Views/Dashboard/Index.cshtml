@@ -1,0 +1,57 @@
+@{
+    ViewData["Title"] = "داشبورد";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">خوش آمدید، @ViewBag.UserName!</h4>
+            <p>شما با موفقیت وارد سیستم شدید.</p>
+            <hr>
+            <p class="mb-0">
+                <strong>نقش:</strong> @ViewBag.UserRole <br />
+                <strong>شناسه مستاجر:</strong> @ViewBag.TenantId
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-menu-button-wide"></i> مدیریت منو</h5>
+                <p class="card-text">ایجاد و ویرایش منوی رستوران</p>
+                <a asp-controller="Menus" asp-action="Index" class="btn btn-light">مشاهده منوها</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-receipt"></i> سفارش‌ها</h5>
+                <p class="card-text">مدیریت و پیگیری سفارشات</p>
+                <a asp-controller="Orders" asp-action="Index" class="btn btn-light">مشاهده سفارش‌ها</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-chat-dots"></i> گزارش پیامک‌ها</h5>
+                <p class="card-text">مشاهده لاگ‌های ارسال پیامک</p>
+                <a asp-controller="Notifications" asp-action="SmsLogs" class="btn btn-light">مشاهده گزارش‌ها</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}

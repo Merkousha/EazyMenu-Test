@@ -1,31 +1,61 @@
 @{
-    ViewData["Title"] = "داشبورد";
+    ViewData["Title"] = "خانه";
 }
 <div class="text-center" dir="rtl">
     <h1 class="display-4">خوش آمدید به پنل مدیریتی ایزی‌منو</h1>
-    <p class="mb-4">این اپلیکیشن MVC نقطه‌ی شروع برای توسعه جریان‌های آنبوردینگ، مدیریت منو و تنظیمات رستوران است.</p>
-
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                    <h2 class="h5 mb-3">آغاز سریع ثبت‌نام رستوران</h2>
-                    <p class="text-muted">برای فعال‌سازی اشتراک و دریافت لینک پرداخت، فرم آنبوردینگ را تکمیل کنید.</p>
-                    <a class="btn btn-primary btn-lg" asp-controller="Onboarding" asp-action="Start">شروع آنبوردینگ</a>
+    
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <p class="mb-4">سلام <strong>@User.Identity.Name</strong>، به سیستم خوش آمدید!</p>
+        
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h2 class="h5 mb-3">
+                            <i class="bi bi-speedometer2"></i> داشبورد مدیریتی
+                        </h2>
+                        <p class="text-muted">مدیریت منو، سفارشات و تنظیمات رستوران</p>
+                        <a class="btn btn-primary btn-lg" asp-controller="Dashboard" asp-action="Index">
+                            <i class="bi bi-arrow-left"></i> ورود به داشبورد
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    }
+    else
+    {
+        <p class="mb-4">این اپلیکیشن MVC نقطه‌ی شروع برای توسعه جریان‌های آنبوردینگ، مدیریت منو و تنظیمات رستوران است.</p>
 
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                    <h2 class="h5 mb-3">مدیریت منوی دیجیتال</h2>
-                    <p class="text-muted">پیش‌نمایش داشبورد مدیریت منو با داده نمونه توسعه و مشاهده دسته‌ها و آیتم‌های منو.</p>
-                    <a class="btn btn-outline-primary" asp-controller="Menus" asp-action="Index">مشاهده منوها</a>
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h2 class="h5 mb-3">
+                            <i class="bi bi-box-arrow-in-right"></i> ورود به سیستم
+                        </h2>
+                        <p class="text-muted">برای دسترسی به داشبورد مدیریتی، لطفا وارد شوید.</p>
+                        <a class="btn btn-primary btn-lg" asp-controller="Account" asp-action="Login">
+                            <i class="bi bi-arrow-left"></i> ورود
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h2 class="h5 mb-3">
+                            <i class="bi bi-shop"></i> آغاز سریع ثبت‌نام رستوران
+                        </h2>
+                        <p class="text-muted">برای فعال‌سازی اشتراک و دریافت لینک پرداخت، فرم آنبوردینگ را تکمیل کنید.</p>
+                        <a class="btn btn-outline-primary" asp-controller="Onboarding" asp-action="Start">شروع آنبوردینگ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>

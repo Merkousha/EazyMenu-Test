@@ -12,11 +12,13 @@ using EazyMenu.Application.Features.Menus.Queries.GetMenuDetails;
 using EazyMenu.Application.Features.Menus.Queries.GetMenus;
 using EazyMenu.Web.Models.Menus;
 using EazyMenu.Web.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace EazyMenu.Web.Controllers;
 
+[Authorize(Policy = "StaffAccess")]
 public sealed class MenusController : Controller
 {
     private readonly ILogger<MenusController> _logger;

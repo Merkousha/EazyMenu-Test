@@ -8,12 +8,14 @@ using EazyMenu.Application.Common.Notifications;
 using EazyMenu.Application.Features.Notifications.GetSmsDeliveryLogs;
 using EazyMenu.Application.Features.Notifications.GetSmsUsageSummary;
 using EazyMenu.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 
 namespace EazyMenu.Web.Controllers;
 
+[Authorize(Policy = "ManagerAccess")]
 public sealed class NotificationsController : Controller
 {
     private const int DefaultPageSize = 20;
