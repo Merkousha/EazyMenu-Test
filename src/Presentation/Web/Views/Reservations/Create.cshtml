@@ -102,23 +102,10 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label asp-for="TableId" class="form-label">
-                            <i class="bi bi-table"></i> میز
-                        </label>
-                        <select asp-for="TableId" class="form-select">
-                            <option value="">انتخاب میز</option>
-                            @if (Model?.AvailableTables != null)
-                            {
-                                @foreach (var table in Model.AvailableTables)
-                                {
-                                    <option value="@table.TableId">
-                                        @table.Label - ظرفیت: @table.Capacity نفر
-                                        @(table.IsOutdoor ? " (فضای باز)" : " (داخل سالن)")
-                                    </option>
-                                }
-                            }
-                        </select>
-                        <span asp-validation-for="TableId" class="text-danger small"></span>
+                        <div class="alert alert-info mb-0 mt-4" role="alert">
+                            <i class="bi bi-info-circle"></i>
+                            <small>میز مناسب به صورت خودکار بر اساس تعداد نفرات و ترجیح شما انتخاب می‌شود.</small>
+                        </div>
                     </div>
                 </div>
 

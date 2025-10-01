@@ -169,14 +169,7 @@
     {
         <div class="alert alert-info" role="alert">
             <i class="bi bi-info-circle"></i> 
-            @if (Model.SelectedDay.HasValue)
-            {
-                <text>هیچ رزرویی برای روز @daysOfWeek[Model.SelectedDay.Value] یافت نشد.</text>
-            }
-            else
-            {
-                <text>هنوز هیچ رزرویی ثبت نشده است.</text>
-            }
+            هیچ رزرویی برای روز @daysOfWeek[Model.SelectedDay] یافت نشد.
         </div>
     }
 </div>

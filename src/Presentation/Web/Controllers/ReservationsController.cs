@@ -137,32 +137,14 @@ public sealed class ReservationsController : Controller
             return RedirectToAction("Index", "Dashboard");
         }
 
-        try
+        var model = new CreateReservationViewModel
         {
-            var tablesQuery = new GetBranchTablesQuery(tenantId.Value, branchId.Value);
-            var tables = await _getBranchTablesHandler.HandleAsync(tablesQuery, cancellationToken);
+            TenantId = tenantId.Value,
+            BranchId = branchId.Value
+        };
 
-            var model = new CreateReservationViewModel
-            {
-                TenantId = tenantId.Value,
-                BranchId = branchId.Value,
-                AvailableTables = tables.Select(t => new TableOptionViewModel(
-                    t.TableId,
-                    t.Label,
-                    t.Capacity,
-                    t.IsOutdoor
-                )).ToList()
-            };
-
-            ViewData["Title"] = "رزرو جدید";
-            return View(model);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "خطا در آماده‌سازی فرم رزرو");
-            TempData["ReservationError"] = "در آماده‌سازی فرم رزرو خطایی رخ داد.";
-            return RedirectToAction("Index");
-        }
+        ViewData["Title"] = "رزرو جدید";
+        return View(model);
     }
 
     [HttpPost]
@@ -171,24 +153,6 @@ public sealed class ReservationsController : Controller
     {
         if (!ModelState.IsValid)
         {
-            // بازیابی لیست میزها برای نمایش دوباره
-            try
-            {
-                var tablesQuery = new GetBranchTablesQuery(model.TenantId, model.BranchId);
-                var tables = await _getBranchTablesHandler.HandleAsync(tablesQuery, cancellationToken);
-                model.AvailableTables = tables.Select(t => new TableOptionViewModel(
-                    t.TableId,
-                    t.Label,
-                    t.Capacity,
-                    t.IsOutdoor
-                )).ToList();
-            }
-            catch
-            {
-                // اگر خطا در بازیابی میزها رخ داد، لیست خالی بگذاریم
-                model.AvailableTables = new List<TableOptionViewModel>();
-            }
-
             return View(model);
         }
 
@@ -219,48 +183,12 @@ public sealed class ReservationsController : Controller
         {
             _logger.LogWarning(ex, "خطای قانون کسب‌وکار در ثبت رزرو");
             ModelState.AddModelError(string.Empty, ex.Message);
-
-            // بازیابی لیست میزها
-            try
-            {
-                var tablesQuery = new GetBranchTablesQuery(model.TenantId, model.BranchId);
-                var tables = await _getBranchTablesHandler.HandleAsync(tablesQuery, cancellationToken);
-                model.AvailableTables = tables.Select(t => new TableOptionViewModel(
-                    t.TableId,
-                    t.Label,
-                    t.Capacity,
-                    t.IsOutdoor
-                )).ToList();
-            }
-            catch
-            {
-                model.AvailableTables = new List<TableOptionViewModel>();
-            }
-
             return View(model);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "خطای غیرمنتظره در ثبت رزرو");
             ModelState.AddModelError(string.Empty, "در ثبت رزرو خطایی رخ داد. لطفاً دوباره تلاش کنید.");
-
-            // بازیابی لیست میزها
-            try
-            {
-                var tablesQuery = new GetBranchTablesQuery(model.TenantId, model.BranchId);
-                var tables = await _getBranchTablesHandler.HandleAsync(tablesQuery, cancellationToken);
-                model.AvailableTables = tables.Select(t => new TableOptionViewModel(
-                    t.TableId,
-                    t.Label,
-                    t.Capacity,
-                    t.IsOutdoor
-                )).ToList();
-            }
-            catch
-            {
-                model.AvailableTables = new List<TableOptionViewModel>();
-            }
-
             return View(model);
         }
     }
