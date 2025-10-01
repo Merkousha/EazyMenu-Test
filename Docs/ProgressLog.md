@@ -7,6 +7,16 @@ A running history of significant work completed in this repository.
 - Summarize what was finished, notable commands/tests that ran, and any follow-up actions.
 - Reference related tasks in `Docs/Todo.md` when closing items.
 
+## 2025-10-10 (signalr-complete)
+- **اتمام کامل یکپارچه‌سازی SignalR برای تمام رویدادهای چرخه حیات سفارش**: اتصال سه Command Handler باقی‌مانده (ConfirmOrder، CompleteOrder، CancelOrder) به سیستم اعلان بلادرنگ.
+- **به‌روزرسانی ConfirmOrderCommandHandler**: تزریق IOrderRealtimeNotifier و انتشار رویداد "order-confirmed" پس از تأیید موفق سفارش با تمام اطلاعات (TenantId، OrderId، OrderNumber، Status، TotalAmount).
+- **به‌روزرسانی CompleteOrderCommandHandler**: تزریق IOrderRealtimeNotifier و انتشار رویداد "order-completed" پس از تکمیل موفق سفارش.
+- **به‌روزرسانی CancelOrderCommandHandler**: تزریق IOrderRealtimeNotifier و انتشار رویداد "order-cancelled" پس از لغو موفق سفارش با حفظ اطلاعات دلیل لغو.
+- همه Handler ها از الگوی مشابه PlaceOrderCommandHandler پیروی می‌کنند: Validate → Execute Business Logic → Save to DB → Broadcast SignalR Notification.
+- SignalR client موجود در Orders/Index.cshtml اکنون قادر به دریافت و نمایش تمام چهار نوع رویداد (Created، Confirmed، Completed، Cancelled) است.
+- اجرای `dotnet build` (موفق، مدت 7.4 ثانیه) و `dotnet test` (موفق، 110 تست، مدت 3.0 ثانیه) جهت اطمینان از سلامت تغییرات.
+- **وضعیت نهایی**: سیستم اعلان بلادرنگ کامل برای تمام تغییرات وضعیت سفارش فعال است. مشتری می‌تواند سفارش دهد و داشبورد مدیریتی فوراً اعلان دریافت کند. مدیر پس از تأیید/تکمیل/لغو سفارش نیز اعلان مربوطه پخش می‌شود.
+
 ## 2025-10-10 (signalr)
 - پیاده‌سازی کامل SignalR برای اعلان بلادرنگ سفارش‌های جدید به داشبورد مدیریتی شامل OrderAlertsHub و SignalROrderNotifier.
 - ایجاد infrastructure لازم با استفاده از IOrderRealtimeNotifier موجود و OrderRealtimeNotification record برای انتشار رویدادهای سفارش.
@@ -20,7 +30,7 @@ A running history of significant work completed in this repository.
   - بارگذاری مجدد خودکار صفحه پس از 2 ثانیه
   - fallback alert برای مرورگرهای بدون پشتیبانی Notification API
 - اجرای `dotnet build` (موفق، مدت 13.9 ثانیه) و `dotnet test` (موفق، 110 تست، مدت 3.0 ثانیه) جهت اطمینان از سلامت تغییرات.
-- گام بعدی: تست کامل جریان (ثبت سفارش از سایت عمومی → دریافت اعلان در داشبورد) و اتصال رویدادهای Confirm/Complete/Cancel به SignalR.
+- گام بعدی: اتصال رویدادهای Confirm/Complete/Cancel به SignalR.
 
 ## 2025-10-10 (checkout-flow)
 - پیاده‌سازی کامل جریان سبد خرید و checkout برای مشتریان شامل Models (CartItemModel, ShoppingCartModel)، ViewModels (CartViewModel, CheckoutViewModel, OrderConfirmationViewModel).

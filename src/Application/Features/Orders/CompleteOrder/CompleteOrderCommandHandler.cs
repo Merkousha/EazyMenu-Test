@@ -1,8 +1,10 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using EazyMenu.Application.Abstractions.Messaging;
 using EazyMenu.Application.Abstractions.Persistence;
 using EazyMenu.Application.Common.Exceptions;
+using EazyMenu.Application.Common.Interfaces.Orders;
 using EazyMenu.Domain.ValueObjects;
 
 namespace EazyMenu.Application.Features.Orders.CompleteOrder;
@@ -11,11 +13,16 @@ public sealed class CompleteOrderCommandHandler : ICommandHandler<CompleteOrderC
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IOrderRealtimeNotifier _realtimeNotifier;
 
-    public CompleteOrderCommandHandler(IOrderRepository orderRepository, IUnitOfWork unitOfWork)
+    public CompleteOrderCommandHandler(
+        IOrderRepository orderRepository,
+        IUnitOfWork unitOfWork,
+        IOrderRealtimeNotifier realtimeNotifier)
     {
         _orderRepository = orderRepository;
         _unitOfWork = unitOfWork;
+        _realtimeNotifier = realtimeNotifier;
     }
 
     public async Task<bool> HandleAsync(CompleteOrderCommand command, CancellationToken cancellationToken = default)
@@ -40,6 +47,18 @@ public sealed class CompleteOrderCommandHandler : ICommandHandler<CompleteOrderC
 
         await _orderRepository.UpdateAsync(order, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Broadcast real-time notification
+        await _realtimeNotifier.PublishOrderChangedAsync(
+            new OrderRealtimeNotification(
+                TenantId: order.TenantId.Value,
+                OrderId: order.Id.Value,
+                OrderNumber: order.OrderNumber,
+                ChangeType: "order-completed",
+                Status: order.Status.ToString(),
+                TotalAmount: order.TotalAmount,
+                OccurredAtUtc: DateTime.UtcNow),
+            cancellationToken);
 
         return true;
     }
