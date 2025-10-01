@@ -3,10 +3,12 @@ using EazyMenu.Domain.Aggregates.Menus;
 using EazyMenu.Domain.Aggregates.Users;
 using EazyMenu.Domain.ValueObjects;
 using EazyMenu.Infrastructure.Persistence;
+using EazyMenu.Infrastructure.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EazyMenu.Infrastructure.Persistence.Seed;
@@ -291,7 +293,54 @@ public sealed class DevelopmentDataSeeder
         _context.Menus.Add(menu);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("✅ منو با {CategoryCount} دسته‌بندی ایجاد شد", 4);
+        // منتشر کردن منو
+        menu.PublishNextVersion();
+        
+        var publishedAtUtc = DateTime.UtcNow;
+        var snapshotJson = CreateMenuSnapshotJson(menu);
+        var publication = new MenuPublication
+        {
+            Id = Guid.NewGuid(),
+            TenantId = menu.TenantId.Value,
+            MenuId = menu.Id.Value,
+            Version = menu.PublishedVersion,
+            SnapshotJson = snapshotJson,
+            PublishedAtUtc = publishedAtUtc
+        };
+        
+        _context.Set<MenuPublication>().Add(publication);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("✅ منو با {CategoryCount} دسته‌بندی ایجاد و منتشر شد (Version: {Version})", 4, menu.PublishedVersion);
         return menu;
+    }
+
+    private string CreateMenuSnapshotJson(Menu menu)
+    {
+        var snapshot = new
+        {
+            menuId = menu.Id.Value,
+            name = menu.Name.Values,
+            description = menu.Description?.Values,
+            categories = menu.Categories.Select(cat => new
+            {
+                id = cat.Id.Value,
+                name = cat.Name.Values,
+                displayOrder = cat.DisplayOrder,
+                iconUrl = cat.IconUrl,
+                items = cat.Items.Select(item => new
+                {
+                    id = item.Id.Value,
+                    name = item.Name.Values,
+                    description = item.Description?.Values,
+                    basePrice = new { amount = item.BasePrice.Amount, currency = item.BasePrice.Currency },
+                    isAvailable = item.IsAvailable,
+                    imageUrl = item.ImageUrl,
+                    tags = item.Tags.Select(t => t.ToString()).ToList()
+                }).ToList()
+            }).ToList()
+        };
+        
+        return System.Text.Json.JsonSerializer.Serialize(snapshot);
     }
 }
