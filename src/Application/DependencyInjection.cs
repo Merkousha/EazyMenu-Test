@@ -11,6 +11,7 @@ using EazyMenu.Application.Features.Identity.Login;
 using EazyMenu.Application.Features.Identity.RegisterUser;
 using EazyMenu.Application.Features.Tenants.Commands.UpdateBranding;
 using EazyMenu.Application.Features.Tenants.Queries.GetTenantBranding;
+using EazyMenu.Application.Features.QrCodes.Commands.GenerateTenantQrCode;
 using EazyMenu.Application.Features.Menus.Common;
 using EazyMenu.Application.Features.Menus.Commands.AddMenuCategory;
 using EazyMenu.Application.Features.Menus.Commands.AddMenuItem;
@@ -97,6 +98,9 @@ public static class DependencyInjection
         // Tenant branding
         services.AddScoped<UpdateBrandingHandler>();
         services.AddScoped<GetTenantBrandingHandler>();
+        
+        // QR Code generation
+        services.AddScoped<GenerateTenantQrCodeHandler>();
         
         return services;
     }

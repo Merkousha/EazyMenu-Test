@@ -18,6 +18,7 @@ using EazyMenu.Infrastructure.Provisioning;
 using EazyMenu.Infrastructure.Notifications;
 using EazyMenu.Infrastructure.Security;
 using EazyMenu.Infrastructure.Services.Orders;
+using EazyMenu.Infrastructure.Services.QrCodes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -133,6 +134,9 @@ public static class DependencyInjection
         // Identity services
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<IUserRepository, UserRepository>();
+        
+        // QR Code generation
+        services.AddSingleton<EazyMenu.Application.Features.QrCodes.IQrCodeGenerator, QRCoderGenerator>();
         
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<EazyMenuDbContext>());
 

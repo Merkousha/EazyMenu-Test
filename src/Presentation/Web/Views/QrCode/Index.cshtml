@@ -1,0 +1,196 @@
+@model EazyMenu.Application.Features.QrCodes.Commands.GenerateTenantQrCode.QrCodeResult
+@{
+    ViewData["Title"] = "QR Code رستوران";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="bi bi-qr-code"></i>
+                        QR Code منوی رستوران
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Main QR Code Display -->
+                        <div class="col-md-6 text-center mb-4">
+                            <h5>QR Code اصلی</h5>
+                            <div class="border rounded p-3 bg-light" style="display: inline-block;">
+                                <img src="data:image/png;base64,@Model.QrCodeBase64" alt="QR Code" class="img-fluid" style="max-width: 300px;" />
+                            </div>
+                            <div class="mt-3">
+                                <p class="text-muted small">
+                                    <i class="bi bi-link-45deg"></i>
+                                    لینک: <code>@Model.PublicMenuUrl</code>
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Download Options -->
+                        <div class="col-md-6">
+                            <h5>دانلود QR Code</h5>
+                            <p class="text-muted">این QR Code را می‌توانید برای استفاده در منو، پوستر یا تراکت چاپ کنید</p>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="@Url.Action("DownloadPng", "QrCode")" class="btn btn-outline-primary">
+                                    <i class="bi bi-download"></i>
+                                    دانلود PNG (تصویر)
+                                </a>
+                                <a href="@Url.Action("DownloadSvg", "QrCode")" class="btn btn-outline-secondary">
+                                    <i class="bi bi-download"></i>
+                                    دانلود SVG (برداری)
+                                </a>
+                            </div>
+
+                            <div class="alert alert-info mt-4">
+                                <i class="bi bi-info-circle"></i>
+                                <strong>نکته:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>فرمت PNG برای چاپ معمولی مناسب است</li>
+                                    <li>فرمت SVG برای چاپ حرفه‌ای و تغییر اندازه بدون افت کیفیت</li>
+                                    <li>QR Code به صفحه منوی عمومی رستوران شما لینک می‌شود</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <!-- Campaign QR Code Generator -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>
+                                <i class="bi bi-megaphone"></i>
+                                تولید QR Code کمپین ویژه
+                            </h5>
+                            <p class="text-muted">برای رهگیری منبع سفارشات، QR Code اختصاصی برای کمپین‌های تبلیغاتی بسازید</p>
+
+                            <form id="campaignForm" class="mb-3">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <input type="text" id="campaignName" class="form-control" placeholder="نام کمپین (مثلاً: spring-menu، instagram-ad)" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="bi bi-plus-circle"></i>
+                                            تولید QR Code
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div id="campaignQrResult" class="d-none">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h6 id="campaignTitle"></h6>
+                                        <img id="campaignQrImage" src="" alt="Campaign QR Code" class="img-fluid mb-3" style="max-width: 250px;" />
+                                        <p class="small text-muted">
+                                            <i class="bi bi-link-45deg"></i>
+                                            <code id="campaignUrl"></code>
+                                        </p>
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" id="downloadCampaignPng">
+                                                <i class="bi bi-download"></i> دانلود PNG
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" id="downloadCampaignSvg">
+                                                <i class="bi bi-download"></i> دانلود SVG
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Usage Instructions -->
+            <div class="card shadow mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-question-circle"></i>
+                        راهنمای استفاده
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="bi bi-printer fs-1 text-primary"></i>
+                                <h6 class="mt-2">چاپ و نصب</h6>
+                                <p class="small text-muted">QR Code را دانلود و روی منو، میز یا ورودی رستوران نصب کنید</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="bi bi-phone fs-1 text-success"></i>
+                                <h6 class="mt-2">اسکن توسط مشتری</h6>
+                                <p class="small text-muted">مشتریان با اسکن QR Code به منوی آنلاین دسترسی پیدا می‌کنند</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center mb-3">
+                                <i class="bi bi-cart-check fs-1 text-warning"></i>
+                                <h6 class="mt-2">سفارش آنلاین</h6>
+                                <p class="small text-muted">مشتریان می‌توانند مستقیماً از منو سفارش خود را ثبت کنند</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $('#campaignForm').submit(function(e) {
+            e.preventDefault();
+            
+            const campaignName = $('#campaignName').val().trim();
+            if (!campaignName) {
+                alert('لطفاً نام کمپین را وارد کنید');
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("GenerateCampaignQrCode", "QrCode")',
+                type: 'POST',
+                data: {
+                    campaignName: campaignName,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#campaignTitle').text('کمپین: ' + response.campaignName);
+                        $('#campaignQrImage').attr('src', 'data:image/png;base64,' + response.qrCodeBase64);
+                        $('#campaignUrl').text(response.url);
+                        $('#campaignQrResult').removeClass('d-none');
+
+                        // Set download links
+                        $('#downloadCampaignPng').data('campaign', response.campaignName);
+                        $('#downloadCampaignSvg').data('campaign', response.campaignName);
+                    } else {
+                        alert('خطا: ' + response.error);
+                    }
+                },
+                error: function() {
+                    alert('خطا در تولید QR Code کمپین');
+                }
+            });
+        });
+
+        $('#downloadCampaignPng').click(function() {
+            const campaign = $(this).data('campaign');
+            window.location.href = '@Url.Action("DownloadPng", "QrCode")?campaign=' + encodeURIComponent(campaign);
+        });
+
+        $('#downloadCampaignSvg').click(function() {
+            const campaign = $(this).data('campaign');
+            window.location.href = '@Url.Action("DownloadSvg", "QrCode")?campaign=' + encodeURIComponent(campaign);
+        });
+    </script>
+}

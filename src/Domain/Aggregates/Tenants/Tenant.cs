@@ -16,15 +16,17 @@ public sealed class Tenant : Entity<TenantId>, IAggregateRoot
     private readonly List<Subscription> _subscriptions = new();
     private Subscription? _activeSubscription;
 
-    private Tenant(TenantId id, string businessName, BrandProfile branding, Email contactEmail, PhoneNumber contactPhone, DateTime createdAtUtc)
+    private Tenant(TenantId id, string businessName, TenantSlug slug, BrandProfile branding, Email contactEmail, PhoneNumber contactPhone, DateTime createdAtUtc)
         : base(id)
     {
         Guard.AgainstNullOrWhiteSpace(businessName, nameof(businessName));
+        Guard.AgainstNull(slug, nameof(slug));
         Guard.AgainstNull(branding, nameof(branding));
         Guard.AgainstNull(contactEmail, nameof(contactEmail));
         Guard.AgainstNull(contactPhone, nameof(contactPhone));
 
         BusinessName = businessName.Trim();
+        Slug = slug;
         Branding = branding;
         ContactEmail = contactEmail;
         ContactPhone = contactPhone;
@@ -35,9 +37,12 @@ public sealed class Tenant : Entity<TenantId>, IAggregateRoot
 
     private Tenant()
     {
+        Slug = TenantSlug.Create("default");
     }
 
     public string BusinessName { get; private set; } = string.Empty;
+
+    public TenantSlug Slug { get; private set; } = null!;
 
     public BrandProfile Branding { get; private set; } = null!;
 
@@ -65,7 +70,8 @@ public sealed class Tenant : Entity<TenantId>, IAggregateRoot
 
     public static Tenant Register(string businessName, BrandProfile branding, Email contactEmail, PhoneNumber contactPhone, Address? headquartersAddress = null)
     {
-        var tenant = new Tenant(TenantId.New(), businessName, branding, contactEmail, contactPhone, DateTime.UtcNow)
+        var slug = TenantSlug.FromBusinessName(businessName);
+        var tenant = new Tenant(TenantId.New(), businessName, slug, branding, contactEmail, contactPhone, DateTime.UtcNow)
         {
             HeadquartersAddress = headquartersAddress
         };

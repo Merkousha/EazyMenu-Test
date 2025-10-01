@@ -22,6 +22,15 @@ internal sealed class TenantConfiguration : IEntityTypeConfiguration<Tenant>
             .HasMaxLength(200)
             .IsRequired();
 
+        builder.Property(t => t.Slug)
+            .HasConversion(slug => slug.Value, value => TenantSlug.Create(value))
+            .HasColumnName("Slug")
+            .HasMaxLength(50)
+            .IsRequired();
+
+        builder.HasIndex(t => t.Slug)
+            .IsUnique();
+
         builder.Property(t => t.CreatedAtUtc).IsRequired();
         builder.Property(t => t.IsSuspended).IsRequired();
         builder.Property(t => t.SuspendedAtUtc);
